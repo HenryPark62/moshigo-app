@@ -185,6 +185,16 @@ div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--
 [class*="st-key-pick_"] .stButton>button:hover p,[class*="st-key-mrow_"] .stButton>button:hover p{color:var(--accent-text)!important}
 .stMarkdown a.golink,.stMarkdown a.golink:hover{text-decoration:none!important}
 .golink{flex-shrink:0;font-size:13px;font-weight:700;color:var(--accent-text)!important;text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:4px 10px;background:var(--surface);white-space:nowrap}
+/* 추천 플랜 시간표 */
+.tl{display:flex;flex-direction:column;gap:0;margin-top:4px}
+.tl-row{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px;align-items:start}
+.tl-row>b{font-size:14px;line-height:1.35;padding-top:12px}
+.tl-row>b .muted{font-size:12px;font-weight:500}
+.tl-row.edge{align-items:center;padding:6px 0}
+.tl-row.edge>b{padding-top:0;color:var(--accent-text)}
+.tl-row.edge span{font-size:14px;font-weight:700}
+.tl-walk{margin-left:64px;padding:6px 0 6px 12px;border-left:3px dotted var(--hair-strong);font-size:12px;color:var(--muted)}
+.tl-card{margin:2px 0;gap:6px}
 .fbline{font-size:12px;color:var(--accent-text);font-weight:700;margin-top:6px}
 /* 아래 탭바 */
 .st-key-tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);z-index:99;background:var(--surface);border-top:1px solid var(--hair);padding:6px 6px calc(8px + env(safe-area-inset-bottom))}

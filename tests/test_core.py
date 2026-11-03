@@ -126,3 +126,23 @@ def test_cook_time_by_food_and_rush_hour():
     rush = freemeal.plan(menu2.DEFAULT_PEOPLE, "12:10", "13:40", 10, {"name": "x", "lat": 37.5665, "lng": 126.978}, list(pl.values()))
     w = lambda f, n: next(r["wait_min"] for r in f["restaurants"] if r["name"] == n)
     assert rush["peak"] and not calm["peak"] and w(rush, "BBQ치킨") > w(calm, "BBQ치킨")
+
+
+def test_plan_fits_time_window():
+    from core import plan
+    o = {"lat": 37.5665, "lng": 126.978}
+    rests = [{"id": "r1", "name": "국수집", "type": "food", "lat": 37.567, "lng": 126.979, "wait_min": 10, "meal_min": 30, "sitdown": True, "score": 1.0},
+             {"id": "r2", "name": "버거집", "type": "food", "lat": 37.5655, "lng": 126.977, "wait_min": 5, "meal_min": 20, "sitdown": False, "score": 0.5}]
+    spots = [{"id": "s1", "name": "광장", "type": "spot", "group": "park", "lat": 37.5663, "lng": 126.9779, "score": 1.0}]
+    ps = plan.make_plans(o, 12 * 60, 14 * 60, rests, spots, 1.0)
+    assert ps
+    for p in ps:
+        assert p["finish"] <= 14 * 60 - 10 and sum(x["place"]["type"] == "food" for x in p["stops"]) == 1
+        assert all(a["leave"] <= b["arrive"] for a, b in zip(p["stops"], p["stops"][1:]))
+    assert any(x["place"]["type"] == "spot" for x in ps[0]["stops"])  # 시간이 넉넉하면 둘러볼 곳도 넣는다
+    assert plan.make_plans(o, 12 * 60, 12 * 60 + 30, rests, spots, 1.0) == []  # 30분으로는 못 다녀옴
+
+
+def test_free_meal_past_midnight():
+    d = freemeal.plan(menu2.DEFAULT_PEOPLE, "23:15", "00:25", 10, {"name": "x", "lat": 37.5665, "lng": 126.978}, [])
+    assert d["left_min"] == 70

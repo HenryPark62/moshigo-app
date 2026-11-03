@@ -6,7 +6,7 @@ import os
 import streamlit as st
 import streamlit.components.v1 as components
 
-from core import freemeal, menu2, nearby, ocr, order, reviews, store, world
+from core import freemeal, menu2, nearby, ocr, order, plan, reviews, store, world
 from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, avatar, chips, ghost_avatar, go, josa, level, loader, marks, md, momo, nav
 
 RELATIONS = ["나", "부모님", "아이", "배우자", "친구", "가족"]
@@ -702,34 +702,56 @@ def _spots(lat, lng):
     return nearby.fetch_spots(lat, lng)
 
 
+def rank_restaurants(places, act, speed):
+    """같이 먹는 사람에게 잘 맞는 식당 순서 (사람별 먹을 메뉴, 걷는 시간)."""
+    rows = []
+    for r in places:
+        marks = freemeal.person_marks(r["dishes"], act)
+        walk = max(1, round(r["distance_m"] * 1.3 / speed / 60))
+        score = sum((1 if m["mark"] == "편히" else 0.4 if m["mark"] == "조심" else -1) + (m["match"] and 0.5 or 0) for m in marks) / max(1, len(act))
+        score -= walk / 30 + (0.3 if r["kind"] == "카페" else 0) + (0.6 if r["wait_min"] <= 5 else 0) + (0 if r["dishes"] else 0.8)
+        rows.append(dict(r, marks=marks, walk_min=walk, score=score, all_ok=all(m["mark"] == "편히" for m in marks)))
+    rows.sort(key=lambda r: -r["score"])
+    return rows
+
+
 def walk_link(lat, lng):
     return f'<a class="golink" href="https://www.google.com/maps/dir/?api=1&destination={lat},{lng}&travelmode=walking" target="_blank" rel="noopener">길 찾기</a>'
 
 
-def spots_view(geo, slot, left=None, buffer=0):
-    """주변 둘러볼 곳. left(남은 분)가 있으면 그 안에 다녀올 수 있는 곳만."""
+def get_spots(geo, slot=None):
+    """주변 둘러볼 곳 원본. 브라우저가 묻는 중이면 'wait', 없으면 빈 목록."""
     s = st.session_state
     lat, lng = round(geo["lat"], 3), round(geo["lng"], 3)
     ck = f"spots_{lat}_{lng}"
+    if s.get(ck):
+        return s[ck]
     box = slot or st.empty()
-    spots = s.get(ck)
-    if spots is None:
-        box.markdown(loader("주변 둘러볼 곳을 찾는 중"), unsafe_allow_html=True)
-        if not nearby.server_keys():
-            res = browser_fetch(nearby.nominatim_urls(lat, lng, "spots"), key=f"bf_spots_{lat}_{lng}")
-            if res is None:
-                return
-            spots = nearby.spots_from_browser(res, lat, lng)
-            if not spots:
-                nearby._err("브라우저 장소", [r.get("error") for r in res if isinstance(r, dict)] or "결과 없음")
+    box.markdown(loader("주변 둘러볼 곳을 찾는 중"), unsafe_allow_html=True)
+    spots = None
+    if not nearby.server_keys():
+        res = browser_fetch(nearby.nominatim_urls(lat, lng, "spots"), key=f"bf_spots_{lat}_{lng}")
+        if res is None:
+            return "wait"
+        spots = nearby.spots_from_browser(res, lat, lng)
         if not spots:
-            try:
-                spots = _spots(lat, lng)[1]
-            except Exception as e:
-                print(f"[nearby] 장소 실패: {e!r}")
-        box.empty()
-        if spots:
-            s[ck] = spots
+            nearby._err("브라우저 장소", [r.get("error") for r in res if isinstance(r, dict)] or "결과 없음")
+    if not spots:
+        try:
+            spots = _spots(lat, lng)[1]
+        except Exception as e:
+            print(f"[nearby] 장소 실패: {e!r}")
+    box.empty()
+    if spots:
+        s[ck] = spots
+    return spots or []
+
+
+def spots_view(geo, slot, left=None, buffer=0):
+    """주변 둘러볼 곳. left(남은 분)가 있으면 그 안에 다녀올 수 있는 곳만."""
+    spots = get_spots(geo, slot)
+    if spots == "wait":
+        return
     if st.session_state.get("dev"):  # 개발 확인용: 어느 서비스가 왜 실패했는지
         md('<div class="note">[dev] ' + E(" / ".join(nearby.ERRORS[-6:]) or "오류 없음") + f' / 장소 {len(spots or [])}개</div>')
     if not spots:
@@ -786,14 +808,16 @@ def places_here(geo, slot=None):
         box.empty()
 
 
-def _map(center, center_label, rows, label_of, color_of, key, height=260):
-    from folium import DivIcon, Map, Marker
+def _map(center, center_label, rows, label_of, color_of, key, height=260, route=None):
+    from folium import DivIcon, Map, Marker, PolyLine
 
     m = Map(location=[center["lat"], center["lng"]], zoom_start=16, tiles="OpenStreetMap", control_scale=False)
     pill = 'position:absolute;transform:translate(-50%,-100%);white-space:nowrap;padding:3px 9px;border-radius:999px;font:700 12px sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.25);'
     Marker([center["lat"], center["lng"]], icon=DivIcon(html=f'<span style="{pill.replace("translate(-50%,-100%)", "translate(calc(-100% - 8px),-50%)")}background:#22302a;color:#fff">{center_label}</span>')).add_to(m)
     for r in rows:
         Marker([r["lat"], r["lng"]], icon=DivIcon(html=f'<span style="{pill}background:{color_of(r)};color:#fff;border:2px solid #fff">{label_of(r)}</span>')).add_to(m)
+    if route:
+        PolyLine(route, color="#2f7a50", weight=4, opacity=0.8, dash_array="6 8").add_to(m)
     if rows:
         m.fit_bounds([[center["lat"], center["lng"]]] + [[r["lat"], r["lng"]] for r in rows], padding=(30, 30))
     # 지도 그림(타일)이 다 뜰 때까지 걷는 모모를 지도 위에 띄워 둔다
@@ -839,8 +863,9 @@ def nearby_view():
         return
     if not s.get("near_tab"):
         s.near_tab = "식당"
-    if st.segmented_control("보기", ["식당", "둘러볼 곳"], key="near_tab", label_visibility="collapsed") == "둘러볼 곳":
-        spots_view(geo, slot)
+    tab = st.segmented_control("보기", ["식당", "둘러볼 곳", "추천 플랜"], key="near_tab", label_visibility="collapsed")
+    if tab in ("둘러볼 곳", "추천 플랜"):
+        (spots_view if tab == "둘러볼 곳" else plan_view)(geo, slot)
         st.button("위치 다시 잡기", width="stretch", key="near_regeo2", on_click=_set, kwargs={"geo": None})
         return
     src, places = places_here(geo, slot)
@@ -856,14 +881,7 @@ def nearby_view():
         return
     act = active()
     speed, slowest = freemeal.group_speed(act)
-    rows = []
-    for r in places:
-        marks = freemeal.person_marks(r["dishes"], act)
-        walk = max(1, round(r["distance_m"] * 1.3 / speed / 60))
-        score = sum((1 if m["mark"] == "편히" else 0.4 if m["mark"] == "조심" else -1) + (m["match"] and 0.5 or 0) for m in marks) / max(1, len(act))
-        score -= walk / 30 + (0.3 if r["kind"] == "카페" else 0) + (0.6 if r["wait_min"] <= 5 else 0) + (0 if r["dishes"] else 0.8)
-        rows.append(dict(r, marks=marks, walk_min=walk, score=score, all_ok=all(m["mark"] == "편히" for m in marks)))
-    rows.sort(key=lambda r: -r["score"])
+    rows = rank_restaurants(places, act, speed)
     only = st.toggle("모두 편히 먹을 수 있는 곳만", key="near_only")
     shown = [r for r in rows if r["all_ok"]] if only else rows
     shown = shown[:15]
@@ -879,6 +897,75 @@ def nearby_view():
     if geo and st.button("위치 다시 잡기", width="stretch"):
         s.geo = None
         st.rerun()
+
+
+def plan_view(geo, slot, start=None, end=None, buffer=10):
+    """추천 플랜: 출발과 도착 시간 안에 식당 한 곳과 둘러볼 곳을 묶은 동선. start/end를 주면(자유식) 그 시간으로."""
+    from datetime import timedelta
+
+    s = st.session_state
+    free = start
+    src, places = places_here(geo, slot)
+    if src == "wait":
+        return
+    spots = get_spots(geo, slot)
+    if spots == "wait":
+        return
+    if not places:
+        st.info("주변 식당을 찾지 못해서 플랜을 만들 수 없어요.")
+        return
+    act = active()
+    speed, slowest = freemeal.group_speed(act)
+    rests = [r for r in rank_restaurants(places, act, speed) if r["dishes"]]
+    sps = nearby.rank_spots(spots or [], geo["lat"], geo["lng"], act, speed)
+    back = True
+    if start is None:
+        if "plan_start" not in s:
+            n = local_now()
+            n = n.replace(minute=n.minute - n.minute % 5, second=0, microsecond=0)
+            s.plan_start, s.plan_end = n.time(), (n + timedelta(hours=2)).time()
+        with st.container(key="pair_plan"):
+            c1, c2 = st.columns(2)
+            t0 = c1.time_input("출발 시간", step=300, key="plan_start")
+            t1 = c2.time_input("도착 시간", step=300, key="plan_end")
+        back = st.toggle("출발한 곳으로 돌아오기", value=True, key="plan_back")
+        start, end = t0.hour * 60 + t0.minute, t1.hour * 60 + t1.minute
+        if end < start and end + 24 * 60 - start <= 12 * 60:  # 자정을 넘기면 다음 날로
+            end += 24 * 60
+    if end <= start:
+        st.warning("도착 시간이 출발 시간보다 늦어야 해요.")
+        return
+    plans = plan.make_plans(geo, start, end, rests, sps, speed, back, buffer)
+    if not plans:
+        st.info(f"이 시간 안에 다녀올 수 있는 식당이 없어요. {'도착 시간' if free is None else '모이는 시간'}을 늦춰 보세요.")
+        return
+    names = [f"플랜 {i + 1}" for i in range(len(plans))]
+    if s.get("plan_pick") not in names:
+        s.plan_pick = names[0]
+    pick = st.segmented_control("플랜", names, key="plan_pick", label_visibility="collapsed") or names[0]
+    pl = plans[names.index(pick)]
+    md(f'<div class="sum"><div><span>출발</span><b>{plan.hm(start)}</b></div><div><span>{"도착" if back else "끝"}</span><b>{plan.hm(pl["finish"])}</b></div>'
+       f'<div><span>걷는 시간</span><b>{pl["walked"]}분</b></div><div><span>여유</span><b>{pl["spare"]}분</b></div></div>'
+       + ("" if free is not None else f'<div class="note">{E(slowest)} 걸음 기준 (분당 {round(speed * 60)}m)</div>'))
+    pts = [x["place"] for x in pl["stops"]]
+    route = [[geo["lat"], geo["lng"]]] + [[p["lat"], p["lng"]] for p in pts] + ([[geo["lat"], geo["lng"]]] if back else [])
+    _map(geo, "출발", pts, lambda r: f'{pts.index(r) + 1}', lambda r: "#c0617f" if r["type"] == "food" else "#2f7a50", f"planmap", route=route)
+    h = f'<div class="tl"><div class="tl-row edge"><b>{plan.hm(start)}</b><span>출발 (지금 있는 곳)</span></div>'
+    for i, x in enumerate(pl["stops"]):
+        p = x["place"]
+        h += f'<div class="tl-walk">걸어서 {x["walk"]}분</div>'
+        if p["type"] == "food":
+            detail = f'나오기 {x["leave"] - x["arrive"] - p["meal_min"]}분, 식사 {p["meal_min"]}분'
+            body = f'<div class="small muted">{E(p["kind"])} · {detail}</div>' + _marks(p["marks"])
+        else:
+            body = f'<div class="small muted">{E(p["kind"])} · {nearby.STAY_MIN[p["group"]]}분 둘러보기</div><div class="small">{E(p["why"])}</div>'
+        h += (f'<div class="tl-row"><b>{plan.hm(x["arrive"])}<br><span class="muted">~{plan.hm(x["leave"])}</span></b>'
+              f'<div class="card tl-card"><div class="row"><div><span class="tag">{i + 1}</span> <b>{E(p["name"])}</b></div>{walk_link(p["lat"], p["lng"])}</div>{body}</div></div>')
+    if back:
+        h += f'<div class="tl-walk">걸어서 {pl["back_walk"]}분</div><div class="tl-row edge"><b>{plan.hm(pl["finish"])}</b><span>{"도착 (출발한 곳)" if free is None else "모이는 곳 도착"}</span></div>'
+    md(h + "</div>")
+    food = next(x["place"] for x in pl["stops"] if x["place"]["type"] == "food")
+    _pick(food, f"plan_pick_{food['id']}")
 
 
 def local_now():
@@ -933,8 +1020,13 @@ def free():
        f'<div class="note">지금 있는 곳에서 출발, {E(data["slowest"])} 걸음 기준 (분당 {round(data["speed"] * 60)}m)</div>')
     if not s.get("free_tab"):
         s.free_tab = "식당"
-    if st.segmented_control("보기", ["식당", "둘러볼 곳"], key="free_tab", label_visibility="collapsed") == "둘러볼 곳":
+    tab = st.segmented_control("보기", ["식당", "둘러볼 곳", "추천 플랜"], key="free_tab", label_visibility="collapsed")
+    if tab == "둘러볼 곳":
         spots_view(geo, slot, data["left_min"], buf)
+    if tab == "추천 플랜":
+        st0 = now.hour * 60 + now.minute
+        plan_view(geo, slot, st0, st0 + data["left_min"], buf)
+    if tab in ("둘러볼 곳", "추천 플랜"):
         st.button("위치 다시 잡기", width="stretch", key="free_regeo2", on_click=_set, kwargs={"geo": None})
         return
     if data.get("peak"):

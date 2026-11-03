@@ -26,7 +26,7 @@ def group_speed(people):
 
 
 def _hm(m):
-    return f"{m // 60:02d}:{m % 60:02d}"
+    return f"{m // 60 % 24:02d}:{m % 60:02d}"
 
 
 def _mins(t):
@@ -65,6 +65,8 @@ def plan(people, now="12:10", meet="13:30", buffer_min=10, meet_pt=None, restaur
     meet_pt = data["meet"]
     speed, slowest = group_speed(people)
     left = _mins(meet) - _mins(now)
+    if left < 0 and left + 24 * 60 <= 12 * 60:  # 자정을 넘겨 모이는 경우 (23:15 -> 00:25)
+        left += 24 * 60
     t = _mins(now)
     peak = 11 * 60 + 30 <= t < 13 * 60 or 17 * 60 + 30 <= t < 19 * 60 + 30  # 점심, 저녁 붐비는 시간
     rows = []
