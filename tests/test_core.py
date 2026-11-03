@@ -87,3 +87,30 @@ def test_menu_item_ids_are_unique_even_without_latin_letters():
     raw["items"] = [dict(one, name_orig="갈비 750g"), dict(one, name_orig="목살 750g"), dict(one, name_orig="냉면"), dict(one, name_orig="비빔냉면")]
     ids = [i["id"] for i in menu2.enrich(raw, menu2.DEFAULT_PEOPLE)["items"]]
     assert len(set(ids)) == len(ids) == 4, ids
+
+
+def test_order_card_speaks_the_menu_language():
+    s = scan()
+    fam = [dict(menu2.DEFAULT_PEOPLE[0], cannot=["술"]), menu2.DEFAULT_PEOPLE[3]]
+    expect = {"ja-JP": "アレルギー", "zh-CN": "过敏", "zh-HK": "過敏", "th-TH": "แพ้", "de-DE": "Allergie", "it-IT": "allergia",
+              "es-ES": "alergia", "vi-VN": "dị ứng", "ko-KR": "알레르기", "fr-FR": "allergique", "en-US": "allergic"}
+    for code, word in expect.items():
+        card = order.card(dict(s, language_code=code), fam, [], list(order.REQUEST_KEYS))
+        assert word in card["first"][0], (code, card["first"])
+        assert len(card["requests"]) == 7 and card["note"] is None
+    assert "drink" in order.card(dict(s, language_code="en"), fam, [], [])["first"][1]
+    assert order.card(dict(s, language_code="nl-NL"), fam, [], [])["note"]  # 없는 언어는 영어와 안내
+
+
+def test_survey_feedback_moves_liked_menus_up():
+    if os.path.exists("/tmp/moshigo-test.db"):
+        os.remove("/tmp/moshigo-test.db")
+    for _ in range(4):
+        reviews.save("Chez Paulette", "Croque-monsieur, salade", True, 5, [], True, "")
+        reviews.save("Chez Paulette", "Poulet rôti, gratin dauphinois", True, 2, [], False, "")
+    fb = reviews.feedback(["Croque-monsieur, salade", "Poulet rôti, gratin dauphinois", "Escargots de Bourgogne (6)"])
+    assert fb["Croque-monsieur, salade"]["boost"] > 0 > fb["Poulet rôti, gratin dauphinois"]["boost"]
+    assert "Escargots de Bourgogne (6)" not in fb
+    s = menu2.apply_feedback(menu2.demo(menu2.DEFAULT_PEOPLE), fb)
+    croque = next(i for i in s["items"] if i["name_orig"].startswith("Croque"))
+    assert croque["fb"]["again"] == 100 and croque["boost"] > 0

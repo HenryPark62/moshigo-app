@@ -53,6 +53,7 @@ def save_people(people):
 def rejudge():
     act = active()
     scan = menu2.enrich(st.session_state.scan_raw, act)
+    menu2.apply_feedback(scan, reviews.feedback([i["name_orig"] for i in scan["items"]]))
     scan["combos"] = menu2.combos(scan, act)
     st.session_state.scan = scan
     st.session_state.picks = {}
@@ -301,6 +302,8 @@ def menu():
     if not s.get("menu_mode_w"):
         s.menu_mode_w = "번역만"
     mode = st.segmented_control("보기", ["번역만", "원문과 함께", "누가 먹을까"], key="menu_mode_w", label_visibility="collapsed") or "번역만"
+    if mode != "누가 먹을까":
+        picks_view(scan)
     if mode == "누가 먹을까":
         groups = [("all", "모두 편히 먹어요", "누가 먹어도 괜찮아요"), ("some", "몇 명만 괜찮아요", "사람마다 달라요. 이유를 확인해 주세요"),
                   ("none", "모두 피하는 게 좋아요", "")]
@@ -320,6 +323,24 @@ def menu():
     best = scan["combos"][0] if scan["combos"] else None
     if best:
         st.button(f"{best['summary']['people']}명이 같이 먹을 조합 보기", type="primary", width="stretch", on_click=nav, args=('combo',))
+
+
+def picks_view(scan):
+    """가게가 추천하는 메뉴(시그니처, 오늘의 추천 등)를 맨 위에 따로. 처음 보는 맛이면 그렇다고 알려 준다."""
+    picks = [i for i in scan["items"] if i.get("chef_pick") and not i["unreadable"] and i["course"] != "drink"][:3]
+    if not picks:
+        return
+    md(f'<div class="sec">가게 추천 메뉴 <span class="n">{len(picks)}개</span></div>')
+    for it in picks:
+        with st.container(key=f"pick_{it['id']}"):
+            kw = (it["taste_kw"] + it["aroma_kw"])[:4]
+            known = it.get("headline")
+            tag = f'<span class="tag">{E(known)}</span>' if known else '<span class="tag sun">아는 음식과 거리가 먼 현지 맛</span>'
+            md(f'<div class="row"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">'
+               f'<div class="name">{E(it["name_ko"])}</div><div class="reading"><i>{E(it["name_orig"])}</i></div>'
+               f'<div class="desc">{E(it["desc_ko"])}</div><div>{tag}</div>' + (chips(kw) if kw else "") +
+               f'</div><span class="price">{E(it["price"])}</span></div>' + (marks(it["per"]) if it["per"] else ""))
+            st.button("무슨 맛인지 보기 ›", key=f"pickopen_{it['id']}", on_click=nav, args=("dish",), kwargs={"dish_id": it["id"]})
 
 
 def row(it, mode):
@@ -344,6 +365,8 @@ def row(it, mode):
         if al and mode != "누가 먹을까":
             body += chips([f"{a} 들어 있어요" for a in al], "kw care")
         tail = marks(it["per"], reasons=mode == "누가 먹을까") if it["course"] != "drink" else ""  # 표시 줄은 카드 전체 폭으로
+        if it.get("fb"):
+            tail += f'<div class="fbline">먹어 본 {it["fb"]["n"]}명 중 {it["fb"]["again"]}%가 다시 추천받고 싶대요</div>'
         md(f'<div class="row"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">{head}{body}</div><span class="price">{E(it["price"])}</span></div>{tail}')
         if it["course"] != "drink":
             st.button("무슨 맛인지 보기 ›", key=f"open_{it['id']}_{mode}", on_click=nav, args=('dish',), kwargs={"dish_id": it['id']})
@@ -457,6 +480,10 @@ def dish():
            + (f'<div class="note">들어간 재료(짐작): {E(", ".join(it["contains"]))}. 메뉴판에 없는 재료가 있을 수 있어요.</div>' if it["contains"] else "") + "</div>")
 
     # 후기: 이 식당 먼저, 없으면 같은 메뉴
+    fb = it.get("fb")
+    if fb:
+        md(f'<div class="sec">먹어 본 사람들 <span class="n">{fb["n"]}명이 답했어요</span></div><div class="sum">'
+           f'<div><span>맛이 그려졌어요</span><b>{fb["imagine"]} / 5</b></div><div><span>다시 추천받고 싶어요</span><b>{fb["again"]}%</b></div></div>')
     rv = reviews.reviews(it["name_orig"], scan.get("restaurant", ""))
     md(f'<div class="sec">후기 <span class="n">{rv["count"]}개' + (f' · ★ {rv["avg"]}' if rv["avg"] else "") + "</span></div>")
     if rv["count"]:
@@ -487,10 +514,10 @@ def dish():
     for r in ["소스는 따로", "덜 짜게"]:
         if r not in reqs:
             reqs.append(r)
-    lang = (scan.get("language_code") or "fr").split("-")[0]
-    col = 0 if lang == "fr" else 1
-    md('<div class="sec">직원에게 부탁하기 <span class="n">누르면 읽어 줘요</span></div>')
-    speak_block([(order.REQUESTS[r][col], r) for r in reqs[:4] if r in order.REQUESTS], "fr-FR" if lang == "fr" else "en-US", 60 * min(4, len(reqs)) + 8)
+    key = order.lang_key(scan)
+    md(f'<div class="sec">직원에게 부탁하기 <span class="n">{order.LANG[key]["name"]} · 누르면 읽어 줘요</span></div>')
+    phr = [(order.speakable(order.request_text(key, r), key), r, order.request_text(key, r)) for r in reqs[:4] if r in order.REQUEST_KEYS]
+    speak_block(phr, order.voice(scan), 60 * len(phr) + 8)
 
     if it["course"] != "drink":
         md('<div class="sec">보여 주기</div>')
@@ -531,6 +558,7 @@ def survey():
             reviews.save(s.scan.get("restaurant", ""), it["name_orig"], ordered == "네", imagine or 3, stronger or [], again == "네",
                          comment or "", ",".join(who or []))
             st.toast("고마워요. 다음 사람에게 알려 줄게요.")
+            rejudge()  # 방금 답한 설문을 추천 순서에 바로 반영
             go("dish")
     st_ = reviews.stats(it["name_orig"])
     if st_["n"]:
@@ -606,16 +634,17 @@ def order_card():
     if card["first"]:
         h += '<div class="first">' + "".join(f'<div><b>{E(t)}</b><span class="ko">{E(k)}</span></div>' for t, k in zip(card["first"], card["first_ko"])) + "</div>"
     h += f'<div class="hello">{E(card["hello"])}</div>'
-    h += "".join(f'<div class="ln"><b>{o["count"]} × {E(o["orig"])}</b><span class="ko">{E(o["ko"])} · {E(o["price"])}</span></div>' for o in card["order"])
+    h += "".join(f'<div class="ln"><b>{o["count"]} × {E(o["orig"])}</b><span class="ko">{E(o["ko"])}{(" · " + E(o["price"])) if o["price"] else ""}</span></div>' for o in card["order"])
     h += "".join(f'<div class="ln"><b style="font-size:17px">{E(r["orig"])}</b><span class="ko">{E(r["ko"])}</span></div>' for r in card["requests"])
     md(h + f'<div class="hello">{E(card["thanks"])}</div></div>')
     if card.get("note"):
         st.info(card["note"])
-    md(f'<div class="sec">{"프랑스어" if card["lang"] == "fr" else "영어"}로 읽어 주기</div>')
-    lines = [(t, k) for t, k in zip(card["first"], card["first_ko"])] + [(f'{o["count"]} {o["orig"]}', o["ko"]) for o in card["order"]] + \
-            [(r["orig"], r["ko"]) for r in card["requests"]]
-    speak_block([(" ".join([*card["first"], card["hello"], *[f'{o["count"]} {o["orig"]}' for o in card["order"]], *[r["orig"] for r in card["requests"]], card["thanks"]]),
-                  "알레르기부터 주문, 인사까지 차례로 읽어요", "카드 전체 읽기")] + lines, card["voice"], 64 * (len(lines) + 1) + 10)
+    md(f'<div class="sec">{card["lang_name"]}로 읽어 주기</div>')
+    sp = lambda t: order.speakable(t, card["lang"])
+    lines = [(sp(t), k, t) for t, k in zip(card["first"], card["first_ko"])] + [(f'{o["count"]} {o["orig"]}', o["ko"]) for o in card["order"]] + \
+            [(sp(r["orig"]), r["ko"], r["orig"]) for r in card["requests"]]
+    whole = sp(" ".join([*card["first"], card["hello"], *[f'{o["count"]} {o["orig"]}' for o in card["order"]], *[r["orig"] for r in card["requests"]], card["thanks"]]))
+    speak_block([(whole, "알레르기부터 주문, 인사까지 차례로 읽어요", "카드 전체 읽기")] + lines, card["voice"], 64 * (len(lines) + 1) + 10)
     md('<div class="note">현지어 문장은 자동으로 만든 거라 어색할 수 있어요. 직원이 헷갈려하면 메뉴 이름을 손가락으로 가리켜 주세요.</div>')
 
 

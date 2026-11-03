@@ -48,6 +48,29 @@ def stats(menu):
             "strong": top and {"taste": top[0], "pct": round(100 * top[1] / n)}}
 
 
+def feedback(menus):
+    """메뉴 여러 개의 설문 요약을 한 번에. 응답 2개 이상인 메뉴만, 추천 가산점(boost) 포함.
+    다시 추천받고 싶다는 비율과 '맛이 그려졌다' 점수가 높을수록 +, 낮을수록 - (최대 ±0.25, 응답 5개부터 온전히)."""
+    menus = list(dict.fromkeys(menus))
+    if not menus:
+        return {}
+    with _db() as con:
+        rows = con.execute(f"select menu, imagine, again from survey where menu in ({','.join('?' * len(menus))})", menus).fetchall()
+    agg = {}
+    for m, im, ag in rows:
+        a = agg.setdefault(m, [0, 0, 0])
+        a[0] += 1; a[1] += im; a[2] += ag
+    out = {}
+    for m, (n, im, ag) in agg.items():
+        if n < 2:
+            continue
+        again, imagine = ag / n, im / n
+        raw = 0.3 * (again - 0.5) + 0.15 * (imagine - 3) / 2
+        out[m] = {"n": n, "again": round(100 * again), "imagine": round(imagine, 1),
+                  "boost": round(max(-0.25, min(0.25, raw)) * min(1, n / 5), 3)}
+    return out
+
+
 def caution(menu):
     """설문에서 '예상보다 강했다'가 40% 넘게 나온 맛을 미리 알려 준다 (응답 3개 이상일 때)."""
     s = stats(menu)

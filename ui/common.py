@@ -148,6 +148,13 @@ div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--
 [class*="st-key-mrow_"] .stButton{display:flex;justify-content:flex-end}
 [class*="st-key-mrow_"] .stButton>button{min-height:34px;padding:0 4px;font-size:14px;border:0;background:none;color:var(--accent-text);font-weight:700}
 [class*="st-key-mrow_"] .stButton>button p{color:var(--accent-text)}
+/* 가게 추천 메뉴 */
+[class*="st-key-pick_"]{background:var(--tint-sun2);border:1px solid #f0d58a;border-radius:16px;padding:12px 14px}
+[class*="st-key-pick_"] [data-testid="stVerticalBlock"]{gap:8px}
+[class*="st-key-pick_"] .stButton>button{min-height:34px;padding:0 4px;font-size:14px;border:0!important;background:none!important;color:var(--accent-text);font-weight:700}
+[class*="st-key-pick_"] .stButton>button p{color:var(--accent-text)!important}
+[class*="st-key-pick_"] .stButton>button:hover p,[class*="st-key-mrow_"] .stButton>button:hover p{color:var(--accent-text)!important}
+.fbline{font-size:12px;color:var(--accent-text);font-weight:700;margin-top:6px}
 /* 아래 탭바 */
 .st-key-tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);z-index:99;background:var(--surface);border-top:1px solid var(--hair);padding:6px 6px calc(8px + env(safe-area-inset-bottom))}
 .st-key-tabbar [data-testid="stHorizontalBlock"]{flex-wrap:nowrap!important;gap:2px!important}

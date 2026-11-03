@@ -286,10 +286,21 @@ def demo(people):
 SCORE = {"편히": 1.0, "조심": 0.55}
 
 
+def apply_feedback(scan, fb):
+    """먹어 본 사람들의 설문(reviews.feedback)을 메뉴에 붙이고, 같은 묶음 안에서 반응이 좋은 메뉴를 앞으로."""
+    for it in scan["items"]:
+        f = fb.get(it["name_orig"])
+        it["fb"] = f
+        it["boost"] = f["boost"] if f else 0.0
+    order = {"all": 0, "some": 1, "none": 2}
+    scan["judged"].sort(key=lambda i: (order[i["group"]], -(sum(x["verdict"] == "편히" for x in i["per"]) + 2 * i.get("boost", 0))))
+    return scan
+
+
 def _score(item, x):
     if x["verdict"] == "피하기":
         return None
-    s = SCORE[x["verdict"]]
+    s = SCORE[x["verdict"]] + item.get("boost", 0)  # 먹어 본 사람들 반응
     if x["match"]:
         s += 0.25 * x["match"]["bars"] + 0.2 * x["match"]["score"]  # 같은 단계면 더 닮은 쪽
     return round(s, 3)
@@ -354,7 +365,8 @@ def combos(scan, people):
                            "who": [x["name"] for x in d["per"] if x["verdict"] != "피하기"]} for d in share],
                 "summary": {"happy": ok, "people": len(ids), "minutes": max(i["serve_minutes"] for i in chosen),
                             "price": round(price, 2) if price else None},
-                "why": _why(plates, scan)}
+                "why": _why(plates, scan) + (" 먹어 본 사람들이 다시 추천받고 싶다고 한 메뉴를 앞에 두었어요."
+                                             if any(it.get("boost", 0) > 0.03 for _, it, _ in pick) else "")}
 
     out = [package("all", mains, title="모두 만족", note=f"이렇게 시키면 {len(ids)}명 모두 맛있게 먹어요")]
     local = next((i for i in mains if i.get("chef_pick")), None) or next((i for i in mains if not any(x["match"] for x in i["per"])), None)
