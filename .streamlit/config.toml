@@ -8,6 +8,7 @@ textColor = "#22302a"
 [client]
 toolbarMode = "minimal"
 showSidebarNavigation = false
+showErrorDetails = "none"
 
 [browser]
 gatherUsageStats = false

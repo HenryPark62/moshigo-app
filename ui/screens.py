@@ -731,7 +731,7 @@ def nearby_view():
         md(f'<div class="card"><div class="row"><div><span class="tag {"good" if r["all_ok"] else ""}">{i + 1}</span> <b style="font-size:16px">{E(r["name"])}</b>{orig}'
            f'<div class="small muted">{E(r["kind"])} · 걸어서 {r["walk_min"]}분</div></div></div>{_marks(r["marks"])}'
            + (f'<div class="note">{E(r["note"])}</div>' if r.get("note") else "") + "</div>")
-        _pick(r, f"near_pick_{r['id']}")
+        _pick(r, f"near_pick_{i}_{r['id']}")
     md(f'<div class="note">식당 정보: {E(src)}. 대표 메뉴는 요리 종류로 짐작한 것이라, 실제 메뉴는 메뉴판을 찍어서 확인해 주세요.</div>')
     if geo and st.button("위치 다시 잡기", width="stretch"):
         s.geo = None
@@ -806,6 +806,6 @@ def free():
             md(f'<div class="card {"" if r["fits"] else "soft"}"><div><b style="font-size:16px">{E(r["name"])}</b> <span class="small muted">{E(r["kind"])}</span></div>'
                f'<div>{tag}</div>{bar}{_marks(r["marks"])}' + (f'<div class="note">{E(r["note"])}</div>' if r["note"] else "") + "</div>")
             if r["fits"]:
-                _pick(r, f"free_pick_{r['id']}")
+                _pick(r, f"free_pick_{t}_{lst.index(r)}_{r['id']}")
     md(f'<div class="note">식당 정보: {E(src)}. 기다림과 식사 시간은 가게 종류로 어림한 값이에요. 걷는 길은 직선 거리의 1.3배로 어림했어요.</div>')
     st.button("위치 다시 잡기", width="stretch", key="free_regeo", on_click=_set, kwargs={"geo": None})

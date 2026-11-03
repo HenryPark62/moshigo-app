@@ -1,3 +1,4 @@
+import json
 import os
 
 os.environ["MOSHIGO_DB"] = "/tmp/moshigo-test.db"
@@ -77,3 +78,12 @@ def test_nearby_places_get_dishes_and_allergy_rules():
     assert all(m.get("unknown") for m in freemeal.person_marks([], menu2.DEFAULT_PEOPLE))
     f = freemeal.plan(menu2.DEFAULT_PEOPLE, "12:10", "13:30", 10, {"name": "여기", "lat": 48.8838, "lng": 2.3437}, places)
     assert f["meet"]["name"] == "여기" and len(f["restaurants"]) == 3
+
+
+def test_menu_item_ids_are_unique_even_without_latin_letters():
+    base = {k: v for k, v in menu2.demo(menu2.DEFAULT_PEOPLE)["items"][0].items()}
+    raw = json.loads((menu2.DATA / "demo_paris.json").read_text("utf-8"))
+    one = raw["items"][0]
+    raw["items"] = [dict(one, name_orig="갈비 750g"), dict(one, name_orig="목살 750g"), dict(one, name_orig="냉면"), dict(one, name_orig="비빔냉면")]
+    ids = [i["id"] for i in menu2.enrich(raw, menu2.DEFAULT_PEOPLE)["items"]]
+    assert len(set(ids)) == len(ids) == 4, ids

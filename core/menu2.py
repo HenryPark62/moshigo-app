@@ -164,7 +164,7 @@ def enrich(raw, people):
     """Claude 결과에 규칙 판정, 닮은꼴, 맛 지도를 더한다."""
     active = [p for p in people if p.get("active", True)]
     items = []
-    for it in raw["items"]:
+    for idx, it in enumerate(raw["items"]):
         it = dict(it)
         it["taste"] = [float(it.pop(f"t_{a}")) for a in world.AXES]
         given = {g["name"]: g for g in it.pop("people", [])}
@@ -191,7 +191,9 @@ def enrich(raw, people):
         else:
             it["headline"] = None
         it["map"] = world.taste_map(it, [dict(x["match"], who=[x["name"]]) for x in per if x["match"]])
-        it["id"] = re.sub(r"[^a-z0-9]+", "-", it["name_orig"].lower()).strip("-")[:40] or f"item{len(items)}"
+        # 순번을 붙여 항상 겹치지 않게 (한글, 일본어 이름은 영문자가 없어서 '750g'처럼 같은 값이 될 수 있다)
+        slug = re.sub(r"[^a-z0-9]+", "-", it["name_orig"].lower()).strip("-")[:30]
+        it["id"] = f"{slug or 'item'}-{idx}"
         items.append(it)
     order = {"all": 0, "some": 1, "none": 2}
     return {**{k: v for k, v in raw.items() if k != "items"}, "items": items,

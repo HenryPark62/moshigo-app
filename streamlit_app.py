@@ -48,10 +48,19 @@ has_scan = bool(s.get("scan"))
 view = s.view
 if view in ("menu", "dish", "combo", "order", "survey") and not has_scan:
     view = "scan"
-{
+page = {
     "start": screens.start, "people": screens.people, "edit": screens.edit, "scan": screens.scan, "menu": screens.menu,
     "dish": screens.dish, "survey": screens.survey, "combo": screens.combo, "order": screens.order_card, "free": screens.free, "nearby": screens.nearby_view,
-}.get(view, screens.start)()
+}.get(view, screens.start)
+try:
+    page()
+except Exception as e:  # 화면을 그리다 오류가 나면 내부 기록 대신 안내를 보여 준다
+    if type(e).__name__ in ("StopException", "RerunException", "RerunData"):
+        raise
+    import traceback
+    print("[page error]", view, repr(e)); traceback.print_exc()
+    md('<div class="card warnbox"><div><b>이 화면을 여는 중에 문제가 생겼어요.</b><br>잠시 뒤 다시 해 주세요. 계속 그러면 메뉴판을 다시 찍어 주세요.</div></div>')
+    st.button("처음 화면으로", type="primary", width="stretch", on_click=nav, args=("start",), key="err_home")
 
 # 아래 탭바
 if view != "start":
