@@ -63,3 +63,17 @@ def test_people_saved_by_code_and_survey_feeds_caution():
     assert "매운맛" in reviews.caution("Steak frites")
     rv = reviews.reviews("Steak frites", "Chez Paulette")
     assert rv["here"][0]["kind"] == "user"
+
+
+def test_nearby_places_get_dishes_and_allergy_rules():
+    from core import nearby
+    els = [{"type": "node", "id": 1, "lat": 48.884, "lon": 2.344, "tags": {"name": "Pho 13", "amenity": "restaurant", "cuisine": "vietnamese"}},
+           {"type": "node", "id": 2, "lat": 48.885, "lon": 2.345, "tags": {"name": "Thai Wok", "amenity": "restaurant", "cuisine": "thai"}},
+           {"type": "node", "id": 3, "lat": 48.886, "lon": 2.346, "tags": {"name": "Le Bar", "amenity": "restaurant"}}]
+    places = nearby.to_places(els, 48.8838, 2.3437)
+    assert places[0]["dishes"][0]["name_ko"] == "쌀국수" and places[2]["dishes"] == []
+    marks = {m["name"]: m for m in freemeal.person_marks(places[1]["dishes"], menu2.DEFAULT_PEOPLE)}
+    assert marks["지우"]["dish"] != "팟타이"  # 팟타이에는 땅콩(견과류)이 들어가서 지우에게는 빼야 한다
+    assert all(m.get("unknown") for m in freemeal.person_marks([], menu2.DEFAULT_PEOPLE))
+    f = freemeal.plan(menu2.DEFAULT_PEOPLE, "12:10", "13:30", 10, {"name": "여기", "lat": 48.8838, "lng": 2.3437}, places)
+    assert f["meet"]["name"] == "여기" and len(f["restaurants"]) == 3

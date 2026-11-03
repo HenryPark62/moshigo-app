@@ -26,6 +26,13 @@ h1,h2,h3{color:var(--ink)!important;padding:0!important;margin:0!important}
 /* 버튼 */
 .stButton>button,.stDownloadButton>button,.stFormSubmitButton>button{min-height:48px;border-radius:14px;font-weight:700;font-size:15px;border:1px solid var(--hair);background:var(--surface);color:var(--ink);box-shadow:none}
 .stButton>button:hover{border-color:var(--accent);color:var(--accent-text)}
+/* 누르는 순간 바로 반응이 보이게 */
+.stButton>button{transition:transform .08s ease,background-color .08s ease}
+.stButton>button:active:not(:disabled){transform:scale(.97);background:var(--tint-green)}
+/* 서버가 일하는 동안 맨 위에 얇은 막대 */
+.stApp[data-test-script-state="running"]::before{content:"";position:fixed;top:0;left:0;right:0;height:3px;z-index:1000;
+background:linear-gradient(90deg,transparent,#2f7a50,#ffc94a,transparent);background-size:40% 100%;background-repeat:no-repeat;animation:moshi-run .9s linear infinite}
+@keyframes moshi-run{from{background-position:-40% 0}to{background-position:140% 0}}
 [data-testid="stBaseButton-primary"]{background:var(--accent)!important;color:#fff!important;border-color:transparent!important;min-height:54px!important;font-size:16px!important}
 [data-testid="stBaseButton-primary"] p{color:#fff!important}
 /* 아직 누를 수 없는 버튼은 흐리게: 초록색이 비활성 상태를 덮지 않게 */
@@ -180,6 +187,13 @@ def marks(per, reasons=False):
         return out + "</ul>"
     return '<ul class="marks">' + "".join(
         f'<li class="{VCLASS[x["verdict"]]}"><span class="vm">{VMARK[x["verdict"]]}</span><b>{E(x["name"])}</b></li>' for x in per) + "</ul>"
+
+
+def nav(view, **kw):
+    """버튼 on_click 용: 화면을 그리기 전에 상태만 바꾼다 (다시 그리기를 한 번으로 줄인다)."""
+    st.session_state.view = view
+    for k, v in kw.items():
+        st.session_state[k] = v
 
 
 def go(view, **kw):

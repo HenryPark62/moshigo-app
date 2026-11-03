@@ -1,0 +1,140 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>모시고 서비스 설계안 v2</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#f2f5ef;--surface:#fff;--surface2:#f7f8f4;--ink:#22302a;--muted:#5e6a63;--hair:#dce2da;--hair-strong:#b9c2b7;--accent:#2f7a50;
+--sun:#ffc94a;--tint-sun:#fff1c7;--tint-sun2:#fff6da;--tint-green:#ddf0e3;--tint-warn:#fdebe3;--warn:#9a3a22;--display:"Gowun Dodum","Noto Sans KR",sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121915;--surface:#1d2621;--surface2:#25302a;--ink:#eef2ea;--muted:#a7b3ab;--hair:#33413a;--hair-strong:#4a5a51;--accent:#5dbb85;--tint-sun:#43391a;--tint-sun2:#3a3218;--tint-green:#22392b;--tint-warn:#45281f;--warn:#f2a48c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px}
+header.doc{display:flex;gap:18px;align-items:center;padding-bottom:22px;border-bottom:2px solid var(--ink);margin-bottom:28px}
+header.doc h1{font-family:var(--display);font-weight:400;font-size:36px;line-height:1.25;margin:0}
+header.doc p{margin:4px 0 0;color:var(--muted);font-size:14px}
+h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--hair)}
+h2 .no{display:inline-block;min-width:34px;color:var(--accent)}
+h3{font-size:17px;margin:22px 0 8px}
+p,li{font-size:15px}ul{padding-left:20px}li{margin:3px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:14px;background:var(--surface);border-radius:12px;overflow:hidden}
+th,td{border:1px solid var(--hair);padding:9px 11px;text-align:left;vertical-align:top}th{background:var(--surface2);font-weight:700;white-space:nowrap}
+code,pre{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px}
+code{background:var(--surface2);padding:1px 6px;border-radius:6px;border:1px solid var(--hair)}
+pre{background:#1d2621;color:#eef2ea;padding:14px 16px;border-radius:12px;overflow-x:auto;line-height:1.55}
+.box{background:var(--surface);border:1px solid var(--hair);border-radius:16px;padding:16px 18px;margin:12px 0}
+.box.sun{background:var(--tint-sun2);border-color:transparent}.box.green{background:var(--tint-green);border-color:transparent}.box.warn{background:var(--tint-warn);border-color:transparent;color:var(--warn)}
+.tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--surface2);border:1px solid var(--hair)}
+.tag.done{background:var(--tint-green);border-color:transparent;color:var(--accent)}.tag.plan{background:var(--tint-sun);border-color:transparent}
+.muted{color:var(--muted)}.small{font-size:13px}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.toc a{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--hair);color:var(--ink);text-decoration:none}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+/* 화면 카드 */
+.screen{display:grid;grid-template-columns:320px minmax(0,1fr);gap:24px;padding:24px 0;border-bottom:1px dashed var(--hair-strong)}
+.phone{width:320px;border:10px solid #1d2621;border-radius:34px;overflow:hidden;background:#f2f5ef;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.phone .scr{height:620px;overflow-y:auto}.phone img{display:block;width:100%}
+.screen .id{font-family:var(--display);font-size:15px;color:var(--accent)}
+.screen h3{margin:2px 0 8px;font-size:22px;font-family:var(--display);font-weight:400}
+.cap{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
+/* 흐름도 */
+.flow{display:flex;flex-direction:column;gap:0;align-items:stretch}
+.step{background:var(--surface);border:1px solid var(--hair);border-radius:14px;padding:12px 14px}
+.step b{display:block}.step.key{border:2px solid var(--accent)}.step.ext{background:var(--tint-sun2);border-color:transparent}.step.db{background:var(--tint-green);border-color:transparent}
+.down{height:26px;position:relative}.down::before{content:"";position:absolute;left:50%;top:2px;bottom:6px;border-left:2px solid var(--hair-strong)}
+.down::after{content:"";position:absolute;left:calc(50% - 5px);bottom:2px;border:5px solid transparent;border-top:7px solid var(--hair-strong)}
+.lanes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;font-size:13px}
+.lane{background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:8px}
+.lane h4{margin:0 0 6px;font-size:13px;text-align:center}
+.msg{background:var(--surface2);border-radius:8px;padding:6px 8px;margin:6px 0;font-size:12.5px;line-height:1.5}
+.msg.hl{background:var(--tint-sun)}
+.seq{width:100%;border-collapse:separate;border-spacing:0}
+.seq td{border:0;border-bottom:1px dashed var(--hair);padding:7px 8px;font-size:13.5px}
+.seq td:first-child{width:40px;color:var(--accent);font-weight:700}
+@media (max-width:760px){.screen{grid-template-columns:1fr}.phone{margin:0 auto}.lanes{grid-template-columns:1fr 1fr}header.doc h1{font-size:28px}}
+</style></head><body><div class="wrap"><header class="doc"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><ellipse cx="60" cy="106" rx="42" ry="6" fill="#22302A" opacity="0.12"/><rect x="26" y="80" width="15" height="22" rx="7.5" fill="#8CCB9F" stroke="#22302A" stroke-width="3"/><rect x="72" y="80" width="15" height="22" rx="7.5" fill="#8CCB9F" stroke="#22302A" stroke-width="3"/><path d="M18 84 C18 48 40 32 58 32 C78 32 98 48 98 84 Z" fill="#3E8E5E" stroke="#22302A" stroke-width="3"/><path d="M45 50 L58 43 L71 50 L71 64 L58 71 L45 64 Z" fill="#6DBA88" stroke="#22302A" stroke-width="2.5"/><rect x="12" y="78" width="92" height="11" rx="5.5" fill="#FFC94A" stroke="#22302A" stroke-width="3"/><circle cx="100" cy="62" r="15" fill="#8CCB9F" stroke="#22302A" stroke-width="3"/><path d="M100.5 61 q3.5 -4.5 7 0" fill="none" stroke="#22302A" stroke-width="2.5" stroke-linecap="round"/><path d="M87 52 Q100 36 113 52 Z" fill="#FFC94A" stroke="#22302A" stroke-width="3"/><path d="M83 52 H117" stroke="#22302A" stroke-width="3"/></svg><div><h1>모시고 서비스 설계안 v2</h1><p>가족 메뉴판 도우미, 강사님 피드백 반영 | 팀 NEXUS | 2026.11.03</p></div></header><nav class="toc"><a href="#change">피드백과 바뀐 점</a><a href="#problem">문제와 고객</a><a href="#feature">핵심 기능</a><a href="#ai">AI와 계산</a><a href="#diff">다른 점</a><a href="#stack">기술 구성</a><a href="#check">성능 확인</a><a href="#now">지금 상태</a></nav>
+<div class="box green"><b>한 줄 소개</b><br>처음 보는 해외 메뉴판을 찍으면, 같이 먹는 사람마다 <b>각자 아는 음식에 빗대어</b> 무슨 맛인지 알려 주고, 모두가 먹을 수 있는 주문까지 도와주는 모바일 웹앱.</div>
+
+<h2 id="change"><span class="no">1</span>피드백과 바뀐 점</h2>
+<table><tr><th>받은 피드백</th><th>이번 설계에서 바꾼 것</th></tr>
+<tr><td>번역만으로는 무슨 맛인지 모른다. 맛을 상상하게 해 주는 것이 가치다</td><td>각자 즐겨 먹는 음식(나라 상관없이)을 기준으로 닮은꼴을 아주 / 꽤 / 조금으로 알려 주고, 같은 점과 다른 점, 향과 식감 키워드, 맛 지도를 보여 준다</td></tr>
+<tr><td>효도에 갇히지 말 것. 아이가 더 까다롭다</td><td>혼자 / 여럿이로 시작한다. 가족 단위로 사람마다 입맛을 저장하고, 아이는 '처음 보는 음식', '골라내는 경우', '잘 먹는 재료'를 따로 받는다</td></tr>
+<tr><td>부모님을 아픈 사람으로 그리지 않아 좋다</td><td>질병, 복약 정보는 받지 않는다. 좋아하는 맛, 피하고 싶은 맛, 못 먹는 것, 알레르기만 받는다</td></tr>
+<tr><td>한식당이 없는 자유여행, 패키지 여행의 자유 식사 시간</td><td>파리 외곽처럼 한식당이 없는 곳이 기본 상황. 패키지는 '모이는 시간'에서 거꾸로 계산해 다녀올 수 있는 식당만 먼저 보여 준다</td></tr>
+<tr><td>여러 명이면 메뉴 조합을 추천해 달라</td><td>조합 3안(모두 만족, 현지 맛 도전, 빨리 나와요). 가장 덜 맞는 사람 기준으로 고르고 이유를 보여 준다</td></tr>
+<tr><td>메뉴판 번역(예: 프랑스어에서 한국어)</td><td>메뉴판 순서 그대로 옮기기, 원문과 함께 보기, 요리 용어 풀이, 흐린 줄 표시</td></tr>
+<tr><td>유사도 아이디어가 신박하다. 구현이 중요하다</td><td>실제 사진에서 글씨를 따고(CLOVA OCR) 설명을 만드는(Claude) 동작하는 MVP를 배포한다. 닮은꼴과 조합은 코드로 계산해 결과를 설명할 수 있게 한다</td></tr></table>
+<p class="small muted">이전 설계(부모님 걸음 기준 일정 짜기)는 보류한다. 걷는 속도 계산(Bohannon, 2011)은 자유 식사 시간 화면에서 가장 천천히 걷는 사람 기준으로 다시 쓴다.</p>
+
+<h2 id="problem"><span class="no">2</span>문제와 고객</h2>
+<div class="grid2">
+<div class="box"><b>겪는 문제</b><ul>
+<li>번역 앱은 이름만 바꿔 줄 뿐, 그 요리가 어떤 맛인지는 알려 주지 않는다</li>
+<li>가족 안에서도 입맛이 다르다. 한 사람은 새로운 맛을, 아이는 익숙한 맛을 원한다</li>
+<li>알레르기와 못 먹는 재료를 현지어로 정확히 전하기 어렵다</li>
+<li>패키지 자유 식사는 시간이 정해져 있어 고를 시간이 짧다</li></ul></div>
+<div class="box"><b>고객</b><ul>
+<li><b>1차</b> 아이나 부모님과 함께 한식당이 없는 지역을 자유여행하는 가족</li>
+<li><b>2차</b> 패키지 여행의 자유 식사 시간을 쓰는 여행객</li>
+<li><b>확장</b> 혼자 여행하는 사람, 해외 시니어 상품을 기획하는 여행사</li></ul></div></div>
+<p class="small muted">근거: 2025년 해외관광객 2,955만 명으로 역대 최대(한국관광공사, 2026.2.), 2026년 5월 해외관광객 중 60세 이상 16.0%(한국관광공사, 2026.7.). 참가신청서 참고문헌과 같다.</p>
+
+<h2 id="feature"><span class="no">3</span>핵심 기능</h2>
+<h3>기능 1. 메뉴판 번역과 맛 그려 주기 <span class="tag done">구현</span></h3>
+<ul><li>메뉴판 사진에서 CLOVA OCR로 글씨를 줄 단위로 딴다. 확신도가 낮은 글자는 표시해 둔다</li>
+<li>Claude가 줄을 메뉴로 묶고, 빠진 악센트를 바로잡고(gratinee를 gratinée로), 우리말 이름, 한 줄 설명, 요리 용어, 들어간 재료, 맛 수치 8개, 맛·향·식감 키워드를 구조화된 JSON으로 만든다</li>
+<li>사람마다 즐겨 먹는 음식과 비교해 가장 닮은 음식, 단계, 같은 점, 다른 점을 코드로 계산한다</li></ul>
+<h3>기능 2. 사람별 판정, 메뉴 조합, 주문 카드 <span class="tag done">구현</span></h3>
+<ul><li>메뉴마다 사람별 편히 / 조심 / 피하기와 한 줄 이유. 알레르기와 못 먹는 재료는 LLM 판정과 상관없이 코드에서 피하기로 고정한다</li>
+<li>조합: 사람마다 한 접시 + 나눠 먹을 후식. 가장 덜 맞는 사람의 점수가 가장 높은 조합(maximin)을 먼저, 같으면 서로 다른 메뉴와 합계 점수로 고른다</li>
+<li>주문 카드: 알레르기 문장을 맨 위에, 현지어 주문 줄과 부탁 문장, 소리 내어 읽기</li></ul>
+<h3>기능 3. 주변 식당과 패키지 자유 식사 시간 <span class="tag done">구현</span> <span class="tag plan">보행 경로 API 연동 예정</span></h3>
+<ul><li>지금 위치(브라우저 위치 허용)로 주변 실제 식당을 불러온다. 요리 종류로 대표 메뉴를 붙이고 사람별로 먹을 메뉴와 닮은꼴을 미리 보여 준다. 위치는 저장하지 않는다</li>
+<li>남은 시간 = 모이는 시각 − 지금. 식당마다 가기 + 기다림 + 식사 + 돌아오기 + 여유가 남은 시간 안에 드는지 본다</li>
+<li>걷는 속도는 일행 중 가장 느린 사람 기준 (Bohannon 2011 연령별 보행 속도, 아이 1.0 m/s 초안)</li>
+<li>식당: 한국 안은 카카오 로컬, 해외는 Geoapify(둘 다 키가 있을 때), 없으면 OpenStreetMap 공개 서버(Overpass). 걷는 길은 아직 직선 거리 × 1.3이라 OpenRouteService로 바꾼다</li></ul>
+<h3>더하기. 후기와 먹은 뒤 설문 <span class="tag done">구현</span></h3>
+<ul><li>후기는 이 식당의 이 메뉴를 먼저, 없으면 다른 식당의 같은 메뉴로 넓힌다</li>
+<li>설문(실제 주문, 맛이 그려졌는지, 예상보다 강한 맛, 다시 추천)이 쌓이면 다음 사람에게 '생각보다 매울 수 있어요'처럼 미리 알려 준다</li></ul>
+
+<h2 id="ai"><span class="no">4</span>AI와 계산이 맡는 일</h2>
+<table><tr><th>단계</th><th>누가</th><th>입력</th><th>출력</th></tr>
+<tr><td>글씨 따기</td><td>네이버 CLOVA OCR (General V2)</td><td>메뉴판 사진</td><td>줄 단위 글자와 확신도</td></tr>
+<tr><td>옮기기와 설명</td><td>Claude (claude-opus-5-5, 구조화 출력)</td><td>OCR 줄, 사람별 입맛 요약</td><td>메뉴별 번역, 설명, 용어, 재료, 맛 수치 8개, 키워드, 사람별 판정 초안</td></tr>
+<tr><td>규칙 판정</td><td>코드</td><td>재료, 사람별 알레르기와 못 먹는 것</td><td>피하기 고정과 이유</td></tr>
+<tr><td>닮은꼴</td><td>코드 (세계 음식 43종 맛 표)</td><td>메뉴 맛 수치, 주재료, 조리법</td><td>닮은 음식, 단계, 같은 점, 다른 점, 맛 지도</td></tr>
+<tr><td>조합</td><td>코드 (maximin)</td><td>사람별 판정과 닮은꼴</td><td>조합 3안, 고른 이유</td></tr>
+<tr><td>시간 계산</td><td>코드</td><td>모이는 시각, 식당 위치, 걷는 속도</td><td>다녀올 수 있는 식당과 시간 막대</td></tr>
+<tr><td>설문 반영</td><td>코드 (SQLite)</td><td>먹은 뒤 설문</td><td>메뉴별 주의 문구, 후기</td></tr></table>
+<div class="box"><b>닮은꼴 계산</b><br>맛 수치 8개(짠맛, 단맛, 매운맛, 신맛, 감칠맛, 향의 세기, 기름진 정도, 부드러움)의 가중 거리로 맛 유사도를 구하고, 주재료가 같으면 +0.18, 조리법이 같으면 +0.08을 더한다. 주재료가 다르면 '조금 닮았어요'까지만 준다. 0.78 이상 아주, 0.64 이상 꽤, 0.50 이상 조금.<br>
+<span class="small muted">참가신청서에서는 코사인 유사도를 적었으나, 맛 수치가 모두 양수라 메뉴 사이 차이가 잘 드러나지 않아 가중 거리로 바꿨다. 향의 세기는 짐작이 흔들려 가중치를 낮추고, 향 차이는 '다른 점' 문장으로 알려 준다.</span></div>
+
+<h2 id="diff"><span class="no">5</span>다른 서비스와 다른 점</h2>
+<table><tr><th>구분</th><th>사진 번역 앱</th><th>지도 앱 리뷰</th><th>모시고</th></tr>
+<tr><td>알려 주는 것</td><td>요리 이름의 뜻</td><td>별점과 후기</td><td>그 사람이 아는 음식에 빗댄 맛, 같은 점과 다른 점</td></tr>
+<tr><td>기준</td><td>없음</td><td>다른 사람의 평가</td><td>같이 먹는 사람마다 따로</td></tr>
+<tr><td>여러 명</td><td>해당 없음</td><td>해당 없음</td><td>사람별 판정, 메뉴 조합</td></tr>
+<tr><td>알레르기</td><td>해당 없음</td><td>해당 없음</td><td>규칙으로 고정, 주문 카드 맨 위</td></tr>
+<tr><td>시간 제약</td><td>해당 없음</td><td>거리 표시</td><td>모이는 시간 역산, 가장 느린 사람 기준</td></tr></table>
+<p class="small muted">비교는 각 서비스의 공개 소개 기준이며 제출 전 최신 버전으로 다시 확인한다.</p>
+
+<h2 id="stack"><span class="no">6</span>기술 구성</h2>
+<table><tr><th>구분</th><th>사용</th><th>상태</th></tr>
+<tr><td>화면</td><td>Python, Streamlit (모바일 전용 레이아웃)</td><td><span class="tag done">구현</span></td></tr>
+<tr><td>글씨 따기</td><td>네이버 CLOVA OCR General (월 100회 무료 제공으로 안내됨, 콘솔 확인 필요)</td><td><span class="tag done">구현</span> 키 발급 필요</td></tr>
+<tr><td>설명 생성</td><td>LLM API (Anthropic Claude)</td><td><span class="tag done">구현</span></td></tr>
+<tr><td>저장</td><td>SQLite: 사람별 입맛(기기 코드), 설문, 하루 사용량</td><td><span class="tag done">구현</span></td></tr>
+<tr><td>지도</td><td>OpenStreetMap (folium)</td><td><span class="tag done">구현</span></td></tr>
+<tr><td>주변 식당</td><td>OpenStreetMap(Overpass), 카카오 로컬, Geoapify, 브라우저 위치</td><td><span class="tag done">구현</span> 카카오, Geoapify는 키 발급 필요</td></tr>
+<tr><td>경로</td><td>OpenRouteService, TMAP</td><td><span class="tag plan">예정</span></td></tr>
+<tr><td>배포</td><td>Render 무료 (Docker), https://moshigo.onrender.com</td><td><span class="tag done">배포</span></td></tr></table>
+<p class="small">로그인과 회원가입은 MVP에서 만들지 않는다. 입맛은 주소에 붙는 6자리 코드로 기기마다 저장하고, 다른 기기에서는 코드를 넣어 불러온다.</p>
+
+<h2 id="check"><span class="no">7</span>성능 확인 계획</h2>
+<table><tr><th>항목</th><th>방법</th><th>목표</th></tr>
+<tr><td>메뉴 읽기</td><td>실제 메뉴판 사진 30장(프랑스어, 이탈리아어, 태국어, 영어)에서 메뉴 이름과 가격을 사람이 적은 정답과 비교</td><td>메뉴 이름 일치 90% 이상</td></tr>
+<tr><td>알레르기</td><td>알레르기 재료가 든 메뉴가 그 사람에게 피하기로 나오는지</td><td>놓침 0건</td></tr>
+<tr><td>사람별 판정</td><td>팀원 3명이 같은 메뉴판을 직접 판정한 결과와 비교</td><td>일치 80% 이상</td></tr>
+<tr><td>맛 그려 주기</td><td>먹은 뒤 설문 '설명을 보고 맛이 그려졌나요' 평균</td><td>5점 중 4점 이상</td></tr>
+<tr><td>속도</td><td>사진을 올리고 결과가 나오기까지</td><td>60초 안 (지금 OCR 경로 약 43초)</td></tr></table>
+
+<h2 id="now"><span class="no">8</span>지금 상태와 남은 일</h2>
+<ul><li><span class="tag done">완료</span> 모바일 MVP 화면 15개, OCR과 LLM 연결, 메뉴판이 아닌 사진 알림, 닮은꼴과 조합, 주문 카드, 주변 식당(현재 위치), 자유 식사 시간, 후기와 설문, 입맛 저장(쿠키 코드), 공개 배포(Render), 테스트 7개</li>
+<li><span class="tag plan">남음</span> CLOVA OCR 키와 실제 메뉴판 시험, 카카오와 Geoapify 키, 보행 경로 연동, 세계 음식 맛 표 팀 검토, 현지어 문장 원어민 검토</li></ul>
+<p class="small muted">시연용 [샘플] 식당과 '예시' 후기는 화면에 그렇게 표시한다.</p>
+</div></body></html>

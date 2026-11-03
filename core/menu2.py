@@ -87,19 +87,23 @@ def _schema(names):
         "additionalProperties": False,
     }
     return {"type": "object", "properties": {
+        "is_menu": {"type": "boolean", "description": "음식점 메뉴판(요리 이름이나 가격 목록)이면 true. 음식 사진, 풍경, 영수증, 간판만 있으면 false"},
         "restaurant": {"type": "string", "description": "가게 이름. 모르면 빈 문자열"},
         "menu_language": {"type": "string", "description": "예: 프랑스어"}, "language_code": {"type": "string", "description": "BCP 47. 예: fr-FR"},
         "items": {"type": "array", "items": item}},
-        "required": ["restaurant", "menu_language", "language_code", "items"], "additionalProperties": False}
+        "required": ["is_menu", "restaurant", "menu_language", "language_code", "items"], "additionalProperties": False}
 
 
 SYSTEM = """너는 가족 여행 메뉴판 도우미 '모시고'다. 가족이 해외 식당 메뉴판을 찍었다.
+0) 사진이 메뉴판이 아니면 is_menu=false, items는 빈 배열로 둔다.
 1) 메뉴판을 순서와 묶음(전채, 주요리, 후식 등) 그대로 읽고 한국어로 옮긴다. 요리 이름은 소리 나는 대로(reading) 두고 뜻(name_ko)을 함께 적는다. 음료는 course=drink로 둔다.
 2) 흐려서 못 읽은 줄은 unreadable=true, desc_ko에 '직원에게 물어봐 주세요'.
 3) 메뉴마다 맛 수치 8개(t_salty 짠맛, t_sweet 단맛, t_spicy 매운맛, t_sour 신맛, t_umami 감칠맛, t_aroma 향의 세기, t_oily 기름진 정도, t_soft 부드러움)를 일반적인 조리법으로 짐작한다.
 4) 사람마다 판정한다. 편히: 그 사람 입맛에 잘 맞음 / 조심: 덜어 내거나 부탁하면 됨, 또는 아이가 처음 보는 음식이라 망설일 수 있음 / 피하기: 알레르기, 못 먹는 것, 입맛과 정반대.
    어린이 메뉴(kids_only)는 아이만 판정한다. 이유는 그 사람 기준 한 줄. 건강이나 병 이야기는 하지 않고 입맛과 취향으로 말한다. 아이는 '버섯이 보여요. 고기만 덜어 주세요'처럼 행동으로 말한다.
-5) 가족:
+5) 말투: 해요체, 짧고 담백하게. 광고나 블로그 같은 말(풍미 가득, 완벽한, 환상적인, 일품, 선사, 어우러져, ~를 추천드립니다), 느낌표, 이모지는 쓰지 않는다.
+   맛은 아는 말로 구체적으로 쓴다 (예: '짭짤하고 버터 맛이 진해요').
+6) 가족:
 {people}"""
 
 

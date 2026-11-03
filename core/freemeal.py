@@ -37,6 +37,8 @@ def _mins(t):
 def person_marks(dishes, people):
     """식당 대표 메뉴로 사람마다 먹을 게 있는지: 편히 / 조심 / 피하기와 가장 닮은 메뉴."""
     out = []
+    if not dishes:  # 요리 종류를 모르는 가게
+        return [{"id": p["id"], "name": p["name"], "mark": "조심", "dish": None, "match": None, "unknown": True} for p in people]
     for p in people:
         best = None
         for d in dishes:
@@ -55,8 +57,11 @@ def person_marks(dishes, people):
     return out
 
 
-def plan(people, now="12:10", meet="13:30", buffer_min=10):
+def plan(people, now="12:10", meet="13:30", buffer_min=10, meet_pt=None, restaurants=None):
+    """meet_pt, restaurants를 주면 그것으로(지금 위치와 주변 실제 식당), 없으면 예시 동네(파리)로 계산한다."""
     data = json.loads(DATA.read_text("utf-8"))
+    if restaurants is not None:
+        data = {"meet": meet_pt, "restaurants": restaurants}
     meet_pt = data["meet"]
     speed, slowest = group_speed(people)
     left = _mins(meet) - _mins(now)
@@ -70,12 +75,13 @@ def plan(people, now="12:10", meet="13:30", buffer_min=10):
             d["taste"] = d.get("taste") or [0.5] * 8
         marks = person_marks(r["dishes"], people)
         rows.append({
-            "id": r["id"], "name": r["name"], "kind": r["kind"], "lat": r["lat"], "lng": r["lng"], "price": r["price"],
+            "id": r["id"], "name": r["name"], "orig_name": r.get("orig_name", ""), "kind": r["kind"], "known": bool(r["dishes"]), "lat": r["lat"], "lng": r["lng"], "price": r["price"],
             "walk_min": walk, "wait_min": r["wait_min"], "meal_min": r["meal_min"], "buffer_min": buffer_min,
             "need_min": need, "spare_min": spare, "fits": spare >= 0,
             "back_by": _hm(_mins(now) + need - buffer_min), "marks": marks,
             "all_ok": all(m["mark"] != "피하기" for m in marks), "note": r.get("note", ""),
         })
-    rows.sort(key=lambda x: (not x["fits"], not x["all_ok"], -sum(m["mark"] == "편히" for m in x["marks"]), x["need_min"]))
+    rows.sort(key=lambda x: (not x["fits"], not x["known"], not x["all_ok"], -sum(m["mark"] == "편히" for m in x["marks"]),
+                             -sum((m["match"] or {}).get("level", "") != "" for m in x["marks"]), x["need_min"]))
     return {"meet": {**meet_pt, "time": meet}, "now": now, "left_min": left, "buffer_min": buffer_min,
             "speed": round(speed, 2), "slowest": slowest, "restaurants": rows}

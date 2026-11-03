@@ -1,0 +1,191 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>모시고 API 명세서</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#f2f5ef;--surface:#fff;--surface2:#f7f8f4;--ink:#22302a;--muted:#5e6a63;--hair:#dce2da;--hair-strong:#b9c2b7;--accent:#2f7a50;
+--sun:#ffc94a;--tint-sun:#fff1c7;--tint-sun2:#fff6da;--tint-green:#ddf0e3;--tint-warn:#fdebe3;--warn:#9a3a22;--display:"Gowun Dodum","Noto Sans KR",sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121915;--surface:#1d2621;--surface2:#25302a;--ink:#eef2ea;--muted:#a7b3ab;--hair:#33413a;--hair-strong:#4a5a51;--accent:#5dbb85;--tint-sun:#43391a;--tint-sun2:#3a3218;--tint-green:#22392b;--tint-warn:#45281f;--warn:#f2a48c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px}
+header.doc{display:flex;gap:18px;align-items:center;padding-bottom:22px;border-bottom:2px solid var(--ink);margin-bottom:28px}
+header.doc h1{font-family:var(--display);font-weight:400;font-size:36px;line-height:1.25;margin:0}
+header.doc p{margin:4px 0 0;color:var(--muted);font-size:14px}
+h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--hair)}
+h2 .no{display:inline-block;min-width:34px;color:var(--accent)}
+h3{font-size:17px;margin:22px 0 8px}
+p,li{font-size:15px}ul{padding-left:20px}li{margin:3px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:14px;background:var(--surface);border-radius:12px;overflow:hidden}
+th,td{border:1px solid var(--hair);padding:9px 11px;text-align:left;vertical-align:top}th{background:var(--surface2);font-weight:700;white-space:nowrap}
+code,pre{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px}
+code{background:var(--surface2);padding:1px 6px;border-radius:6px;border:1px solid var(--hair)}
+pre{background:#1d2621;color:#eef2ea;padding:14px 16px;border-radius:12px;overflow-x:auto;line-height:1.55}
+.box{background:var(--surface);border:1px solid var(--hair);border-radius:16px;padding:16px 18px;margin:12px 0}
+.box.sun{background:var(--tint-sun2);border-color:transparent}.box.green{background:var(--tint-green);border-color:transparent}.box.warn{background:var(--tint-warn);border-color:transparent;color:var(--warn)}
+.tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--surface2);border:1px solid var(--hair)}
+.tag.done{background:var(--tint-green);border-color:transparent;color:var(--accent)}.tag.plan{background:var(--tint-sun);border-color:transparent}
+.muted{color:var(--muted)}.small{font-size:13px}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.toc a{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--hair);color:var(--ink);text-decoration:none}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+/* 화면 카드 */
+.screen{display:grid;grid-template-columns:320px minmax(0,1fr);gap:24px;padding:24px 0;border-bottom:1px dashed var(--hair-strong)}
+.phone{width:320px;border:10px solid #1d2621;border-radius:34px;overflow:hidden;background:#f2f5ef;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.phone .scr{height:620px;overflow-y:auto}.phone img{display:block;width:100%}
+.screen .id{font-family:var(--display);font-size:15px;color:var(--accent)}
+.screen h3{margin:2px 0 8px;font-size:22px;font-family:var(--display);font-weight:400}
+.cap{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
+/* 흐름도 */
+.flow{display:flex;flex-direction:column;gap:0;align-items:stretch}
+.step{background:var(--surface);border:1px solid var(--hair);border-radius:14px;padding:12px 14px}
+.step b{display:block}.step.key{border:2px solid var(--accent)}.step.ext{background:var(--tint-sun2);border-color:transparent}.step.db{background:var(--tint-green);border-color:transparent}
+.down{height:26px;position:relative}.down::before{content:"";position:absolute;left:50%;top:2px;bottom:6px;border-left:2px solid var(--hair-strong)}
+.down::after{content:"";position:absolute;left:calc(50% - 5px);bottom:2px;border:5px solid transparent;border-top:7px solid var(--hair-strong)}
+.lanes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;font-size:13px}
+.lane{background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:8px}
+.lane h4{margin:0 0 6px;font-size:13px;text-align:center}
+.msg{background:var(--surface2);border-radius:8px;padding:6px 8px;margin:6px 0;font-size:12.5px;line-height:1.5}
+.msg.hl{background:var(--tint-sun)}
+.seq{width:100%;border-collapse:separate;border-spacing:0}
+.seq td{border:0;border-bottom:1px dashed var(--hair);padding:7px 8px;font-size:13.5px}
+.seq td:first-child{width:40px;color:var(--accent);font-weight:700}
+@media (max-width:760px){.screen{grid-template-columns:1fr}.phone{margin:0 auto}.lanes{grid-template-columns:1fr 1fr}header.doc h1{font-size:28px}}
+</style></head><body><div class="wrap"><header class="doc"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><ellipse cx="60" cy="106" rx="42" ry="6" fill="#22302A" opacity="0.12"/><rect x="26" y="80" width="15" height="22" rx="7.5" fill="#8CCB9F" stroke="#22302A" stroke-width="3"/><rect x="72" y="80" width="15" height="22" rx="7.5" fill="#8CCB9F" stroke="#22302A" stroke-width="3"/><path d="M18 84 C18 48 40 32 58 32 C78 32 98 48 98 84 Z" fill="#3E8E5E" stroke="#22302A" stroke-width="3"/><path d="M45 50 L58 43 L71 50 L71 64 L58 71 L45 64 Z" fill="#6DBA88" stroke="#22302A" stroke-width="2.5"/><rect x="12" y="78" width="92" height="11" rx="5.5" fill="#FFC94A" stroke="#22302A" stroke-width="3"/><circle cx="100" cy="62" r="15" fill="#8CCB9F" stroke="#22302A" stroke-width="3"/><path d="M100.5 61 q3.5 -4.5 7 0" fill="none" stroke="#22302A" stroke-width="2.5" stroke-linecap="round"/><path d="M87 52 Q100 36 113 52 Z" fill="#FFC94A" stroke="#22302A" stroke-width="3"/><path d="M83 52 H117" stroke="#22302A" stroke-width="3"/></svg><div><h1>모시고 API 명세서</h1><p>가족 메뉴판 도우미, 외부 API와 내부 함수와 데이터 구조 | 팀 NEXUS | 2026.11.03</p></div></header><nav class="toc"><a href="#ocr">CLOVA OCR</a><a href="#claude">Claude</a><a href="#near">주변 식당</a><a href="#func">내부 함수</a><a href="#types">데이터 구조</a><a href="#db">저장소</a><a href="#config">설정값</a><a href="#rest">REST 부록</a></nav>
+<div class="box sun">모시고 MVP는 Streamlit 앱 하나로 동작한다. 화면과 계산이 같은 Python 프로세스에 있어서 따로 여는 REST API는 없다.
+이 문서는 <b>외부 API 2개</b>(CLOVA OCR, Claude), <b>내부 모듈 함수</b>, <b>데이터 구조</b>, <b>저장소</b>, <b>설정값</b>을 정리한다.
+네이티브 앱으로 넓힐 때 쓸 REST 엔드포인트는 부록에 둔다 (FastAPI 시제품에 구현되어 있음).</div>
+
+<h2 id="ocr"><span class="no">1</span>외부 API: 네이버 CLOVA OCR (General, V2)</h2>
+<table><tr><th>항목</th><th>값</th></tr>
+<tr><td>호출</td><td><code>POST {CLOVA_OCR_URL}</code> (콘솔의 API Gateway 연동 General 호출 주소, <code>…/general</code>)</td></tr>
+<tr><td>헤더</td><td><code>Content-Type: application/json</code>, <code>X-OCR-SECRET: {CLOVA_OCR_SECRET}</code></td></tr>
+<tr><td>제한</td><td>한 번에 사진 1장, 50MB 이하. 앱은 8MB를 넘거나 JPG/PNG가 아니면 JPEG(긴 변 2000px)로 바꿔 보낸다. 시간 제한 30초</td></tr>
+<tr><td>언어</td><td><code>lang</code>은 ko, ja, zh-TW. 보내지 않으면 도메인 설정. 라틴 문자는 악센트가 빠질 수 있어 다음 단계(Claude)에서 바로잡는다</td></tr></table>
+<pre>{
+  "version": "V2",
+  "requestId": "4f1c…(uuid)",
+  "timestamp": 1793678400000,
+  "images": [{ "format": "jpg", "name": "menu", "data": "(base64)" }]
+}</pre>
+<p>응답에서 쓰는 값</p>
+<table><tr><th>필드</th><th>뜻</th><th>앱에서</th></tr>
+<tr><td><code>images[0].inferResult</code></td><td>SUCCESS / FAILURE / ERROR</td><td>SUCCESS가 아니면 실패 처리</td></tr>
+<tr><td><code>fields[].inferText</code></td><td>읽은 글자 (단어 단위)</td><td>줄로 이어 붙임</td></tr>
+<tr><td><code>fields[].inferConfidence</code></td><td>0~1 확신도</td><td>0.6 미만이면 글자 뒤에 <code>(?)</code>, 줄에 <code>[흐림]</code></td></tr>
+<tr><td><code>fields[].lineBreak</code></td><td>줄의 마지막 단어인지</td><td>줄 나누기 기준</td></tr></table>
+<p>앱 안에서 넘기는 모양 (<code>core.ocr.read</code>의 반환값)</p>
+<pre>{ "lines": [ {"text": "Soupe a l'oignon gratinee 9 €", "conf": 0.9, "low": false},
+             {"text": "Plat(?) du(?) j0ur(?) 18 €", "conf": 0.35, "low": true} ],
+  "words": 52 }</pre>
+
+<h2 id="claude"><span class="no">2</span>외부 API: Claude (Messages, 구조화 출력)</h2>
+<table><tr><th>항목</th><th>값</th></tr>
+<tr><td>SDK</td><td>anthropic 2.3.0 (Python), <code>client.beta.messages.stream(...)</code> 후 <code>get_final_message()</code></td></tr>
+<tr><td>모델</td><td><code>claude-opus-5-5</code>, <code>max_tokens</code> 32000, <code>output_config.effort</code> "low"</td></tr>
+<tr><td>출력 형식</td><td><code>output_config.format = {"type": "json_schema", "schema": …}</code> (아래 스키마)</td></tr>
+<tr><td>대체 모델</td><td><code>betas=["server-side-fallback-2026-07-01"]</code>, <code>fallbacks="default"</code></td></tr>
+<tr><td>실패 판정</td><td><code>stop_reason</code>이 refusal 또는 max_tokens면 예외. 앱은 예시 메뉴판으로 이어 감</td></tr>
+<tr><td>시스템 프롬프트</td><td>메뉴판 순서와 묶음 유지, 흐린 줄 표시, 맛 수치 8개 짐작, 사람별 판정 기준(편히, 조심, 피하기). 건강이나 병이 아니라 입맛과 취향으로 말하기, 아이는 행동으로 말하기. 사람별 입맛 요약을 붙임</td></tr>
+<tr><td>사용자 메시지</td><td>OCR 경로: 줄 번호가 붙은 OCR 글자와 바로잡기 안내 (텍스트만). 사진 경로: 사진(base64) + 짧은 요청</td></tr>
+<tr><td>걸린 시간</td><td>OCR 경로 약 43초, 사진 경로 약 69초 (메뉴 12~16개 기준)</td></tr></table>
+<h3>출력 스키마 (메뉴 하나)</h3>
+<table><tr><th>필드</th><th>형식</th><th>설명</th></tr>
+<tr><td>section_orig, section_ko</td><td>string</td><td>묶음 이름 원문과 우리말 (예: ENTRÉES, 먼저 먹는 요리)</td></tr>
+<tr><td>name_orig, reading, name_ko</td><td>string</td><td>원래 이름(악센트 바로잡음), 한글 읽기, 뜻</td></tr>
+<tr><td>price, desc_ko</td><td>string</td><td>가격 원문, 쉬운 한 문장 설명</td></tr>
+<tr><td>glossary</td><td>[{term, meaning}]</td><td>요리 용어 풀이</td></tr>
+<tr><td>unreadable</td><td>boolean</td><td>흐려서 이름을 알 수 없음</td></tr>
+<tr><td>course</td><td>starter / main / side / dessert / drink</td><td>조합 계산에 씀</td></tr>
+<tr><td>contains</td><td>enum 배열</td><td>견과류, 우유, 달걀, 밀가루, 갑각류, 조개류, 생선, 돼지고기, 소고기, 닭고기, 버섯, 양파, 날것, 술</td></tr>
+<tr><td>ingredient, cooking</td><td>enum</td><td>주재료, 조리법 (세계 음식 표와 같은 값)</td></tr>
+<tr><td>t_salty … t_soft</td><td>number 0~1</td><td>짠맛, 단맛, 매운맛, 신맛, 감칠맛, 향의 세기, 기름진 정도, 부드러움</td></tr>
+<tr><td>taste_kw, aroma_kw, texture_kw</td><td>string 배열</td><td>맛, 향('~ 향'), 식감 키워드</td></tr>
+<tr><td>kids_only, chef_pick, share_ok</td><td>boolean</td><td>어린이 메뉴, 가게 추천, 나눠 먹기 좋음</td></tr>
+<tr><td>serve_minutes</td><td>integer</td><td>나오는 데 걸리는 시간 짐작</td></tr>
+<tr><td>people</td><td>[{name(enum), verdict(편히/조심/피하기), reason}]</td><td>사람별 판정 초안. 편히면 reason은 빈 문자열</td></tr></table>
+<p class="small">맨 위: <code>{is_menu, restaurant, menu_language, language_code(BCP 47), items[]}</code>. is_menu가 false면 앱은 '올린 사진이 메뉴판이 맞는지 다시 한번 확인해 주세요.'를 보여 준다.</p>
+
+<h2 id="near"><span class="no">2-1</span>외부 API: 주변 식당과 위치</h2>
+<table><tr><th>API</th><th>호출</th><th>쓰는 값</th><th>조건</th></tr>
+<tr><td>브라우저 위치</td><td><code>navigator.geolocation</code> (streamlit_js_eval의 get_geolocation)</td><td>위도, 경도</td><td>사용자가 허용할 때만. 저장하지 않음</td></tr>
+<tr><td>카카오 로컬</td><td><code>GET https://dapi.kakao.com/v2/local/search/category.json</code>, <code>category_group_code=FD6</code>, x, y, radius=900, sort=distance, 페이지 3개</td><td>place_name, x, y, category_name(요리 종류), place_url</td><td>한국 안이고 <code>KAKAO_REST_KEY</code>가 있을 때</td></tr>
+<tr><td>Geoapify Places</td><td><code>GET https://api.geoapify.com/v2/places</code>, categories=catering.restaurant,catering.fast_food,catering.cafe, filter=circle</td><td>name, lat, lon, categories, opening_hours</td><td><code>GEOAPIFY_KEY</code>가 있을 때</td></tr>
+<tr><td>OpenStreetMap Overpass</td><td><code>POST /api/interpreter</code>, amenity=restaurant|fast_food|cafe, around 900m. 공개 서버 4곳에 동시에 묻고 먼저 온 답을 씀</td><td>name, name:ko, cuisine, opening_hours</td><td>키 없음. 공개 서버라 20~35초 걸릴 수 있음</td></tr></table>
+<p class="small">요리 종류(cuisine)는 대표 메뉴로 바꾼다 (예: vietnamese는 쌀국수, thai는 팟타이와 똠얌꿍). 대표 메뉴의 재료는 일반적인 조리법으로 짐작해 알레르기 규칙에 쓴다 (팟타이는 견과류). 요리 종류를 모르는 가게는 '메뉴 정보가 없어요'로 표시한다.</p>
+
+<h2 id="func"><span class="no">3</span>내부 모듈 함수</h2>
+<table><tr><th>함수</th><th>입력</th><th>출력</th></tr>
+<tr><td><code>ocr.read(data)</code></td><td>사진 bytes</td><td>{lines, words}. 환경 변수 CLOVA_OCR_URL, CLOVA_OCR_SECRET 필요</td></tr>
+<tr><td><code>ocr.group(fields)</code></td><td>CLOVA fields</td><td>{lines, words}</td></tr>
+<tr><td><code>menu2.read_menu_text(ocr, people)</code></td><td>OCR 결과, 오늘 같이 먹는 사람</td><td>Claude 원본 JSON (위 스키마)</td></tr>
+<tr><td><code>menu2.read_menu(jpeg, media_type, people)</code></td><td>사진, 사람</td><td>같음 (OCR 키가 없을 때)</td></tr>
+<tr><td><code>menu2.enrich(raw, people)</code></td><td>원본 JSON, 사람</td><td>Scan: items[]에 taste[8], per[], group, headline, map, id 추가. judged(음료와 흐린 줄 뺀 정렬 목록), people</td></tr>
+<tr><td><code>menu2.combos(scan, people)</code></td><td>Scan</td><td>Combo 최대 3개 (all, local, fast)</td></tr>
+<tr><td><code>world.best_match(item, favorites)</code></td><td>메뉴, 즐겨 먹는 음식</td><td>Match 또는 None</td></tr>
+<tr><td><code>order.card(scan, people, lines, requests)</code></td><td>lines [{item_id, count}], 부탁(한국어)</td><td>OrderCard</td></tr>
+<tr><td><code>nearby.find(lat, lng, radius)</code></td><td>위치</td><td>(출처 이름, 원본 목록). 카카오, Geoapify, Overpass 순</td></tr>
+<tr><td><code>nearby.to_places(elements, lat, lng)</code></td><td>원본 목록</td><td>식당 목록: id, name, kind, lat, lng, wait_min, meal_min, dishes[], distance_m, note(영업시간)</td></tr>
+<tr><td><code>freemeal.plan(people, now, meet, buffer, meet_pt=None, restaurants=None)</code></td><td>"HH:MM" 두 개, 여유 분, (지금 위치, 주변 식당)</td><td>FreeMeal. 위치가 없으면 예시 동네</td></tr>
+<tr><td><code>reviews.save(...)</code>, <code>stats(menu)</code>, <code>caution(menu)</code>, <code>reviews(menu, restaurant)</code></td><td>설문 값, 메뉴 원래 이름</td><td>저장, 요약, 주의 문구, 후기 {here, other, count, avg}</td></tr>
+<tr><td><code>store.load(code)</code>, <code>save(code, people)</code>, <code>take_scan()</code></td><td>기기 코드</td><td>사람 목록, 저장, 오늘 사용 가능 여부</td></tr></table>
+
+<h2 id="types"><span class="no">4</span>데이터 구조</h2>
+<h3>Person</h3>
+<pre>{ "id": "jiwoo", "name": "지우", "relation": "아이", "age": "6~9살", "sex": null,
+  "likes": ["달큰한", "고소한", "바삭한"], "favorites": ["치즈 토스트", "함박스테이크", "감자튀김", "푸딩"],
+  "avoid": [], "cannot": [], "allergies": ["견과류"],
+  "child": {"new_food": "망설여요", "pick_out": ["채소가 보이면"], "good": ["치즈", "감자", "빵"]},
+  "active": true }</pre>
+<h3>Per (메뉴 하나에 대한 사람 한 명) 와 Match</h3>
+<pre>{ "id": "mom", "name": "엄마", "verdict": "편히", "reason": "",
+  "rule": null,                       // 알레르기나 못 먹는 것으로 고정되면 {"kind": "allergy"|"cannot", "what": ["견과류"]}
+  "match": { "food": "갈비찜", "score": 0.65, "level": "꽤 닮았어요", "bars": 2,
+             "shared": ["소고기", "오래 끓이기", "진한 감칠맛", "부드러운 식감"],
+             "difference": "다른 점: 레드와인 향이 나고, 덜 달아요, 조금 더 새콤해요." } }</pre>
+<h3>Combo</h3>
+<pre>{ "kind": "all", "title": "모두 만족", "note": "이렇게 시키면 4명 모두 맛있게 먹어요",
+  "plates": [ { "person": {"id", "name"}, "item": {id, name_orig, reading, name_ko, price, course, serve_minutes},
+                "verdict", "match", "reason", "alts": [ …바꿀 수 있는 메뉴 3개 ] } ],
+  "share": [ { "item": {…}, "count": 2, "who": ["나", "엄마", "아빠", "지우"] } ],
+  "summary": { "happy": 4, "people": 4, "minutes": 20, "price": 92.0 },
+  "why": "나는 좋아하는 비프 스튜와 닮은 레드와인 소고기찜, … 골랐어요." }</pre>
+<h3>OrderCard</h3>
+<pre>{ "lang": "fr", "voice": "fr-FR",
+  "first": ["Mon enfant est allergique aux fruits à coque (…). Pouvez-vous vérifier, s'il vous plaît ?", "Mon père ne mange pas de coquillages (…)."],
+  "first_ko": ["지우: 견과류 알레르기가 있어요. 확인해 주세요.", "아빠: 조개류를 못 먹어요."],
+  "hello": "Bonjour ! Nous voudrions commander, s'il vous plaît.",
+  "order": [ {"count": 1, "orig": "Bœuf bourguignon", "ko": "레드와인 소고기찜", "price": "22 €"} ],
+  "requests": [ {"ko": "소스는 따로", "orig": "La sauce à part, s'il vous plaît."} ],
+  "thanks": "Merci beaucoup !", "text": "(카드 전체 문장)", "note": null }</pre>
+<h3>FreeMeal</h3>
+<pre>{ "meet": {"name", "lat", "lng", "time": "13:30"}, "now": "12:10", "left_min": 80, "buffer_min": 10,
+  "speed": 1.0, "slowest": "지우",
+  "restaurants": [ { "id", "name", "kind", "lat", "lng", "price", "walk_min": 6, "wait_min": 10, "meal_min": 45,
+                     "need_min": 77, "spare_min": 3, "fits": true, "back_by": "13:17",
+                     "marks": [ {"id", "name", "mark": "편히", "dish": "뵈프 부르기뇽", "match": {"food", "level"}} ] } ] }</pre>
+
+<h2 id="db"><span class="no">5</span>저장소 (SQLite)</h2>
+<table><tr><th>테이블</th><th>열</th><th>용도</th></tr>
+<tr><td>people</td><td>code TEXT PK, data TEXT(JSON), updated REAL</td><td>기기 코드별 사람 목록</td></tr>
+<tr><td>survey</td><td>id, ts, restaurant, menu, ordered, imagine(1~5), stronger(쉼표), again, comment, who</td><td>먹은 뒤 설문, 한 줄 후기</td></tr>
+<tr><td>usage</td><td>day TEXT PK, scans INT</td><td>하루 사진 읽기 횟수 (API 비용 보호)</td></tr></table>
+<p class="small muted">Render 무료 서버는 다시 시작하거나 다시 배포하면 파일이 지워진다. 시연 뒤 오래 보관하려면 외부 DB로 옮긴다.</p>
+
+<h2 id="config"><span class="no">6</span>설정값과 비밀값</h2>
+<table><tr><th>이름</th><th>어디</th><th>설명</th></tr>
+<tr><td>ANTHROPIC_API_KEY</td><td>배포처 비밀값 (Render 환경 변수)</td><td>Claude 호출 키</td></tr>
+<tr><td>CLOVA_OCR_URL, CLOVA_OCR_SECRET</td><td>배포처 비밀값</td><td>CLOVA OCR General 호출 주소와 Secret Key. 없으면 사진을 Claude가 직접 읽음</td></tr>
+<tr><td>KAKAO_REST_KEY</td><td>배포처 비밀값</td><td>카카오 로컬 REST API 키 (한국 안 주변 식당, 선택)</td></tr>
+<tr><td>GEOAPIFY_KEY</td><td>배포처 비밀값</td><td>Geoapify 키 (해외 주변 식당, 선택)</td></tr>
+<tr><td>MOSHIGO_DAILY_SCANS</td><td>환경 변수</td><td>하루 사진 읽기 한도, 기본 150</td></tr>
+<tr><td>MOSHIGO_DB</td><td>환경 변수</td><td>SQLite 파일 위치, 기본 core/data/moshigo.db</td></tr></table>
+<p class="small">비밀값은 저장소에 올리지 않는다 (<code>.streamlit/secrets.toml</code>은 .gitignore). 예시는 <code>.streamlit/secrets.example.toml</code>.</p>
+
+<h2 id="rest"><span class="no">부록</span>REST 엔드포인트 (네이티브 앱 확장용, FastAPI 시제품)</h2>
+<table><tr><th>메서드</th><th>경로</th><th>요청</th><th>응답</th></tr>
+<tr><td>GET</td><td><code>/api/people?session_id=</code></td><td>-</td><td>{session_id, people: Person[]}</td></tr>
+<tr><td>PUT</td><td><code>/api/people</code></td><td>{session_id, people: Person[]}</td><td>{session_id, people}. 이름이 없으면 400 NO_PEOPLE</td></tr>
+<tr><td>GET</td><td><code>/api/foods</code></td><td>-</td><td>{foods: [{name, country}]}</td></tr>
+<tr><td>POST</td><td><code>/api/v2/menu/scan</code></td><td>multipart: session_id, image(선택)</td><td>Scan + combos[], demo, note. 메뉴가 없으면 422 NO_MENU</td></tr>
+<tr><td>GET</td><td><code>/api/v2/menu/{scan_id}?session_id=</code></td><td>-</td><td>같은 메뉴판을 바뀐 사람 기준으로 다시 판정. 없으면 404</td></tr>
+<tr><td>POST</td><td><code>/api/v2/order-card</code></td><td>{scan_id, session_id, lines: [{item_id, count}], requests: string[]}</td><td>OrderCard</td></tr>
+<tr><td>GET</td><td><code>/api/freemeal?session_id=&amp;now=&amp;meet=&amp;buffer=</code></td><td>-</td><td>FreeMeal</td></tr></table>
+<p class="small muted">오류 형식: <code>{"detail": {"code": "…", "message": "화면에 그대로 보여 줄 문장"}}</code></p>
+</div></body></html>

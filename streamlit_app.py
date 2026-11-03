@@ -6,7 +6,7 @@ import streamlit as st
 st.set_page_config(page_title="모시고 · 가족 메뉴판 도우미", page_icon="🐢", layout="centered", initial_sidebar_state="collapsed")
 
 # 키는 Streamlit secrets(배포) 또는 환경 변수(로컬)에서 읽는다
-for k in ("ANTHROPIC_API_KEY", "CLOVA_OCR_URL", "CLOVA_OCR_SECRET"):
+for k in ("ANTHROPIC_API_KEY", "CLOVA_OCR_URL", "CLOVA_OCR_SECRET", "KAKAO_REST_KEY", "GEOAPIFY_KEY"):
     try:
         if k in st.secrets and not os.environ.get(k):
             os.environ[k] = str(st.secrets[k])
@@ -15,7 +15,7 @@ for k in ("ANTHROPIC_API_KEY", "CLOVA_OCR_URL", "CLOVA_OCR_SECRET"):
 
 from core import menu2, store  # noqa: E402
 from ui import screens  # noqa: E402
-from ui.common import CSS, E, md, momo  # noqa: E402
+from ui.common import CSS, E, md, momo, nav  # noqa: E402
 
 s = st.session_state
 if "code" not in s:
@@ -49,7 +49,7 @@ if view in ("menu", "dish", "combo", "order", "survey") and not has_scan:
     view = "scan"
 {
     "start": screens.start, "people": screens.people, "edit": screens.edit, "scan": screens.scan, "menu": screens.menu,
-    "dish": screens.dish, "survey": screens.survey, "combo": screens.combo, "order": screens.order_card, "free": screens.free,
+    "dish": screens.dish, "survey": screens.survey, "combo": screens.combo, "order": screens.order_card, "free": screens.free, "nearby": screens.nearby_view,
 }.get(view, screens.start)()
 
 # 아래 탭바
@@ -59,11 +59,10 @@ if view != "start":
             ("combo", "조합", ":material/restaurant:", has_scan),
             ("order", "주문", ":material/receipt_long:", has_scan),
             ("free", "자유식", ":material/schedule:", True)]
-    cur = {"edit": "people", "dish": "menu", "survey": "menu", "scan": "menu" if has_scan else "scan"}.get(view, view)
+    cur = {"edit": "people", "dish": "menu", "survey": "menu", "nearby": "menu", "scan": "menu" if has_scan else "scan"}.get(view, view)
     with st.container(key="tabbar"):
         cols = st.columns(len(tabs))
         for col, (key, label, icon, ok) in zip(cols, tabs):
-            if col.button(label, icon=icon, key=f"tab_{key}", disabled=not ok, width="stretch",
-                          type="primary" if (cur == key or (key == "menu" and cur == "scan")) else "secondary"):
-                s.view = key
-                st.rerun()
+            col.button(label, icon=icon, key=f"tab_{key}", disabled=not ok, width="stretch",
+                       type="primary" if (cur == key or (key == "menu" and cur == "scan")) else "secondary",
+                       on_click=nav, args=(key,))
