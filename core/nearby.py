@@ -6,6 +6,8 @@
 """
 import math
 import os
+import threading
+import time
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 
 import httpx
@@ -14,7 +16,7 @@ from . import world
 
 ENDPOINTS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter",
              "https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
-UA = {"User-Agent": "moshigo-mvp/0.1 (SVC Seoul AI hackathon demo)"}
+UA = {"User-Agent": "moshigo-mvp/0.1 (+https://moshigo.onrender.com)", "Accept-Language": "ko,en"}
 
 # 요리 종류 -> (한국어 이름, 대표 메뉴(세계 음식 표의 이름))
 CUISINE = {
@@ -47,6 +49,31 @@ CUISINE = {
     "dessert": ("디저트", ["치즈케이크", "푸딩", "크레페"]),
     "bunsik": ("분식", ["떡볶이", "김치찌개", "비빔밥"]),
 }
+# 요리 종류 태그가 없을 때 가게 이름으로 짐작 (앞에 있는 것이 먼저)
+NAME_HINTS = [
+    (["쌀국수", "pho", "phở", "베트남"], "vietnamese"), (["팟타이", "태국", "thai"], "thai"),
+    (["스시", "초밥", "sushi", "참치", "오마카세"], "sushi"), (["라멘", "ramen", "라면"], "ramen"),
+    (["돈까스", "돈카츠", "우동", "이자카야", "덮밥", "규동", "일식"], "japanese"),
+    (["반점", "짬뽕", "짜장", "마라", "훠궈", "딤섬", "중식", "중화"], "chinese"),
+    (["피자", "pizza", "pizzeria"], "pizza"), (["파스타", "pasta", "trattoria", "이탈리"], "italian"),
+    (["버거", "burger", "맥도날드", "롯데리아", "mcdonald"], "burger"), (["치킨", "chicken", "통닭"], "chicken"),
+    (["스테이크", "steak"], "steak_house"), (["타코", "taco", "멕시"], "mexican"), (["크레페", "crêpe", "creperie", "crêperie"], "crepe"),
+    (["bistro", "bistrot", "brasserie", "비스트로"], "french"), (["샌드위치", "sandwich", "subway", "써브웨이"], "sandwich"),
+    (["김밥", "떡볶이", "분식"], "bunsik"), (["칼국수", "국수", "냉면", "noodle"], "noodle"), (["카레", "curry"], "curry"),
+    (["횟집", "수산", "해물", "조개", "seafood"], "seafood"),
+    (["국밥", "찌개", "갈비", "삼겹", "고기", "불고기", "한정식", "백반", "순대", "곰탕", "설렁탕", "해장국", "보쌈", "족발", "닭갈비",
+      "비빔밥", "한식", "식당", "밥집"], "korean"),
+]
+
+
+def guess_cuisine(name):
+    n = (name or "").lower()
+    for words, key in NAME_HINTS:
+        if any(w in n for w in words):
+            return key
+    return None
+
+
 # 가게 종류 -> (이름, 기다림, 식사 시간 어림값)
 AMENITY = {"restaurant": ("식당", 10, 45), "fast_food": ("빨리 먹는 집", 5, 20), "cafe": ("카페", 5, 30)}
 
@@ -176,8 +203,42 @@ def fetch_geoapify(lat, lng, radius=900, limit=80):
     return out
 
 
+# ---------- Nominatim (OpenStreetMap 검색, 키 없음, 빠름) ----------
+_NOMI_LOCK = threading.Lock()
+_NOMI_LAST = [0.0]
+
+
+def _nominatim(q, lat, lng, d):
+    with _NOMI_LOCK:  # 사용 정책: 1초에 한 번
+        gap = time.time() - _NOMI_LAST[0]
+        if gap < 1.05:
+            time.sleep(1.05 - gap)
+        _NOMI_LAST[0] = time.time()
+    r = httpx.get("https://nominatim.openstreetmap.org/search", headers=UA, timeout=15, params={
+        "q": q, "format": "jsonv2", "limit": 50, "extratags": 1, "namedetails": 1, "bounded": 1,
+        "viewbox": f"{lng - d},{lat + d},{lng + d},{lat - d}"})
+    r.raise_for_status()
+    return r.json()
+
+
+def fetch_nominatim(lat, lng, radius=900):
+    d = radius / 111000 * 1.1
+    out, seen = [], set()
+    for q in ("restaurant", "fast food"):
+        for x in _nominatim(q, lat, lng, d):
+            nd, et = x.get("namedetails") or {}, x.get("extratags") or {}
+            name = x.get("name") or nd.get("name")
+            if not name or x.get("osm_id") in seen:
+                continue
+            seen.add(x.get("osm_id"))
+            out.append({"type": "nominatim", "id": x.get("osm_id"), "lat": float(x["lat"]), "lon": float(x["lon"]),
+                        "tags": {"name": name, "name:ko": nd.get("name:ko", ""), "amenity": x.get("type", "restaurant"),
+                                 "cuisine": et.get("cuisine", ""), "opening_hours": et.get("opening_hours", "")}})
+    return [e for e in out if _dist(lat, lng, e["lat"], e["lon"]) <= radius * 1.2]
+
+
 def find(lat, lng, radius=900):
-    """주변 식당 원본과 출처 이름. 한국 안이면 카카오(키가 있을 때), 다음은 Geoapify(키가 있을 때), 마지막으로 Overpass."""
+    """주변 식당 원본과 출처 이름. 카카오(한국, 키) > Geoapify(키) > Nominatim(무료, 빠름) > Overpass(무료, 느림)."""
     if kakao_available() and in_korea(lat, lng):
         try:
             return "카카오맵", fetch_kakao(lat, lng, radius)
@@ -188,6 +249,12 @@ def find(lat, lng, radius=900):
             return "OpenStreetMap (Geoapify)", fetch_geoapify(lat, lng, radius)
         except Exception as e:
             print(f"[nearby] Geoapify 실패: {e!r}")
+    try:
+        got = fetch_nominatim(lat, lng, radius)
+        if got:
+            return "OpenStreetMap", got
+    except Exception as e:
+        print(f"[nearby] Nominatim 실패: {e!r}")
     return "OpenStreetMap", fetch(lat, lng, radius)
 
 
@@ -202,6 +269,10 @@ def to_places(elements, lat, lng):
             continue
         amen = AMENITY.get(t.get("amenity"), AMENITY["restaurant"])
         cuisines = [c.strip().lower() for c in (t.get("cuisine") or "").split(";") if c.strip()]
+        if not any(c in CUISINE for c in cuisines):
+            g = guess_cuisine(t.get("name:ko") or "") or guess_cuisine(t.get("name") or "")
+            if g:
+                cuisines.append(g)
         label, foods = None, []
         for c in cuisines:
             if c in CUISINE:

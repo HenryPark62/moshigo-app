@@ -622,7 +622,8 @@ def geo_block(key):
             s.geo_asking = None
             st.rerun()
         elif loc and loc.get("error"):
-            s.geo_asking, s.geo_err = None, "위치를 가져오지 못했어요. 휴대폰 설정에서 브라우저 위치 권한을 켜 주세요."
+            s.geo_asking, s.geo_err = None, ("위치를 가져오지 못했어요. 휴대폰은 설정에서 브라우저 위치 권한을, 노트북(맥)은 시스템 설정 > 개인정보 보호 및 보안 > "
+                                             "위치 서비스에서 브라우저를 켜 주세요. 주소창 왼쪽 자물쇠에서 이 사이트 위치 허용도 확인해 주세요.")
             st.rerun()
         md('<div class="card soft small">위치 허용 창이 뜨면 <b>허용</b>을 눌러 주세요.</div>')
         return None
@@ -637,7 +638,7 @@ def geo_block(key):
 
 
 def places_here(geo):
-    with st.spinner("주변 식당을 찾고 있어요. 처음 찾을 때는 30초쯤 걸릴 수 있어요"):
+    with st.spinner("주변 식당을 찾고 있어요"):
         try:
             return _places(round(geo["lat"], 3), round(geo["lng"], 3))
         except Exception as e:
@@ -681,15 +682,15 @@ def nearby_view():
     title("주변 식당", "지금 있는 곳에서 가까운 식당이에요. 같이 먹는 사람마다 먹을 메뉴를 미리 보여 드려요.")
     geo = geo_block("near")
     if not geo:
-        if st.button("예시 동네로 보기 (파리 몽마르트르)", width="stretch"):
-            s.geo = {"lat": 48.8838, "lng": 2.3437, "demo": True}
-            st.rerun()
         return
     src, places = places_here(geo)
     if places is None:
-        st.warning("주변 식당을 불러오지 못했어요. 잠시 뒤 다시 해 주세요.")
-        if st.button("다시 찾기", width="stretch"):
-            st.rerun()
+        st.warning("주변 식당을 불러오지 못했어요. 잠시 뒤 다시 찾아 주세요.")
+        st.button("다시 찾기", width="stretch", key="near_retry")
+        return
+    if not places:
+        st.info("가까운 곳에 등록된 식당이 없어요. 조금 이동한 뒤 위치를 다시 잡아 주세요.")
+        st.button("위치 다시 잡기", width="stretch", key="near_regeo", on_click=_set, kwargs={"geo": None})
         return
     act = active()
     speed, slowest = freemeal.group_speed(act)
@@ -698,13 +699,13 @@ def nearby_view():
         marks = freemeal.person_marks(r["dishes"], act)
         walk = max(1, round(r["distance_m"] * 1.3 / speed / 60))
         score = sum((1 if m["mark"] == "편히" else 0.4 if m["mark"] == "조심" else -1) + (m["match"] and 0.5 or 0) for m in marks) / max(1, len(act))
-        score -= walk / 30 + (0.3 if r["kind"] == "카페" else 0) + (0.2 if r["wait_min"] <= 5 else 0) + (0 if r["dishes"] else 0.8)
+        score -= walk / 30 + (0.3 if r["kind"] == "카페" else 0) + (0.6 if r["wait_min"] <= 5 else 0) + (0 if r["dishes"] else 0.8)
         rows.append(dict(r, marks=marks, walk_min=walk, score=score, all_ok=all(m["mark"] == "편히" for m in marks)))
     rows.sort(key=lambda r: -r["score"])
     only = st.toggle("모두 편히 먹을 수 있는 곳만", key="near_only")
     shown = [r for r in rows if r["all_ok"]] if only else rows
     shown = shown[:15]
-    md(f'<div class="small">{"예시 동네(파리 몽마르트르)" if geo.get("demo") else "지금 있는 곳"} 주변 {len(rows)}곳 중 잘 맞는 순서로 {len(shown)}곳이에요.</div>'
+    md(f'<div class="small">지금 있는 곳 주변 {len(rows)}곳 중 잘 맞는 순서로 {len(shown)}곳이에요.</div>'
        f'<div class="note">걸어서 걸리는 시간은 가장 천천히 걷는 {E(slowest)} 기준이에요.</div>')
     _map(geo, "지금 여기", shown, lambda r: f'{shown.index(r) + 1}', lambda r: "#2f7a50" if r["all_ok"] else "#c99a1e", "nearmap")
     for i, r in enumerate(shown):
@@ -728,23 +729,27 @@ def free():
         meet = c2.time_input("모이는 시간", dtime(13, 30), step=300)
     buf = st.segmented_control("미리 돌아오기", [5, 10, 15], default=10, format_func=lambda b: f"{b}분 전") or 10
     geo = geo_block("free")
-    places, meet_pt, src = None, None, None
-    if geo and not geo.get("demo"):
-        src, places = places_here(geo)
-        if places is None:
-            st.warning("주변 식당을 불러오지 못해서 예시 동네로 보여 드려요.")
-        else:
-            meet_pt = {"name": "지금 있는 곳 (모이는 곳)", "lat": geo["lat"], "lng": geo["lng"]}
-    if places is None and not geo:
-        md('<div class="note">아래는 예시 동네(파리 몽마르트르)예요. 지금 위치로 찾으면 내 주변 식당으로 바뀌어요.</div>')
+    if not geo:  # 위치가 없으면 계산하지 않는다 (예시 데이터를 보여 주지 않음)
+        return
+    src, places = places_here(geo)
+    if places is None:
+        st.warning("주변 식당을 불러오지 못했어요. 잠시 뒤 다시 찾아 주세요.")
+        st.button("다시 찾기", width="stretch", key="free_retry")
+        return
+    if not places:
+        st.info("가까운 곳에 등록된 식당이 없어요. 조금 이동한 뒤 위치를 다시 잡아 주세요.")
+        return
+    meet_pt = {"name": "지금 있는 곳", "lat": geo["lat"], "lng": geo["lng"]}
     data = freemeal.plan(active(), now.strftime("%H:%M"), meet.strftime("%H:%M"), buf, meet_pt, places)
     if data["left_min"] <= 0:
         st.warning("모이는 시간이 지금보다 늦어야 해요.")
         return
-    md(f'<div><b style="font-size:24px;color:var(--accent-text)">{data["left_min"]}분</b> 남았어요</div><div class="small">모이는 곳: {E(data["meet"]["name"])}</div>'
+    md(f'<div><b style="font-size:24px;color:var(--accent-text)">{data["left_min"]}분</b> 남았어요</div><div class="small">지금 있는 곳을 모이는 곳으로 보고 계산했어요.</div>'
        f'<div class="note">걷는 속도는 가장 천천히 걷는 {E(data["slowest"])} 기준 (분당 {round(data["speed"] * 60)}m)</div>')
-    fits = [r for r in data["restaurants"] if r["fits"]][:12]
-    rest = [r for r in data["restaurants"] if not r["fits"]][:5 if places is None else 3]
+    fits = [r for r in data["restaurants"] if r["fits"] and r["known"]][:12]
+    rest = [r for r in data["restaurants"] if not r["fits"] and r["known"]][:3]
+    if not fits:
+        st.info("이 시간 안에 다녀올 수 있는 식당이 없어요. 모이는 시간을 늦추거나 미리 돌아오기를 줄여 보세요.")
     _map(data["meet"], f'{data["meet"]["time"]} 모여요', fits + rest, lambda r: f'{r["need_min"]}분' if r["fits"] else "부족",
          lambda r: "#2f7a50" if r["fits"] else "#8a8f8b", "freemap")
     md('<div class="legend"><span><i style="background:#8ccb9f"></i>가고 오기</span><span><i style="background:#f2c6b6"></i>기다림</span>'
@@ -759,12 +764,9 @@ def free():
             bar = (f'<div class="tb">{seg(r["walk_min"], "w", "가기")}{seg(r["wait_min"], "q", "기다림")}{seg(r["meal_min"], "m", "식사")}'
                    f'{seg(r["walk_min"], "w", "오기")}{seg(r["buffer_min"], "b", "여유")}<i style="left:{data["left_min"] / scale * 100}%"></i></div>')
             tag = f'<span class="tag good">{r["back_by"]} 도착 · {r["spare_min"]}분 남아요</span>' if r["fits"] else f'<span class="tag warn">{-r["spare_min"]}분 모자라요</span>'
-            price = f' · {E(r["price"])}' if r.get("price") else ""
-            md(f'<div class="card {"" if r["fits"] else "soft"}"><div><b style="font-size:16px">{E(r["name"])}</b> <span class="small muted">{E(r["kind"])}{price}</span></div>'
+            md(f'<div class="card {"" if r["fits"] else "soft"}"><div><b style="font-size:16px">{E(r["name"])}</b> <span class="small muted">{E(r["kind"])}</span></div>'
                f'<div>{tag}</div>{bar}{_marks(r["marks"])}' + (f'<div class="note">{E(r["note"])}</div>' if r["note"] else "") + "</div>")
-            if r["fits"] and (places is not None or r["id"] == "bistro"):
+            if r["fits"]:
                 _pick(r, f"free_pick_{r['id']}")
-    if places is None:
-        md('<div class="note">예시 동네의 식당은 시연용 [샘플]이에요. 걷는 길은 직선 거리의 1.3배로 어림했어요.</div>')
-    else:
-        md(f'<div class="note">식당 정보: {E(src)}. 기다림과 식사 시간은 가게 종류로 어림한 값이에요. 걷는 길은 직선 거리의 1.3배로 어림했어요.</div>')
+    md(f'<div class="note">식당 정보: {E(src)}. 기다림과 식사 시간은 가게 종류로 어림한 값이에요. 걷는 길은 직선 거리의 1.3배로 어림했어요.</div>')
+    st.button("위치 다시 잡기", width="stretch", key="free_regeo", on_click=_set, kwargs={"geo": None})
