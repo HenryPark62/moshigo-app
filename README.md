@@ -1,14 +1,3 @@
----
-title: 모시고
-emoji: 🐢
-colorFrom: green
-colorTo: yellow
-sdk: docker
-app_port: 7860
-pinned: false
-short_description: 처음 보는 메뉴판을 아는 음식에 빗대어 알려 주는 웹앱
----
-
 # 모시고 · 가족 메뉴판 도우미
 
 처음 보는 해외 메뉴판을 찍으면 우리말로 옮기고, 같이 먹는 사람마다 **각자 아는 음식에 빗대어** 무슨 맛인지 알려 주는 모바일 웹앱.
@@ -48,6 +37,11 @@ core/freemeal.py   자유 식사 시간 계산
 core/reviews.py    후기, 설문, 설문을 설명에 반영
 core/store.py      입맛 저장, 하루 사용량 한도
 ```
+
+## 배포 (Render 무료)
+
+저장소 맨 위의 `render.yaml`로 무료 웹 서비스를 만든다 (Docker, 싱가포르). `ANTHROPIC_API_KEY`(필수), `CLOVA_OCR_URL`, `CLOVA_OCR_SECRET`(선택)은 Render 화면에서 넣는다.
+15분 동안 접속이 없으면 잠들고 다음 접속 때 1분쯤 걸려 깨어난다. 다시 시작하면 SQLite 파일은 지워진다.
 
 ## 실행
 
