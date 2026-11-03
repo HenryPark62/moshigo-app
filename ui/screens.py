@@ -7,7 +7,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from core import freemeal, menu2, nearby, ocr, order, reviews, store, world
-from .common import ALLERGENS, E, VCLASS, VMARK, chips, go, josa, level, marks, md, momo, nav
+from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, chips, go, josa, level, loader, marks, md, momo, nav
 
 RELATIONS = ["나", "부모님", "아이", "배우자", "친구", "가족"]
 AGES = ["3~5살", "6~9살", "10대", "20대", "30대", "40대", "50대", "60대", "70대", "80대 이상"]
@@ -465,6 +465,12 @@ def dish():
                     h += '<div class="chips"><span class="small muted">같은 점</span>' + "".join(f'<span class="kw same">{E(w)}</span>' for w in m["shared"]) + "</div>"
                 h += f'<div class="muted">{E(m["difference"])}</div>'
             md(h + "</div>")
+        md('<div class="sec">휴대폰 건네서 크게 보여 주기</div>')
+        with st.container(key="pair_show"):
+            cols = st.columns(len(it["per"]))
+            for c, x in zip(cols, it["per"]):
+                if c.button(x["name"], key=f"show_{x['id']}", width="stretch"):
+                    show_dialog(it, x)
         if len(it["map"]) > 1:
             md('<div class="sec">맛 지도</div><div class="card">' + taste_map(it["map"]) +
                '<div class="note">가까울수록 비슷한 맛이에요. 짠맛, 감칠맛, 기름진 정도를 가로에, 부드러운 정도를 세로에 놓았어요.</div></div>')
@@ -519,17 +525,10 @@ def dish():
     phr = [(order.speakable(order.request_text(key, r), key), r, order.request_text(key, r)) for r in reqs[:4] if r in order.REQUEST_KEYS]
     speak_block(phr, order.voice(scan), 60 * len(phr) + 8)
 
-    if it["course"] != "drink":
-        md('<div class="sec">보여 주기</div>')
-        with st.container(key="pair_show"):
-            cols = st.columns(len(it["per"]))
-            for c, x in zip(cols, it["per"]):
-                if c.button(x["name"], key=f"show_{x['id']}", width="stretch"):
-                    show_dialog(it, x)
     st.button("먹어 봤어요 · 짧은 설문", width="stretch", on_click=nav, args=('survey',))
 
 
-@st.dialog("이 사람에게 보여 주기")
+@st.dialog("크게 보여 주기")
 def show_dialog(it, x):
     m = x["match"]
     line = (f'{E(x["name"])}, 이건 <b>{E(m["food"])}</b>{josa(m["food"], "이랑", "랑")} {E(m["level"])}.' if m
@@ -657,7 +656,7 @@ def _places(lat, lng):
     return src, nearby.to_places(els, lat, lng)
 
 
-def geo_block(key):
+def geo_block(key, slot=None):
     """지금 위치를 묻는다. 위치가 있으면 {lat, lng}, 없으면 None. 위치는 저장하지 않고 이 화면에서만 쓴다."""
     s = st.session_state
     if s.get("geo"):
@@ -674,7 +673,7 @@ def geo_block(key):
             s.geo_asking, s.geo_err = None, ("위치를 가져오지 못했어요. 휴대폰은 설정에서 브라우저 위치 권한을, 노트북(맥)은 시스템 설정 > 개인정보 보호 및 보안 > "
                                              "위치 서비스에서 브라우저를 켜 주세요. 주소창 왼쪽 자물쇠에서 이 사이트 위치 허용도 확인해 주세요.")
             st.rerun()
-        md('<div class="note one-line">위치 허용 창이 뜨면 <b>허용</b>을 눌러 주세요.</div>')
+        (slot or st).markdown(loader("지금 있는 곳을 찾는 중", "위치 허용 창이 뜨면 허용을 눌러 주세요"), unsafe_allow_html=True)
         return None
     if s.get("geo_err"):
         st.warning(s.pop("geo_err"))
@@ -686,13 +685,16 @@ def geo_block(key):
     return None
 
 
-def places_here(geo):
-    with st.spinner("주변 식당을 찾고 있어요"):
-        try:
-            return _places(round(geo["lat"], 3), round(geo["lng"], 3))
-        except Exception as e:
-            print(f"[nearby] 실패: {e!r}")
-            return None, None
+def places_here(geo, slot=None):
+    box = slot or st.empty()
+    box.markdown(loader("주변 식당 지도를 불러오는 중"), unsafe_allow_html=True)
+    try:
+        return _places(round(geo["lat"], 3), round(geo["lng"], 3))
+    except Exception as e:
+        print(f"[nearby] 실패: {e!r}")
+        return None, None
+    finally:
+        box.empty()
 
 
 def _map(center, center_label, rows, label_of, color_of, key, height=260):
@@ -705,6 +707,19 @@ def _map(center, center_label, rows, label_of, color_of, key, height=260):
         Marker([r["lat"], r["lng"]], icon=DivIcon(html=f'<span style="{pill}background:{color_of(r)};color:#fff;border:2px solid #fff">{label_of(r)}</span>')).add_to(m)
     if rows:
         m.fit_bounds([[center["lat"], center["lng"]]] + [[r["lat"], r["lng"]] for r in rows], padding=(30, 30))
+    # 지도 그림(타일)이 다 뜰 때까지 걷는 모모를 지도 위에 띄워 둔다
+    from branca.element import Element
+
+    m.get_root().header.add_child(Element(f"<style>{LOADER_CSS}#moshi-load{{position:absolute;inset:0;z-index:1000;background:#f2f5ef;"
+                                          f"display:flex;align-items:center;justify-content:center;transition:opacity .3s}}</style>"))
+    m.get_root().html.add_child(Element(f'<div id="moshi-load">{loader("지도 불러오는 중")}</div>'))
+    m.get_root().script.add_child(Element(f"""
+      window.addEventListener('load', function(){{
+        var done=function(){{var e=document.getElementById('moshi-load'); if(e){{e.style.opacity=0; setTimeout(function(){{e.remove()}},300);}}}};
+        try {{ var n=0; {m.get_name()}.eachLayer(function(l){{ if(l instanceof L.TileLayer){{ n++; if(l.isLoading && !l.isLoading()) done(); else l.once('load', done); }} }});
+              if(!n) done(); }} catch(err) {{ done(); }}
+        setTimeout(done, 8000);
+      }});"""))
     # 서버와 주고받지 않는 정적 지도 (다시 그리기 부담을 줄인다)
     components.html(m.get_root().render(), height=height)
 
@@ -729,10 +744,11 @@ def nearby_view():
     s = st.session_state
     st.button("메뉴판 찍기로", icon=":material/arrow_back:", type="tertiary", on_click=nav, args=('scan',))
     title("주변 식당", "지금 있는 곳에서 가까운 식당이에요. 같이 먹는 사람마다 먹을 메뉴를 미리 보여 드려요.")
-    geo = geo_block("near")
+    slot = st.empty()  # 위치 찾기와 식당 찾기 로딩 표시를 같은 자리에서 바꿔 끼운다
+    geo = geo_block("near", slot)
     if not geo:
         return
-    src, places = places_here(geo)
+    src, places = places_here(geo, slot)
     if places is None:
         st.warning("주변 식당을 불러오지 못했어요. 잠시 뒤 다시 찾아 주세요.")
         st.button("다시 찾기", width="stretch", key="near_retry")
@@ -798,10 +814,11 @@ def free():
         now = c1.time_input("지금", step=300, key="free_now")
         meet = c2.time_input("모이는 시간", step=300, key="free_meet")
     buf = st.segmented_control("미리 돌아오기", [5, 10, 15], default=10, format_func=lambda b: f"{b}분 전") or 10
-    geo = geo_block("free")
+    slot = st.empty()
+    geo = geo_block("free", slot)
     if not geo:  # 위치가 없으면 계산하지 않는다 (예시 데이터를 보여 주지 않음)
         return
-    src, places = places_here(geo)
+    src, places = places_here(geo, slot)
     if places is None:
         st.warning("주변 식당을 불러오지 못했어요. 잠시 뒤 다시 찾아 주세요.")
         st.button("다시 찾기", width="stretch", key="free_retry")

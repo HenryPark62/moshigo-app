@@ -222,6 +222,34 @@ def momo(size=40):
     return MOMO.format(s=size)
 
 
+# 다리에 이름을 붙인 걷는 모모 (로딩 표시용)
+_WALK = MOMO.replace('<rect x="26" y="80"', '<rect class="leg-b" x="26" y="80"').replace('<rect x="72" y="80"', '<rect class="leg-f" x="72" y="80"')
+LOADER_CSS = """
+.loader{display:flex;flex-direction:column;align-items:center;gap:10px;padding:26px 0 22px}
+.loader .track{position:relative;width:200px;height:64px;overflow:hidden}
+.loader .track::after{content:"";position:absolute;left:0;right:0;bottom:6px;border-bottom:2px dashed #b9c2b7}
+.loader .walker{position:absolute;bottom:2px;left:0;animation:moshi-stroll 3.2s linear infinite}
+.loader .walker svg{display:block}
+.loader .leg-b,.loader .leg-f{transform-box:fill-box;transform-origin:50% 0}
+.loader .leg-b{animation:moshi-step .36s ease-in-out infinite alternate}
+.loader .leg-f{animation:moshi-step .36s ease-in-out infinite alternate-reverse}
+.loader .walker svg{animation:moshi-bob .36s ease-in-out infinite alternate}
+.loader .txt{font-size:15px;font-weight:700;color:#22302a}
+.loader .txt i{font-style:normal;display:inline-block;width:1.2em;text-align:left;animation:moshi-dots 1.2s steps(4) infinite;overflow:hidden;vertical-align:bottom;white-space:nowrap}
+.loader .sub{font-size:12px;color:#5e6a63}
+@keyframes moshi-stroll{0%{transform:translateX(-60px)}100%{transform:translateX(200px)}}
+@keyframes moshi-step{0%{transform:rotate(-14deg)}100%{transform:rotate(14deg)}}
+@keyframes moshi-bob{0%{transform:translateY(0)}100%{transform:translateY(-2px)}}
+@keyframes moshi-dots{0%{width:0}100%{width:1.2em}}
+"""
+
+
+def loader(text, sub=""):
+    """거북이 모모가 점선 위를 걸어가는 로딩 표시."""
+    return (f'<div class="loader"><div class="track"><div class="walker">{_WALK.format(s=52)}</div></div>'
+            f'<div class="txt">{E(text)}<i>...</i></div>' + (f'<div class="sub">{E(sub)}</div>' if sub else "") + "</div>")
+
+
 def josa(word, a, b):
     ch = re.sub(r"[^가-힣]", "", word or "")[-1:]
     if not ch:
@@ -263,3 +291,5 @@ def go(view, **kw):
     for k, v in kw.items():
         st.session_state[k] = v
     st.rerun()
+
+CSS = CSS.replace("</style>", LOADER_CSS + "</style>")
