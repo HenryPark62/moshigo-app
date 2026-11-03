@@ -300,13 +300,20 @@ def row(it, mode):
 # ---------------- 메뉴 자세히 ----------------
 def taste_map(points):
     W, H, pad = 300, 190, 24
-    X = lambda x: pad + x * (W - pad * 2)
-    Y = lambda y: H - pad - y * (H - pad * 2)
+    xs, ys = [p["x"] for p in points], [p["y"] for p in points]
+    # 점들이 몰려 있으면 보이는 범위를 좁혀서 차이가 보이게 한다 (최소 폭 0.3)
+    def rng(v):
+        lo, hi = min(v), max(v)
+        mid, half = (lo + hi) / 2, max(0.15, (hi - lo) / 2 + 0.06)
+        return mid - half, mid + half
+    (x0, x1), (y0, y1) = rng(xs), rng(ys)
+    X = lambda x: pad + 14 + (x - x0) / (x1 - x0) * (W - pad * 2 - 28)
+    Y = lambda y: H - pad - 14 - (y - y0) / (y1 - y0) * (H - pad * 2 - 20)
     me, foods = points[0], [p for p in points if p["kind"] == "food"]
     svg = (f'<svg viewBox="0 0 {W} {H}" style="width:100%;max-width:380px"><rect x="{pad}" y="8" width="{W - pad * 2}" height="{H - pad - 8}" rx="10" fill="#f7f8f4" stroke="#dce2da"/>'
-           f'<line x1="{W / 2}" y1="8" x2="{W / 2}" y2="{H - pad}" stroke="#b9c2b7" stroke-dasharray="3 4"/>'
-           f'<text x="{pad}" y="{H - 6}" font-size="10" fill="#5e6a63">← 담백해요</text><text x="{W - pad}" y="{H - 6}" text-anchor="end" font-size="10" fill="#5e6a63">진해요 →</text>'
-           f'<text x="{pad + 6}" y="22" font-size="10" fill="#5e6a63">↑ 부드러워요</text>')
+           ''
+           f'<text x="{pad}" y="{H - 6}" font-size="10" fill="#5e6a63">← 더 담백해요</text><text x="{W - pad}" y="{H - 6}" text-anchor="end" font-size="10" fill="#5e6a63">더 진해요 →</text>'
+           f'<text x="{pad + 6}" y="22" font-size="10" fill="#5e6a63">↑ 더 부드러워요</text>')
     for p in foods:
         svg += f'<line x1="{X(me["x"])}" y1="{Y(me["y"])}" x2="{X(p["x"])}" y2="{Y(p["y"])}" stroke="#b9c2b7" stroke-width="1.5"/>'
     for i, p in enumerate(foods):

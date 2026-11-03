@@ -69,7 +69,7 @@ h1,h2,h3{color:var(--ink)!important;padding:0!important;margin:0!important}
 .plike .head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
 .dl{display:grid;grid-template-columns:78px 1fr;gap:10px 10px;font-size:14px;line-height:1.6}.dl dt{font-weight:700}.dl dd{margin:0}
 .rv{display:flex;gap:10px;padding:10px 0;border-bottom:1px dashed var(--hair);font-size:14px;line-height:1.55}.rv:last-child{border-bottom:0}
-.rv .st{color:#e3a300;white-space:nowrap;font-size:13px}
+.rv .tag{align-self:flex-start;white-space:nowrap}.rv .st{color:#e3a300;white-space:nowrap;font-size:13px}
 .oc{border:2px solid var(--ink);border-radius:22px;background:var(--surface);padding:18px;display:flex;flex-direction:column;gap:12px}
 .oc .lbl{font-size:12px;font-weight:700;color:var(--muted)}
 .oc .first{background:var(--tint-warn);color:var(--warn);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
