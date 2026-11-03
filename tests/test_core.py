@@ -25,7 +25,7 @@ def test_allergy_and_cannot_always_avoid():
     s = scan()
     salad = next(i for i in s["items"] if i["name_orig"] == "Salade de chèvre chaud")
     moules = next(i for i in s["items"] if i["name_orig"].startswith("Moules"))
-    assert {x["name"]: x for x in salad["per"]}["지우"]["verdict"] == "피하기"
+    assert {x["name"]: x for x in salad["per"]}["아이"]["verdict"] == "피하기"
     assert {x["name"]: x for x in moules["per"]}["아빠"]["verdict"] == "피하기"
 
 
@@ -49,7 +49,7 @@ def test_combos_and_order_card():
 
 def test_free_meal_time_budget():
     f = freemeal.plan(menu2.DEFAULT_PEOPLE, "12:10", "13:30", 10)
-    assert f["slowest"] == "지우"
+    assert f["slowest"] == "아이"
     assert any(r["fits"] for r in f["restaurants"]) and not all(r["fits"] for r in f["restaurants"])
 
 
@@ -74,7 +74,7 @@ def test_nearby_places_get_dishes_and_allergy_rules():
     places = nearby.to_places(els, 48.8838, 2.3437)
     assert places[0]["dishes"][0]["name_ko"] == "쌀국수" and places[2]["dishes"] == []
     marks = {m["name"]: m for m in freemeal.person_marks(places[1]["dishes"], menu2.DEFAULT_PEOPLE)}
-    assert marks["지우"]["dish"] != "팟타이"  # 팟타이에는 땅콩(견과류)이 들어가서 지우에게는 빼야 한다
+    assert marks["아이"]["dish"] != "팟타이"  # 팟타이에는 땅콩(견과류)이 들어가서 아이에게는 빼야 한다
     assert all(m.get("unknown") for m in freemeal.person_marks([], menu2.DEFAULT_PEOPLE))
     f = freemeal.plan(menu2.DEFAULT_PEOPLE, "12:10", "13:30", 10, {"name": "여기", "lat": 48.8838, "lng": 2.3437}, places)
     assert f["meet"]["name"] == "여기" and len(f["restaurants"]) == 3

@@ -24,7 +24,7 @@ DEFAULT_PEOPLE = [
      "avoid": ["짠 음식"], "cannot": [], "allergies": [], "child": None, "active": True},
     {"id": "dad", "name": "아빠", "relation": "부모님", "age": "60대", "sex": "male", "likes": ["고기"], "favorites": ["스테이크", "제육볶음"],
      "avoid": [], "cannot": ["조개류"], "allergies": [], "child": None, "active": True},
-    {"id": "jiwoo", "name": "지우", "relation": "아이", "age": "6~9살", "likes": ["달큰한", "고소한", "바삭한"], "favorites": ["치즈 토스트", "함박스테이크", "감자튀김", "푸딩"],
+    {"id": "jiwoo", "name": "아이", "relation": "아이", "age": "6~9살", "likes": ["달큰한", "고소한", "바삭한"], "favorites": ["치즈 토스트", "함박스테이크", "감자튀김", "푸딩"],
      "avoid": [], "cannot": [], "allergies": ["견과류"],
      "child": {"new_food": "망설여요", "pick_out": ["채소가 보이면"], "good": ["치즈", "감자", "빵"]}, "active": True},
 ]

@@ -24,8 +24,8 @@ EXAMPLE_IDS = {"mom", "dad", "jiwoo"}  # 예전 버전이 넣어 두던 예시 �
 
 def clean_examples(people):
     """예전 버전이 넣어 둔 예시 가족과 예시 입맛을 손대지 않았으면 지운다 (고친 사람은 그대로 둔다)."""
-    base = {p["id"]: {k: v for k, v in p.items() if k != "active"} for p in menu2.DEFAULT_PEOPLE}
-    same = lambda p: {k: v for k, v in p.items() if k != "active"} == base.get(p["id"])
+    base = {p["id"]: {k: v for k, v in p.items() if k not in ("active", "name")} for p in menu2.DEFAULT_PEOPLE}
+    same = lambda p: {k: v for k, v in p.items() if k not in ("active", "name")} == base.get(p["id"])
     out = []
     for p in people:
         if p["id"] in EXAMPLE_IDS and same(p):
