@@ -14,7 +14,7 @@ for k in ("ANTHROPIC_API_KEY", "CLOVA_OCR_URL", "CLOVA_OCR_SECRET", "KAKAO_REST_
         pass
 
 from core import menu2, store  # noqa: E402
-from ui import screens  # noqa: E402
+from ui import screens, simple  # noqa: E402
 from ui.common import CSS, E, md, momo, nav  # noqa: E402
 
 s = st.session_state
@@ -30,28 +30,48 @@ if "code" not in s:
     s.view = "start"
     s.picks = {}
     s.cookie_set = False
+    # 부모님께 보낸 링크(?for=사람 id)로 열면 그 사람 한 명 기준 간단 모드로 바로 찍기 화면.
+    # 새로 고치거나 서버가 다시 켜져도 이어지게 쿠키에도 남긴다 (전체 화면으로 나가면 지운다)
+    pid = st.query_params.get("for") or (None if "me" in st.query_params else st.context.cookies.get("moshigo_for"))
+    if pid and any(p["id"] == pid for p in s.people):
+        s.simple, s.view = pid, "scan"
+if "for" in st.query_params:
+    del st.query_params["for"]
 if "me" in st.query_params:
     # 주소에 코드를 남기지 않는다: 링크를 공유해도 받은 사람이 내 입맛 목록을 같이 고치지 않게
     del st.query_params["me"]
 if not s.get("cookie_set"):
     import streamlit.components.v1 as components
+    fc = f"moshigo_for={s.simple}; max-age=31536000" if s.get("simple") else "moshigo_for=; max-age=0"
     components.html(f'''<script>document.cookie = "moshigo_me={s.code}; max-age=31536000; path=/; SameSite=Lax";
-try {{ window.parent.document.cookie = "moshigo_me={s.code}; max-age=31536000; path=/; SameSite=Lax"; }} catch (e) {{}}</script>''', height=0)
+document.cookie = "{fc}; path=/; SameSite=Lax";
+try {{ window.parent.document.cookie = "moshigo_me={s.code}; max-age=31536000; path=/; SameSite=Lax";
+window.parent.document.cookie = "{fc}; path=/; SameSite=Lax"; }} catch (e) {{}}</script>''', height=0)
     s.cookie_set = True
 
 st.markdown(CSS, unsafe_allow_html=True)
-act = [p["name"] for p in s.people if p.get("active", True)]
+if s.get("simple") and not simple.person():  # 그 사람이 목록에서 지워졌으면 간단 모드를 끈다
+    s.simple, s.cookie_set = None, False
+if s.get("simple"):
+    st.markdown(simple.CSS, unsafe_allow_html=True)
+act = [p["name"] for p in screens.active()]
 md(f'<div class="top"><div class="brand">{momo(32)}<span>모시고</span></div>'
    + (f'<span class="pill">{E(" · ".join(act))}</span>' if act and s.view != "start" else "") + "</div>")
 
 has_scan = bool(s.get("scan"))
 view = s.view
-if view in ("menu", "dish", "combo", "order", "survey") and not has_scan:
+if view in ("menu", "dish", "sdish", "combo", "order", "survey") and not has_scan:
     view = "scan"
-page = {
-    "start": screens.start, "people": screens.people, "edit": screens.edit, "scan": screens.scan, "menu": screens.menu,
-    "dish": screens.dish, "survey": screens.survey, "combo": screens.combo, "order": screens.order_card, "free": screens.free, "nearby": screens.nearby_view,
-}.get(view, screens.start)
+if s.get("simple"):  # 간단 모드: 찍기, 메뉴 목록, 메뉴 하나, 주문 카드만
+    if view not in ("scan", "menu", "sdish", "dish", "survey", "order"):
+        view = "menu" if has_scan else "scan"
+    page = {"scan": simple.scan, "menu": simple.menu, "sdish": simple.dish, "dish": screens.dish, "survey": screens.survey,
+            "order": simple.order_view}[view]
+else:
+    page = {
+        "start": screens.start, "people": screens.people, "edit": screens.edit, "scan": screens.scan, "menu": screens.menu,
+        "dish": screens.dish, "survey": screens.survey, "combo": screens.combo, "order": screens.order_card, "free": screens.free, "nearby": screens.nearby_view,
+    }.get(view, screens.start)
 try:
     page()
 except Exception as e:  # 화면을 그리다 오류가 나면 내부 기록 대신 안내를 보여 준다
@@ -63,7 +83,16 @@ except Exception as e:  # 화면을 그리다 오류가 나면 내부 기록 대
     st.button("처음 화면으로", type="primary", width="stretch", on_click=nav, args=("start",), key="err_home")
 
 # 아래 탭바
-if view != "start":
+if s.get("simple"):
+    tabs = [("menu", "메뉴 목록", ":material/menu_book:", has_scan),
+            ("scan", "다시 찍기" if has_scan else "메뉴판 찍기", ":material/photo_camera:", True),
+            ("order", "주문 카드", ":material/receipt_long:", has_scan)]
+    cur = {"sdish": "menu", "dish": "menu", "survey": "menu"}.get(view, view)
+    with st.container(key="tabbar"):
+        for col, (key, label, icon, ok) in zip(st.columns(len(tabs)), tabs):
+            col.button(label, icon=icon, key=f"tab_{key}", disabled=not ok, width="stretch",
+                       type="primary" if cur == key else "secondary", on_click=nav, args=(key,))
+elif view != "start":
     tabs = [("people", "사람", ":material/group:", True),
             ("menu" if has_scan else "scan", "메뉴판", ":material/menu_book:", True),
             ("combo", "조합", ":material/restaurant:", has_scan),

@@ -85,7 +85,8 @@
     "진한 국물을 좋아하는 분",
     "치즈를 좋아하는 분"
    ],
-   "local_popular": true
+   "local_popular": true,
+   "staff_asks": []
   },
   {
    "section_orig": "ENTRÉES",
@@ -164,7 +165,8 @@
     "골뱅이, 소라를 좋아하는 분",
     "처음 보는 요리도 즐기는 분"
    ],
-   "local_popular": true
+   "local_popular": true,
+   "staff_asks": []
   },
   {
    "section_orig": "ENTRÉES",
@@ -246,7 +248,8 @@
     "가볍게 먹고 싶은 분",
     "향이 있는 치즈도 괜찮은 분"
    ],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   },
   {
    "section_orig": "PLATS",
@@ -335,7 +338,8 @@
     "갈비찜을 좋아하는 분",
     "부드러운 고기를 찾는 분"
    ],
-   "local_popular": true
+   "local_popular": true,
+   "staff_asks": []
   },
   {
    "section_orig": "PLATS",
@@ -417,7 +421,8 @@
     "홍합탕을 좋아하는 분",
     "여럿이 나눠 먹고 싶은 분"
    ],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   },
   {
    "section_orig": "PLATS",
@@ -502,7 +507,27 @@
     "고기구이를 좋아하는 분",
     "익숙한 맛을 찾는 분"
    ],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": [
+    {
+     "q_orig": "Quelle cuisson ?",
+     "q_ko": "굽기는 어떻게 해 드릴까요?",
+     "answers": [
+      {
+       "orig": "Saignant",
+       "ko": "레어(속이 붉어요)"
+      },
+      {
+       "orig": "À point",
+       "ko": "미디엄(속이 분홍색이에요)"
+      },
+      {
+       "orig": "Bien cuit",
+       "ko": "웰던(속까지 다 익어요)"
+      }
+     ]
+    }
+   ]
   },
   {
    "section_orig": "PLATS",
@@ -583,7 +608,8 @@
     "순한 맛을 찾는 분",
     "어르신과 아이"
    ],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   },
   {
    "section_orig": "PLATS",
@@ -664,7 +690,8 @@
     "간단히 먹고 싶은 분",
     "아이"
    ],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   },
   {
    "section_orig": "PLATS",
@@ -721,7 +748,8 @@
    "ko_compare": "",
    "imagine": "",
    "good_for": [],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   },
   {
    "section_orig": "MENU ENFANT",
@@ -785,7 +813,41 @@
    "good_for": [
     "10살까지 아이"
    ],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": [
+    {
+     "q_orig": "Quelle cuisson pour le steak haché ?",
+     "q_ko": "고기는 얼마나 익혀 드릴까요?",
+     "answers": [
+      {
+       "orig": "À point",
+       "ko": "미디엄(속이 분홍색이에요)"
+      },
+      {
+       "orig": "Bien cuit",
+       "ko": "웰던(속까지 다 익어요)"
+      }
+     ]
+    },
+    {
+     "q_orig": "Quel parfum pour la glace ?",
+     "q_ko": "아이스크림은 무슨 맛으로 할까요?",
+     "answers": [
+      {
+       "orig": "Vanille",
+       "ko": "바닐라"
+      },
+      {
+       "orig": "Chocolat",
+       "ko": "초콜릿"
+      },
+      {
+       "orig": "Fraise",
+       "ko": "딸기"
+      }
+     ]
+    }
+   ]
   },
   {
    "section_orig": "DESSERTS",
@@ -861,7 +923,8 @@
     "푸딩을 좋아하는 분",
     "단 후식을 찾는 분"
    ],
-   "local_popular": true
+   "local_popular": true,
+   "staff_asks": []
   },
   {
    "section_orig": "DESSERTS",
@@ -935,7 +998,8 @@
    "good_for": [
     "초콜릿을 좋아하는 분"
    ],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   },
   {
    "section_orig": "DESSERTS",
@@ -1012,7 +1076,8 @@
    "good_for": [
     "과일 후식을 좋아하는 분"
    ],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   },
   {
    "section_orig": "BOISSONS",
@@ -1078,7 +1143,8 @@
    "ko_compare": "",
    "imagine": "",
    "good_for": [],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   },
   {
    "section_orig": "BOISSONS",
@@ -1150,7 +1216,8 @@
    "ko_compare": "",
    "imagine": "",
    "good_for": [],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   },
   {
    "section_orig": "BOISSONS",
@@ -1214,7 +1281,8 @@
    "ko_compare": "",
    "imagine": "",
    "good_for": [],
-   "local_popular": false
+   "local_popular": false,
+   "staff_asks": []
   }
  ]
 }

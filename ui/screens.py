@@ -40,7 +40,10 @@ NICK_REL = {"엄마": "부모님", "아빠": "부모님", "어머니": "부모�
 
 
 def active():
-    return [p for p in st.session_state.people if p.get("active", True)]
+    s = st.session_state
+    if s.get("simple"):  # 간단 모드: 링크를 받은 그 사람만 (저장된 목록은 그대로 둔다)
+        return [p for p in s.people if p["id"] == s.simple]
+    return [p for p in s.people if p.get("active", True)]
 
 
 def save_people(people):
@@ -144,6 +147,9 @@ def people():
     n = len(active())
     nxt = "자유 식사 식당 보기" if s.get("trip") == "package" else "메뉴판 찍기"
     st.button(f"{n}명 기준으로 {nxt}", type="primary", width="stretch", disabled=n == 0, on_click=nav, args=('free' if s.get('trip') == 'package' else 'menu' if s.get('scan') else 'scan',))
+    from .simple import share_section
+
+    share_section()
     md(f'<div class="card soft"><div class="small">내 코드 <b>{E(s.code)}</b><br><span class="muted">다른 휴대폰에서 이 코드를 넣으면 같은 입맛 목록을 불러와요.</span></div></div>')
     with st.expander("코드로 불러오기"):
         code = st.text_input("코드 6자리", max_chars=6, key="load_code").strip().lower()
@@ -465,7 +471,7 @@ def dish():
                     h += '<div class="chips"><span class="small muted">같은 점</span>' + "".join(f'<span class="kw same">{E(w)}</span>' for w in m["shared"]) + "</div>"
                 h += f'<div class="muted">{E(m["difference"])}</div>'
             md(h + "</div>")
-        others = [x for x in it["per"] if x["id"] != "me"]  # 휴대폰을 건넬 사람만 (나는 빼기)
+        others = [x for x in it["per"] if x["id"] not in ("me", s.get("simple"))]  # 휴대폰을 건넬 사람만 (나, 링크로 연 본인은 빼기)
         if others:
             md('<div class="sec">큰 글씨 설명 보여 주기</div>')
             with st.container(key="pair_show"):
@@ -516,15 +522,31 @@ def dish():
         for k, r in REQ_FROM_REASON:
             if k in (x["reason"] or "") and r not in reqs:
                 reqs.append(r)
+    if any("익" in an["ko"] for q in it.get("staff_asks") or [] for an in q["answers"]):  # 굽기는 직원 질문에서 고른다
+        reqs = [r for r in reqs if r != "잘 익혀 주세요"]
     for r in ["소스는 따로", "덜 짜게"]:
         if r not in reqs:
             reqs.append(r)
     key = order.lang_key(scan)
+    asks = it.get("staff_asks") or []
+    if asks:  # 주문하면 직원이 되묻는 말과 고를 대답
+        md('<div class="sec">직원이 물어볼 수 있어요</div>')
+        for n, q in enumerate(asks):
+            md(f'<div class="ask"><b>{E(q["q_orig"])}</b><span>{E(q["q_ko"])}</span></div>')
+            speak_block([(order.speakable(a["orig"], key), a["ko"], a["orig"]) for a in q["answers"]], order.voice(scan), 60 * len(q["answers"]) + 8)
+            if st.button("대답 크게 보여 주기", key=f"askbig_{it['id']}_{n}", type="tertiary", icon=":material/open_in_full:"):
+                st.dialog("직원에게 보여 주기")(ask_dialog)(q, order.LANG[key]["voice"])
     md(f'<div class="sec">직원에게 부탁하기 <span class="n">{order.LANG[key]["name"]}</span></div>')
     phr = [(order.speakable(order.request_text(key, r), key), r, order.request_text(key, r)) for r in reqs[:4] if r in order.REQUEST_KEYS]
     speak_block(phr, order.voice(scan), 60 * len(phr) + 8)
 
     st.button("먹어 봤어요", icon=":material/rate_review:", width="stretch", on_click=nav, args=('survey',))
+
+
+def ask_dialog(q, lang):
+    md(f'<div class="askbig" lang="{E(lang)}"><div class="q">{E(q["q_orig"])}<span>{E(q["q_ko"])}</span></div>'
+       + "".join(f'<div class="a"><b>{E(a["orig"])}</b><span>{E(a["ko"])}</span></div>' for a in q["answers"])
+       + '<div class="note">고른 대답을 손으로 가리켜 주세요.</div></div>')
 
 
 def show_dialog(it, x):
@@ -648,6 +670,13 @@ def order_card():
             [(sp(r["orig"]), r["ko"], r["orig"]) for r in card["requests"]]
     whole = sp(" ".join([*card["first"], card["hello"], *[f'{o["count"]} {o["orig"]}' for o in card["order"]], *[r["orig"] for r in card["requests"]], card["thanks"]]))
     speak_block([(whole, "알레르기부터 주문, 인사까지 차례로 읽어요", "카드 전체 읽기")] + lines, card["voice"], 64 * (len(lines) + 1) + 10)
+    byid = {i["id"]: i for i in scan["items"]}
+    asks = [(byid[k], q) for k in count if k in byid for q in byid[k].get("staff_asks") or []]
+    if asks:  # 시킨 메뉴 중 직원이 되묻는 것
+        md('<div class="sec">직원이 물어볼 수 있어요</div>')
+        for it, q in asks:
+            md(f'<div class="ask"><span>{E(it["name_ko"])}</span><b>{E(q["q_orig"])}</b><span>{E(q["q_ko"])}</span></div>')
+            speak_block([(order.speakable(a["orig"], card["lang"]), a["ko"], a["orig"]) for a in q["answers"]], card["voice"], 60 * len(q["answers"]) + 8)
     md('<div class="note">말이 안 통하면 메뉴 이름을 손으로 가리켜 주세요.</div>')
 
 

@@ -66,6 +66,13 @@ def _schema(names):
     person = {"type": "object", "properties": {"name": {"type": "string", "enum": names}, "verdict": {"type": "string", "enum": VERDICTS},
                                                "reason": {"type": "string", "description": "편히가 아니면 한 줄 이유. 편히면 빈 문자열"}},
               "required": ["name", "verdict", "reason"], "additionalProperties": False}
+    pair = {"type": "object", "properties": {"orig": {"type": "string", "description": "메뉴판 언어로 짧게. 예: À point"},
+                                             "ko": {"type": "string", "description": "예: 미디엄(속이 분홍색이에요)"}},
+            "required": ["orig", "ko"], "additionalProperties": False}
+    ask = {"type": "object", "properties": {"q_orig": {"type": "string", "description": "직원이 실제로 하는 말, 메뉴판 언어로. 예: Quelle cuisson ?"},
+                                            "q_ko": {"type": "string", "description": "직원 말을 그대로 옮긴 뜻. 예: 굽기는 어떻게 해 드릴까요?"},
+                                            "answers": {"type": "array", "items": pair, "description": "그 질문에 바로 고르는 대답 2~4개"}},
+           "required": ["q_orig", "q_ko", "answers"], "additionalProperties": False}
     item = {
         "type": "object",
         "properties": {
@@ -91,10 +98,11 @@ def _schema(names):
             "kids_only": {"type": "boolean", "description": "어린이 메뉴처럼 아이만 시킬 수 있으면 true"},
             "chef_pick": {"type": "boolean"}, "serve_minutes": {"type": "integer"}, "share_ok": {"type": "boolean"},
             "people": {"type": "array", "items": person},
+            "staff_asks": {"type": "array", "items": ask, "description": "이 요리를 시키면 직원이 거의 꼭 되묻는 질문. 대부분 빈 배열, 많아야 2개"},
         },
         "required": ["section_orig", "section_ko", "name_orig", "reading", "name_ko", "price", "desc_ko", "glossary", "unreadable", "course", "contains",
                      "ingredient", "cooking", *[f"t_{a}" for a in world.AXES], "taste_kw", "aroma_kw", "texture_kw",
-                     "taste_line", "ko_compare", "imagine", "good_for", "local_popular", "kids_only", "chef_pick", "serve_minutes", "share_ok", "people"],
+                     "taste_line", "ko_compare", "imagine", "good_for", "local_popular", "kids_only", "chef_pick", "serve_minutes", "share_ok", "people", "staff_asks"],
         "additionalProperties": False,
     }
     return {"type": "object", "properties": {
@@ -115,6 +123,8 @@ SYSTEM = """너는 가족 여행 메뉴판 도우미 '모시고'다. 가족이 �
 5) 말투: 해요체, 짧고 담백하게. 광고나 블로그 같은 말(풍미 가득, 완벽한, 환상적인, 일품, 선사, 어우러져, ~를 추천드립니다), 느낌표, 이모지는 쓰지 않는다.
    맛은 아는 말로 구체적으로 쓴다 (예: '짭짤하고 버터 맛이 진해요').
    ko_compare는 한국 사람이 아는 음식 하나에 빗대고 무엇이 다른지 말한다. 음료는 taste_line만 쓰고 나머지는 비워 둔다.
+   staff_asks는 이 요리를 시키면 직원이 거의 꼭 되묻는 선택만 (스테이크 굽기, 곁들임이나 소스 고르기, 매운 정도, 크기, 맛 고르기). 대부분 빈 배열.
+   answers는 그 질문에 고르는 대답만 넣고 부탁이나 되묻는 말(빼 주세요, 뭐예요?)은 넣지 않는다. 세트 메뉴처럼 메뉴판에서 다시 고르는 것은 넣지 않는다.
 6) 가족:
 {people}"""
 
@@ -211,7 +221,7 @@ def _bare(g):
     return {"section_orig": g["section_orig"], "section_ko": g["section_orig"], "name_orig": g["name_orig"], "reading": "", "name_ko": g["name_orig"],
             "price": g["price"], "desc_ko": "설명을 만들지 못했어요. 직원에게 물어봐 주세요.", "glossary": [], "unreadable": True, "course": "main",
             "contains": [], "ingredient": INGREDIENTS[0], "cooking": COOKING[0], **{f"t_{a}": 0.5 for a in world.AXES},
-            "taste_kw": [], "aroma_kw": [], "texture_kw": [], "taste_line": "", "ko_compare": "", "imagine": "", "good_for": [], "local_popular": False, "kids_only": False, "chef_pick": False, "serve_minutes": 15, "share_ok": False, "people": []}
+            "taste_kw": [], "aroma_kw": [], "texture_kw": [], "taste_line": "", "ko_compare": "", "imagine": "", "good_for": [], "local_popular": False, "kids_only": False, "chef_pick": False, "serve_minutes": 15, "share_ok": False, "people": [], "staff_asks": []}
 
 
 def read_menu_text(ocr, people, progress=None):
@@ -247,6 +257,7 @@ def enrich(raw, people):
     for idx, it in enumerate(raw["items"]):
         it = dict(it)
         it["taste"] = [float(it.pop(f"t_{a}")) for a in world.AXES]
+        it["staff_asks"] = [dict(q, answers=q["answers"][:4]) for q in it.get("staff_asks") or [] if len(q.get("answers") or []) >= 2][:2]
         given = {g["name"]: g for g in it.pop("people", [])}
         per = []
         for p in active if not it.get("kids_only") else [p for p in active if p.get("child")]:

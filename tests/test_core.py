@@ -156,3 +156,14 @@ def test_menu_guide_fields():
     from ui.common import badges
     h = badges(beef)
     assert 'class="bd t"' in h and 'class="bd a"' in h and "오래 끓인 요리" in h
+
+
+def test_staff_asks():
+    s = menu2.demo(menu2.DEFAULT_PEOPLE)
+    assert all("staff_asks" in i for i in s["items"])
+    steak = next(i for i in s["items"] if i["name_orig"] == "Steak frites")
+    q = steak["staff_asks"][0]
+    assert q["q_orig"] and q["q_ko"] and len(q["answers"]) >= 2 and all(a["orig"] and a["ko"] for a in q["answers"])
+    assert menu2._bare({"section_orig": "", "name_orig": "x", "price": ""})["staff_asks"] == []
+    item = menu2._schema(["나"])["properties"]["items"]["items"]
+    assert "staff_asks" in item["required"] and item["properties"]["staff_asks"]["items"]["additionalProperties"] is False

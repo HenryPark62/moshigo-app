@@ -93,6 +93,11 @@ background:var(--surface)!important;color:var(--ink)!important;text-decoration:n
 .oc .first b{font-size:19px;line-height:1.4}.oc .ko{font-size:12px;color:var(--muted);display:block}.oc .first .ko{color:var(--warn)}
 .oc .ln b{font-size:21px;line-height:1.35}.oc .hello{font-size:17px}
 .oc.big .first b{font-size:25px}.oc.big .ln b{font-size:28px}.oc.big .hello{font-size:21px}
+/* 직원이 물어볼 말 */
+.ask{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:14px;background:var(--surface2);border-left:5px solid var(--sun)}
+.ask b{font-size:17px;line-height:1.4}.ask span{font-size:13px;color:var(--muted)}
+.askbig{display:flex;flex-direction:column;gap:14px}.askbig .q{font-size:15px;color:var(--muted)}.askbig .q span{display:block;font-size:13px}
+.askbig .a{border:2px solid var(--ink);border-radius:16px;padding:12px 16px}.askbig .a b{display:block;font-size:28px;line-height:1.25}.askbig .a span{font-size:14px;color:var(--muted)}.askbig .note{margin-top:2px}
 .plate{display:flex;gap:10px;padding:10px 0;border-bottom:1px dashed var(--hair)}.plate:last-child{border-bottom:0}
 .av{width:34px;height:34px;flex-shrink:0;border-radius:50%;background:var(--tint-sun);display:grid;place-items:center;font-weight:700;font-size:14px}
 .sum{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sum div{background:var(--surface);border:1px solid var(--hair);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column}
