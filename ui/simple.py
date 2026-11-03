@@ -188,6 +188,8 @@ def dish():
     if al:
         h += f'<div class="diff">들어 있어요: {E(", ".join(al))}</div>'
     md(h + "</div>")
+    from .screens import asks_view
+    asks_view([(it, q) for q in it.get("staff_asks") or []], s.scan, "sdish")
     if it["id"] in s.get("simple_picks", []):
         st.button("주문 카드 보기", type="primary", width="stretch", on_click=nav, args=("order",), key="sdish_order")
         st.button("담은 메뉴에서 빼기", width="stretch", on_click=drop_pick, args=(it["id"],), key="sdish_drop")
@@ -198,7 +200,7 @@ def dish():
 
 # ---------------- 주문 카드 ----------------
 def order_view():
-    from .screens import active, speak_block
+    from .screens import active, asks_view, speak_block
 
     s = st.session_state
     scan = s.scan
@@ -222,6 +224,8 @@ def order_view():
         if card.get("note"):
             st.info(card["note"])
         speak_block([(whole, "직원에게 들려주세요", "카드 읽어 주기")], card["voice"], 70)
+    byid = {it["id"]: it for it in scan["items"]}
+    asks_view([(byid[i], q) for i in picks for q in byid[i].get("staff_asks") or []], scan, "sorder", names=True)
     st.button("메뉴 더 고르기", width="stretch", on_click=nav, args=("menu",), key="sorder_more")
     if picks:
         st.button("담은 메뉴 비우기", width="stretch", on_click=lambda: s.update(simple_picks=[]), key="sorder_clear")

@@ -528,19 +528,25 @@ def dish():
         if r not in reqs:
             reqs.append(r)
     key = order.lang_key(scan)
-    asks = it.get("staff_asks") or []
-    if asks:  # 주문하면 직원이 되묻는 말과 고를 대답
-        md('<div class="sec">직원이 물어볼 수 있어요</div>')
-        for n, q in enumerate(asks):
-            md(f'<div class="ask"><b>{E(q["q_orig"])}</b><span>{E(q["q_ko"])}</span></div>')
-            speak_block([(order.speakable(a["orig"], key), a["ko"], a["orig"]) for a in q["answers"]], order.voice(scan), 60 * len(q["answers"]) + 8)
-            if st.button("대답 크게 보여 주기", key=f"askbig_{it['id']}_{n}", type="tertiary", icon=":material/open_in_full:"):
-                st.dialog("직원에게 보여 주기")(ask_dialog)(q, order.LANG[key]["voice"])
+    asks_view([(it, q) for q in it.get("staff_asks") or []], scan, "dish")
     md(f'<div class="sec">직원에게 부탁하기 <span class="n">{order.LANG[key]["name"]}</span></div>')
     phr = [(order.speakable(order.request_text(key, r), key), r, order.request_text(key, r)) for r in reqs[:4] if r in order.REQUEST_KEYS]
     speak_block(phr, order.voice(scan), 60 * len(phr) + 8)
 
     st.button("먹어 봤어요", icon=":material/rate_review:", width="stretch", on_click=nav, args=('survey',))
+
+
+def asks_view(pairs, scan, where, names=False):
+    """주문하면 직원이 되묻는 말과 고를 대답. pairs: [(메뉴, 질문)]"""
+    if not pairs:
+        return
+    key = order.lang_key(scan)
+    md('<div class="sec">직원이 물어볼 수 있어요</div>')
+    for n, (it, q) in enumerate(pairs):
+        md(f'<div class="ask">' + (f'<span>{E(it["name_ko"])}</span>' if names else "") + f'<b>{E(q["q_orig"])}</b><span>{E(q["q_ko"])}</span></div>')
+        speak_block([(order.speakable(a["orig"], key), a["ko"], a["orig"]) for a in q["answers"]], order.voice(scan), 60 * len(q["answers"]) + 8)
+        if st.button("대답 크게 보여 주기", key=f"askbig_{where}_{it['id']}_{n}", type="tertiary", icon=":material/open_in_full:"):
+            st.dialog("직원에게 보여 주기")(ask_dialog)(q, order.LANG[key]["voice"])
 
 
 def ask_dialog(q, lang):
@@ -671,12 +677,7 @@ def order_card():
     whole = sp(" ".join([*card["first"], card["hello"], *[f'{o["count"]} {o["orig"]}' for o in card["order"]], *[r["orig"] for r in card["requests"]], card["thanks"]]))
     speak_block([(whole, "알레르기부터 주문, 인사까지 차례로 읽어요", "카드 전체 읽기")] + lines, card["voice"], 64 * (len(lines) + 1) + 10)
     byid = {i["id"]: i for i in scan["items"]}
-    asks = [(byid[k], q) for k in count if k in byid for q in byid[k].get("staff_asks") or []]
-    if asks:  # 시킨 메뉴 중 직원이 되묻는 것
-        md('<div class="sec">직원이 물어볼 수 있어요</div>')
-        for it, q in asks:
-            md(f'<div class="ask"><span>{E(it["name_ko"])}</span><b>{E(q["q_orig"])}</b><span>{E(q["q_ko"])}</span></div>')
-            speak_block([(order.speakable(a["orig"], card["lang"]), a["ko"], a["orig"]) for a in q["answers"]], card["voice"], 60 * len(q["answers"]) + 8)
+    asks_view([(byid[k], q) for k in count if k in byid for q in byid[k].get("staff_asks") or []], scan, "order", names=True)
     md('<div class="note">말이 안 통하면 메뉴 이름을 손으로 가리켜 주세요.</div>')
 
 
