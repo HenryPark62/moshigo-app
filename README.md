@@ -1,3 +1,14 @@
+---
+title: 모시고
+emoji: 🐢
+colorFrom: green
+colorTo: yellow
+sdk: docker
+app_port: 7860
+pinned: false
+short_description: 처음 보는 메뉴판을 아는 음식에 빗대어 알려 주는 웹앱
+---
+
 # 모시고 · 가족 메뉴판 도우미
 
 처음 보는 해외 메뉴판을 찍으면 우리말로 옮기고, 같이 먹는 사람마다 **각자 아는 음식에 빗대어** 무슨 맛인지 알려 주는 모바일 웹앱.

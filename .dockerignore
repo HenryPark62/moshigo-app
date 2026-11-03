@@ -1,0 +1,7 @@
+.venv
+__pycache__
+.git
+.streamlit/secrets.toml
+core/data/*.db
+tests
+.DS_Store
