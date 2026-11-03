@@ -96,7 +96,7 @@ def test_order_card_speaks_the_menu_language():
     for code, word in expect.items():
         card = order.card(dict(s, language_code=code), fam, [], list(order.REQUEST_KEYS))
         assert word in card["first"][0], (code, card["first"])
-        assert len(card["requests"]) == 7 and card["note"] is None
+        assert len(card["requests"]) == len(order.REQUEST_KEYS) and card["note"] is None
     assert "drink" in order.card(dict(s, language_code="en"), fam, [], [])["first"][1]
     assert order.card(dict(s, language_code="nl-NL"), fam, [], [])["note"]  # 없는 언어는 영어와 안내
 

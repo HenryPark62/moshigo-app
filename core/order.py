@@ -7,7 +7,8 @@ from . import menu2
 
 ALLERGENS = ["견과류", "우유", "달걀", "밀가루", "갑각류", "조개류", "생선"]
 CANNOT = ["조개류", "돼지고기", "소고기", "생선", "날것", "술", "버섯", "양파", "갑각류"]
-REQUEST_KEYS = ["소스는 따로", "잘 익혀 주세요", "덜 짜게", "양파 빼고", "버섯 빼고", "앞접시 하나 더", "물 한 병"]
+REQUEST_KEYS = ["소스는 따로", "잘 익혀 주세요", "덜 짜게", "양파 빼고", "버섯 빼고", "앞접시 하나 더", "물 한 병",
+                "빨리 나오는 걸로", "계산서도 같이", "맵지 않게", "아이용 작은 접시"]
 
 # who: 나, 엄마, 아빠, 아이, 부모님, 가족 / allergy·cannot: {who}, {what} / *_me: 나일 때
 LANG = {
@@ -23,7 +24,7 @@ LANG = {
         "what_not": {"조개류": "de coquillages (moules, huîtres, palourdes)", "돼지고기": "de porc", "소고기": "de bœuf", "생선": "de poisson",
                      "날것": "de plats crus", "술": "d'alcool", "버섯": "de champignons", "양파": "d'oignon", "갑각류": "de crustacés"},
         "req": ["La sauce à part, s'il vous plaît.", "Bien cuit, s'il vous plaît.", "Peu salé, s'il vous plaît.", "Sans oignon, s'il vous plaît.",
-                "Sans champignons, s'il vous plaît.", "Une assiette en plus, s'il vous plaît.", "Une carafe d'eau, s'il vous plaît."],
+                "Sans champignons, s'il vous plaît.", "Une assiette en plus, s'il vous plaît.", "Une carafe d'eau, s'il vous plaît.", "Nous sommes pressés, quelque chose de rapide, s'il vous plaît.", "L'addition en même temps, s'il vous plaît.", "Pas épicé, s'il vous plaît.", "Une petite assiette pour l'enfant, s'il vous plaît."],
     },
     "en": {
         "name": "영어", "voice": "en-US",
@@ -36,7 +37,7 @@ LANG = {
         "what_not": {"조개류": "shellfish (mussels, clams)", "돼지고기": "pork", "소고기": "beef", "생선": "fish", "날것": "raw food",
                      "술": "alcohol", "버섯": "mushrooms", "양파": "onion", "갑각류": "shellfish"},
         "req": ["Sauce on the side, please.", "Well done, please.", "Less salt, please.", "No onion, please.", "No mushrooms, please.",
-                "One extra plate, please.", "A jug of tap water, please."],
+                "One extra plate, please.", "A jug of tap water, please.", "We're in a hurry. Something quick, please.", "Could we have the bill with the food, please?", "Not spicy, please.", "A small plate for the child, please."],
     },
     "ja": {
         "name": "일본어", "voice": "ja-JP",
@@ -48,7 +49,7 @@ LANG = {
         "what_not": {"조개류": "貝類", "돼지고기": "豚肉", "소고기": "牛肉", "생선": "魚", "날것": "生もの", "술": "お酒", "버섯": "きのこ",
                      "양파": "玉ねぎ", "갑각류": "エビ・カニ"},
         "req": ["ソースは別にしてください。", "よく焼いてください。", "塩分控えめでお願いします。", "玉ねぎ抜きでお願いします。",
-                "きのこ抜きでお願いします。", "取り皿をもう一枚ください。", "お水をください。"],
+                "きのこ抜きでお願いします。", "取り皿をもう一枚ください。", "お水をください。", "急いでいるので、早く出せるものをお願いします。", "お会計も一緒にお願いします。", "辛くしないでください。", "子ども用の小皿をお願いします。"],
     },
     "zh-Hans": {
         "name": "중국어", "voice": "zh-CN",
@@ -59,7 +60,7 @@ LANG = {
         "what": {"견과류": "坚果", "우유": "牛奶", "달걀": "鸡蛋", "밀가루": "小麦", "갑각류": "虾蟹类", "조개류": "贝类", "생선": "鱼"},
         "what_not": {"조개류": "贝类", "돼지고기": "猪肉", "소고기": "牛肉", "생선": "鱼", "날것": "生的食物", "술": "酒", "버섯": "蘑菇",
                      "양파": "洋葱", "갑각류": "虾蟹"},
-        "req": ["酱汁请分开放。", "请做全熟。", "请少放盐。", "请不要放洋葱。", "请不要放蘑菇。", "请再给一个小碟子。", "请给一壶水。"],
+        "req": ["酱汁请分开放。", "请做全熟。", "请少放盐。", "请不要放洋葱。", "请不要放蘑菇。", "请再给一个小碟子。", "请给一壶水。", "我们赶时间，请上快一点的菜。", "请把账单一起拿来。", "请不要辣。", "请给孩子一个小盘子。"],
     },
     "zh-Hant": {
         "name": "중국어(번체)", "voice": "zh-TW",
@@ -70,7 +71,7 @@ LANG = {
         "what": {"견과류": "堅果", "우유": "牛奶", "달걀": "雞蛋", "밀가루": "小麥", "갑각류": "蝦蟹類", "조개류": "貝類", "생선": "魚"},
         "what_not": {"조개류": "貝類", "돼지고기": "豬肉", "소고기": "牛肉", "생선": "魚", "날것": "生的食物", "술": "酒", "버섯": "蘑菇",
                      "양파": "洋蔥", "갑각류": "蝦蟹"},
-        "req": ["醬汁請分開放。", "請做全熟。", "請少放鹽。", "請不要放洋蔥。", "請不要放蘑菇。", "請再給一個小碟子。", "請給一壺水。"],
+        "req": ["醬汁請分開放。", "請做全熟。", "請少放鹽。", "請不要放洋蔥。", "請不要放蘑菇。", "請再給一個小碟子。", "請給一壺水。", "我們趕時間，請上快一點的菜。", "請把帳單一起拿來。", "請不要辣。", "請給孩子一個小盤子。"],
     },
     "th": {
         "name": "태국어", "voice": "th-TH",
@@ -82,7 +83,7 @@ LANG = {
         "what_not": {"조개류": "หอย", "돼지고기": "หมู", "소고기": "เนื้อวัว", "생선": "ปลา", "날것": "อาหารดิบ", "술": "แอลกอฮอล์",
                      "버섯": "เห็ด", "양파": "หัวหอม", "갑각류": "กุ้งและปู"},
         "req": ["ขอซอสแยกครับ/ค่ะ", "ขอสุกมากๆ ครับ/ค่ะ", "ขอไม่เค็มมากครับ/ค่ะ", "ไม่ใส่หัวหอมครับ/ค่ะ", "ไม่ใส่เห็ดครับ/ค่ะ",
-                "ขอจานเล็กเพิ่มอีกใบครับ/ค่ะ", "ขอน้ำเปล่าครับ/ค่ะ"],
+                "ขอจานเล็กเพิ่มอีกใบครับ/ค่ะ", "ขอน้ำเปล่าครับ/ค่ะ", "รีบนิดหน่อย ขอเมนูที่ได้เร็วครับ/ค่ะ", "ขอเช็คบิลพร้อมอาหารเลยครับ/ค่ะ", "ไม่เผ็ดครับ/ค่ะ", "ขอจานเล็กสำหรับเด็กครับ/ค่ะ"],
     },
     "de": {
         "name": "독일어", "voice": "de-DE",
@@ -95,7 +96,7 @@ LANG = {
         "what_not": {"조개류": "keine Muscheln", "돼지고기": "kein Schweinefleisch", "소고기": "kein Rindfleisch", "생선": "keinen Fisch",
                      "날것": "nichts Rohes", "술": "keinen Alkohol", "버섯": "keine Pilze", "양파": "keine Zwiebeln", "갑각류": "keine Krebstiere"},
         "req": ["Die Soße bitte separat.", "Bitte gut durchgebraten.", "Bitte wenig Salz.", "Bitte ohne Zwiebeln.", "Bitte ohne Pilze.",
-                "Bitte einen extra Teller.", "Eine Karaffe Leitungswasser, bitte."],
+                "Bitte einen extra Teller.", "Eine Karaffe Leitungswasser, bitte.", "Wir haben es eilig, bitte etwas Schnelles.", "Bitte die Rechnung gleich mit.", "Bitte nicht scharf.", "Einen kleinen Teller für das Kind, bitte."],
     },
     "it": {
         "name": "이탈리아어", "voice": "it-IT",
@@ -108,7 +109,7 @@ LANG = {
         "what_not": {"조개류": "molluschi (cozze, vongole)", "돼지고기": "carne di maiale", "소고기": "manzo", "생선": "pesce", "날것": "cibi crudi",
                      "술": "alcol", "버섯": "funghi", "양파": "cipolla", "갑각류": "crostacei"},
         "req": ["La salsa a parte, per favore.", "Ben cotto, per favore.", "Poco sale, per favore.", "Senza cipolla, per favore.",
-                "Senza funghi, per favore.", "Un piatto in più, per favore.", "Una caraffa d'acqua, per favore."],
+                "Senza funghi, per favore.", "Un piatto in più, per favore.", "Una caraffa d'acqua, per favore.", "Abbiamo fretta, qualcosa di veloce, per favore.", "Il conto insieme, per favore.", "Non piccante, per favore.", "Un piattino per il bambino, per favore."],
     },
     "es": {
         "name": "스페인어", "voice": "es-ES",
@@ -121,7 +122,7 @@ LANG = {
         "what_not": {"조개류": "moluscos (mejillones, almejas)", "돼지고기": "cerdo", "소고기": "ternera", "생선": "pescado", "날것": "comida cruda",
                      "술": "alcohol", "버섯": "setas", "양파": "cebolla", "갑각류": "marisco"},
         "req": ["La salsa aparte, por favor.", "Bien hecho, por favor.", "Con poca sal, por favor.", "Sin cebolla, por favor.",
-                "Sin setas, por favor.", "Un plato más, por favor.", "Una jarra de agua, por favor."],
+                "Sin setas, por favor.", "Un plato más, por favor.", "Una jarra de agua, por favor.", "Tenemos prisa, algo rápido, por favor.", "La cuenta junto con la comida, por favor.", "Sin picante, por favor.", "Un plato pequeño para el niño, por favor."],
     },
     "vi": {
         "name": "베트남어", "voice": "vi-VN",
@@ -133,7 +134,7 @@ LANG = {
         "what_not": {"조개류": "nghêu sò", "돼지고기": "thịt heo", "소고기": "thịt bò", "생선": "cá", "날것": "đồ sống", "술": "rượu bia",
                      "버섯": "nấm", "양파": "hành tây", "갑각류": "tôm cua"},
         "req": ["Cho nước sốt để riêng.", "Làm chín kỹ giúp tôi.", "Nêm nhạt giúp tôi.", "Không cho hành tây.", "Không cho nấm.",
-                "Cho thêm một cái đĩa nhỏ.", "Cho một bình nước lọc."],
+                "Cho thêm một cái đĩa nhỏ.", "Cho một bình nước lọc.", "Chúng tôi đang vội, cho món nào ra nhanh.", "Cho xin hóa đơn luôn nhé.", "Đừng cay nhé.", "Cho một đĩa nhỏ cho bé."],
     },
     "ko": {
         "name": "한국어", "voice": "ko-KR",
@@ -142,7 +143,7 @@ LANG = {
         "allergy": "{who}가 {what} 알레르기가 있어요. 확인 부탁드려요.", "allergy_me": "제가 {what} 알레르기가 있어요. 확인 부탁드려요.",
         "cannot": "{who}는 {what}를 못 드세요.", "cannot_me": "저는 {what}를 못 먹어요.",
         "what": {k: k for k in ALLERGENS}, "what_not": {k: k for k in CANNOT},
-        "req": ["소스는 따로 주세요.", "잘 익혀 주세요.", "덜 짜게 해 주세요.", "양파는 빼 주세요.", "버섯은 빼 주세요.", "앞접시 하나 더 주세요.", "물 좀 주세요."],
+        "req": ["소스는 따로 주세요.", "잘 익혀 주세요.", "덜 짜게 해 주세요.", "양파는 빼 주세요.", "버섯은 빼 주세요.", "앞접시 하나 더 주세요.", "물 좀 주세요.", "시간이 없어서 빨리 나오는 걸로 주세요.", "계산서도 같이 주세요.", "맵지 않게 해 주세요.", "아이용 작은 접시 하나 주세요."],
     },
 }
 # 술은 '먹다'가 아니라 '마시다'
