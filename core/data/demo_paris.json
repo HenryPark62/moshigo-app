@@ -86,7 +86,11 @@
     "치즈를 좋아하는 분"
    ],
    "local_popular": true,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [
+    "아이용 작은 접시"
+   ],
+   "kid_tip": "위에 녹은 치즈와 빵을 떠서 덜어 주세요."
   },
   {
    "section_orig": "ENTRÉES",
@@ -166,7 +170,9 @@
     "처음 보는 요리도 즐기는 분"
    ],
    "local_popular": true,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": ""
   },
   {
    "section_orig": "ENTRÉES",
@@ -249,7 +255,9 @@
     "향이 있는 치즈도 괜찮은 분"
    ],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": ""
   },
   {
    "section_orig": "PLATS",
@@ -339,7 +347,12 @@
     "부드러운 고기를 찾는 분"
    ],
    "local_popular": true,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [
+    "버섯 빼고",
+    "아이용 작은 접시"
+   ],
+   "kid_tip": "으깬 감자 위에 고기를 잘게 잘라 올려 주세요."
   },
   {
    "section_orig": "PLATS",
@@ -422,7 +435,11 @@
     "여럿이 나눠 먹고 싶은 분"
    ],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [
+    "아이용 작은 접시"
+   ],
+   "kid_tip": "감자튀김을 먼저 덜고 홍합 살은 하나만 맛보게 해 주세요."
   },
   {
    "section_orig": "PLATS",
@@ -527,7 +544,12 @@
       }
      ]
     }
-   ]
+   ],
+   "kid_tweaks": [
+    "소스는 따로",
+    "잘 익혀 주세요"
+   ],
+   "kid_tip": "고기를 작게 잘라 감자튀김과 같이 주세요."
   },
   {
    "section_orig": "PLATS",
@@ -609,7 +631,9 @@
     "어르신과 아이"
    ],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": "닭 살을 발라 그라탱과 같이 주세요."
   },
   {
    "section_orig": "PLATS",
@@ -691,7 +715,9 @@
     "아이"
    ],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": "샐러드는 옆으로 빼고 토스트부터 주세요."
   },
   {
    "section_orig": "PLATS",
@@ -749,7 +775,9 @@
    "imagine": "",
    "good_for": [],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": ""
   },
   {
    "section_orig": "MENU ENFANT",
@@ -847,7 +875,9 @@
       }
      ]
     }
-   ]
+   ],
+   "kid_tweaks": [],
+   "kid_tip": ""
   },
   {
    "section_orig": "DESSERTS",
@@ -924,7 +954,9 @@
     "단 후식을 찾는 분"
    ],
    "local_popular": true,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": ""
   },
   {
    "section_orig": "DESSERTS",
@@ -999,7 +1031,9 @@
     "초콜릿을 좋아하는 분"
    ],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": ""
   },
   {
    "section_orig": "DESSERTS",
@@ -1077,7 +1111,9 @@
     "과일 후식을 좋아하는 분"
    ],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": ""
   },
   {
    "section_orig": "BOISSONS",
@@ -1144,7 +1180,9 @@
    "imagine": "",
    "good_for": [],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": ""
   },
   {
    "section_orig": "BOISSONS",
@@ -1217,7 +1255,9 @@
    "imagine": "",
    "good_for": [],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": ""
   },
   {
    "section_orig": "BOISSONS",
@@ -1282,7 +1322,9 @@
    "imagine": "",
    "good_for": [],
    "local_popular": false,
-   "staff_asks": []
+   "staff_asks": [],
+   "kid_tweaks": [],
+   "kid_tip": ""
   }
  ]
 }

@@ -34,6 +34,28 @@ def _mins(t):
     return int(h) * 60 + int(m)
 
 
+EAT_MIN = 25  # 한 접시 먹는 데 드는 시간 초안 (메뉴판에서 시간이 빠듯한지 볼 때)
+
+
+def leave_by(now, left_min, walk_min, buffer_min):
+    """식당을 나서야 하는 시각 (자정 기준 분). 모이는 시각에서 돌아오는 걸음과 미리 돌아오기를 뺀다.
+    now는 'HH:MM' 또는 분. 자정을 넘기면 24*60 이상이 된다."""
+    t = _mins(now) if isinstance(now, str) else now
+    return t + left_min - walk_min - buffer_min
+
+
+def time_left(until, now):
+    """until(식당을 나설 시각)까지 남은 분. 둘 다 자정 기준 분이고 자정을 넘겨도 된다.
+    이미 지났으면 음수 (12시간 넘게 남았다고 나오면 지난 것으로 본다)."""
+    d = (until - now) % (24 * 60)
+    return d - 24 * 60 if d > 12 * 60 else d
+
+
+def dish_fits(serve_min, left, eat_min=EAT_MIN):
+    """나오는 시간과 먹는 시간이 남은 시간 안에 드는지."""
+    return (serve_min or 0) + eat_min <= left
+
+
 def person_marks(dishes, people):
     """식당 대표 메뉴로 사람마다 먹을 게 있는지: 편히 / 조심 / 피하기와 가장 닮은 메뉴."""
     out = []

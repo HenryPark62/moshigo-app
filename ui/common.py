@@ -264,6 +264,21 @@ display:flex;align-items:center;justify-content:center;gap:12px}
 [data-testid="stFileUploaderDropzone"]:hover{background:var(--sun)!important}
 [data-testid="stExpander"] summary:hover{color:var(--ink)!important}
 [data-testid="stExpander"] summary:hover svg{fill:currentColor}
+/* 아는 맛과 닮은 메뉴: 한 장 안에 짧은 줄 3개, 줄 전체를 누르면 메뉴 자세히 */
+.st-key-simlist{background:var(--surface);border:1px solid var(--hair);border-radius:16px;padding:0 14px;gap:0!important}
+[class*="st-key-sim_"]{position:relative;padding:11px 0;gap:0!important;border-top:1px dashed var(--hair-strong)}
+.st-key-simlist>:first-child [class*="st-key-sim_"],.st-key-simlist>[class*="st-key-sim_"]:first-child{border-top:0}
+[class*="st-key-sim_"] [data-testid="stElementContainer"]:has(.stButton){position:absolute!important;inset:0;z-index:2;margin:0!important}
+[class*="st-key-sim_"] .stButton,[class*="st-key-sim_"] .stButton>button{width:100%!important;height:100%!important}
+[class*="st-key-sim_"] button{opacity:0!important;min-height:100%!important}
+[class*="st-key-sim_"]:has(button:active) .sim{opacity:.6}
+.sim{display:flex;gap:10px;align-items:flex-start}
+.sim .sn{flex-shrink:0;width:22px;height:22px;margin-top:1px;border-radius:50%;background:var(--tint-green);color:var(--accent-text);font-size:12px;font-weight:800;display:grid;place-items:center}
+.sim .sb{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.sim .name{font-size:16px;line-height:1.35}
+.sim .like{font-size:13px;line-height:1.5}.sim .nw{white-space:nowrap}
+.sim .kw{font-size:12px;padding:2px 8px}
+.sim .go{flex-shrink:0;align-self:center;font-size:22px;line-height:1;color:var(--muted)}
 </style>
 """
 

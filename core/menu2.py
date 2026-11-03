@@ -16,6 +16,9 @@ VERDICTS = ["편히", "조심", "피하기"]
 CONTAINS = ["견과류", "우유", "달걀", "밀가루", "갑각류", "조개류", "생선", "돼지고기", "소고기", "닭고기", "버섯", "양파", "날것", "술"]
 INGREDIENTS = sorted({v[2] for v in world.WORLD.values()} | {"양고기", "오리고기", "콩"})
 COOKING = sorted({v[3] for v in world.WORLD.values()})
+# 아이 접시로 바꾸는 부탁 (order.REQUEST_KEYS 중 한 접시에 쓰는 것만)
+KID_REQS = ["맵지 않게", "소스는 따로", "버섯 빼고", "양파 빼고", "잘 익혀 주세요", "덜 짜게", "아이용 작은 접시"]
+SPICY = world.AXES.index("spicy")
 
 DEFAULT_PEOPLE = [
     {"id": "me", "name": "나", "relation": "나", "age": "30대", "likes": ["새로운 맛", "향이 진한"], "favorites": ["쌀국수", "토마토 파스타", "비프 스튜", "홍합탕"],
@@ -99,10 +102,13 @@ def _schema(names):
             "chef_pick": {"type": "boolean"}, "serve_minutes": {"type": "integer"}, "share_ok": {"type": "boolean"},
             "people": {"type": "array", "items": person},
             "staff_asks": {"type": "array", "items": ask, "description": "이 요리를 시키면 직원이 거의 꼭 되묻는 질문. 대부분 빈 배열, 많아야 2개"},
+            "kid_tweaks": {"type": "array", "items": {"type": "string", "enum": KID_REQS},
+                           "description": "가족에 아이가 있을 때만. 아이가 먹게 주문할 때 부탁할 것 0~3개. 빼면 요리가 안 되는 재료는 넣지 않는다"},
+            "kid_tip": {"type": "string", "description": "가족에 아이가 있을 때만. 아이 접시에 덜어 주는 법 한 문장, kid_tweaks와 겹치지 않게. 예: 고기와 감자만 덜어 주세요. 아니면 빈 문자열"},
         },
         "required": ["section_orig", "section_ko", "name_orig", "reading", "name_ko", "price", "desc_ko", "glossary", "unreadable", "course", "contains",
                      "ingredient", "cooking", *[f"t_{a}" for a in world.AXES], "taste_kw", "aroma_kw", "texture_kw",
-                     "taste_line", "ko_compare", "imagine", "good_for", "local_popular", "kids_only", "chef_pick", "serve_minutes", "share_ok", "people", "staff_asks"],
+                     "taste_line", "ko_compare", "imagine", "good_for", "local_popular", "kids_only", "chef_pick", "serve_minutes", "share_ok", "people", "staff_asks", "kid_tweaks", "kid_tip"],
         "additionalProperties": False,
     }
     return {"type": "object", "properties": {
@@ -119,6 +125,7 @@ SYSTEM = """너는 가족 여행 메뉴판 도우미 '모시고'다. 가족이 �
 2) 흐려서 못 읽은 줄은 unreadable=true, desc_ko에 '직원에게 물어봐 주세요'.
 3) 메뉴마다 맛 수치 8개(t_salty 짠맛, t_sweet 단맛, t_spicy 매운맛, t_sour 신맛, t_umami 감칠맛, t_aroma 향의 세기, t_oily 기름진 정도, t_soft 부드러움)를 일반적인 조리법으로 짐작한다.
 4) 사람마다 판정한다. 편히: 그 사람 입맛에 잘 맞음 / 조심: 덜어 내거나 부탁하면 됨, 또는 아이가 처음 보는 음식이라 망설일 수 있음 / 피하기: 알레르기, 못 먹는 것, 입맛과 정반대.
+   아이가 있으면 kid_tweaks와 kid_tip을 채우고, 아이 판정이 피하기면 비운다.
    어린이 메뉴(kids_only)는 아이만 판정한다. 이유는 그 사람 기준 한 줄. 건강이나 병 이야기는 하지 않고 입맛과 취향으로 말한다. 아이는 '버섯이 보여요. 고기만 덜어 주세요'처럼 행동으로 말한다.
 5) 말투: 해요체, 짧고 담백하게. 광고나 블로그 같은 말(풍미 가득, 완벽한, 환상적인, 일품, 선사, 어우러져, ~를 추천드립니다), 느낌표, 이모지는 쓰지 않는다.
    맛은 아는 말로 구체적으로 쓴다 (예: '짭짤하고 버터 맛이 진해요').
@@ -216,7 +223,7 @@ def _bare(g):
     return {"section_orig": g["section_orig"], "section_ko": g["section_orig"], "name_orig": g["name_orig"], "reading": "", "name_ko": g["name_orig"],
             "price": g["price"], "desc_ko": "설명을 만들지 못했어요. 직원에게 물어봐 주세요.", "glossary": [], "unreadable": True, "course": "main",
             "contains": [], "ingredient": INGREDIENTS[0], "cooking": COOKING[0], **{f"t_{a}": 0.5 for a in world.AXES},
-            "taste_kw": [], "aroma_kw": [], "texture_kw": [], "taste_line": "", "ko_compare": "", "imagine": "", "good_for": [], "local_popular": False, "kids_only": False, "chef_pick": False, "serve_minutes": 15, "share_ok": False, "people": [], "staff_asks": []}
+            "taste_kw": [], "aroma_kw": [], "texture_kw": [], "taste_line": "", "ko_compare": "", "imagine": "", "good_for": [], "local_popular": False, "kids_only": False, "chef_pick": False, "serve_minutes": 15, "share_ok": False, "people": [], "staff_asks": [], "kid_tweaks": [], "kid_tip": ""}
 
 
 def read_menu_text(ocr, people, progress=None):
@@ -245,14 +252,35 @@ def _hard_rules(item, p):
     return None
 
 
+def kid_tweaks(item, child):
+    """아이 접시로 바꾸는 부탁. Claude가 고른 것에 매운맛 규칙을 더한다.
+    예전에 읽은 메뉴(kid_tweaks 없음)는 재료와 아이가 골라내는 것으로 짐작한다."""
+    if not child:
+        return []
+    c = child.get("child") or {}
+    given = item.get("kid_tweaks")
+    out = [k for k in given or [] if k in KID_REQS]
+    contains = item.get("contains") or []
+    if given is None and "채소가 보이면" in (c.get("pick_out") or []):  # 예전 결과(필드 없음)는 재료로 짐작
+        out += [f"{w} 빼고" for w in ("버섯", "양파") if w in contains and w not in item.get("name_ko", "")]
+    taste = item.get("taste")
+    spicy = taste[SPICY] if taste else float(item.get("t_spicy") or 0)
+    if spicy > 0.4 or (spicy > 0.2 and "매우면" in (c.get("pick_out") or [])):
+        out.append("맵지 않게")
+    return [k for k in KID_REQS if k in out]
+
+
 def enrich(raw, people):
     """Claude 결과에 규칙 판정, 닮은꼴, 맛 지도를 더한다."""
     active = [p for p in people if p.get("active", True)]
+    child = next((p for p in active if p.get("child")), None)
     items = []
     for idx, it in enumerate(raw["items"]):
         it = dict(it)
         it["taste"] = [float(it.pop(f"t_{a}")) for a in world.AXES]
         it["staff_asks"] = [dict(q, answers=q["answers"][:4]) for q in it.get("staff_asks") or [] if len(q.get("answers") or []) >= 2][:2]
+        it["kid_tweaks"] = kid_tweaks(it, child) if it["course"] != "drink" else []
+        it["kid_tip"] = (it.get("kid_tip") or "").strip() if child and it["course"] != "drink" else ""
         given = {g["name"]: g for g in it.pop("people", [])}
         per = []
         for p in active if not it.get("kids_only") else [p for p in active if p.get("child")]:
@@ -290,12 +318,78 @@ def enrich(raw, people):
             "people": [{"id": p["id"], "name": p["name"]} for p in active]}
 
 
+def similar_top(scan, n=3):
+    """각자 좋아하는 음식과 많이 닮은 메뉴 n개. 되도록 서로 다른 사람 몫으로, 같은 메뉴는 한 번만.
+
+    돌려주는 것: [{item, person: {id, name}, match, who: [같은 음식으로 닮은 사람들], line}]
+    """
+    cands = []
+    for it in scan["items"]:
+        if it["course"] == "drink" or it.get("unreadable"):
+            continue
+        for x in it.get("per") or []:
+            m = x.get("match")
+            if m and m["bars"] >= 2 and x["verdict"] != "피하기":
+                cands.append((it, x))
+    cands.sort(key=lambda c: (-c[1]["match"]["bars"], c[1]["verdict"] != "편히", -c[1]["match"]["score"]))
+    picked, dishes, persons = [], set(), set()
+    for spread in (True, False):  # 먼저 사람마다 하나씩, 자리가 남으면 남은 것 중 센 순서로
+        for it, x in cands:
+            if len(picked) >= n:
+                break
+            if it["id"] in dishes or (spread and x["id"] in persons):
+                continue
+            picked.append((it, x))
+            dishes.add(it["id"])
+            persons.add(x["id"])
+    picked.sort(key=lambda c: (-c[1]["match"]["bars"], c[1]["verdict"] != "편히", -c[1]["match"]["score"]))
+    out = []
+    for it, x in picked:
+        m = x["match"]
+        who = [y["name"] for y in it["per"] if y.get("match") and y["match"]["food"] == m["food"] and y["match"]["bars"] >= 2 and y["verdict"] != "피하기"]
+        names = who[0] if len(who) == 1 else (f"{who[0]}{josa(who[0], '과', '와')} {who[1]}" if len(who) == 2 else f"{who[0]} 등 {len(who)}명")
+        out.append({"item": it, "person": {"id": x["id"], "name": x["name"]}, "verdict": x["verdict"], "match": m, "who": who,
+                    "line": f"{subj(names)} 좋아하는 {m['food']}{josa(m['food'], '과', '와')} {m['level']}"})
+    return out
+
+
 def demo(people):
     raw = json.loads((DATA / "demo_paris.json").read_text("utf-8"))
     names = {p["name"] for p in people}
     for it in raw["items"]:  # 데모 결과에 없는 사람은 '조심'으로
         it["people"] = [g for g in it["people"] if g["name"] in names]
     return enrich(raw, people)
+
+
+# ---------- 아이가 안 먹을 때 ----------
+PLAIN = {"굽기", "튀기기", "삶기", "찌기", "부치기"}
+MEAT = {"소고기", "닭고기", "돼지고기", "양고기", "오리고기"}
+
+
+def kid_backup(scan, child, exclude=None):
+    """아이가 안 먹을 때 대신 시킬 메뉴 하나: 아이 판정이 편히이고, 잘 먹는 재료가 보이고,
+    맵지 않고 익숙하게 익힌 것. 어린이 메뉴가 있으면 먼저. 없으면 None."""
+    if not child:
+        return None
+    good = (child.get("child") or {}).get("good") or []
+    best = None
+    for it in scan["judged"]:
+        if it["id"] == exclude or it["course"] not in ("main", "starter", "side"):
+            continue
+        x = next((x for x in it["per"] if x["id"] == child["id"]), None)
+        if not x or x["verdict"] != "편히" or it["cooking"] == "날것" or "날것" in it["contains"] or it["taste"][SPICY] > 0.3:
+            continue
+        text = f'{it["name_ko"]} {it.get("desc_ko", "")}'
+        hits = [g for g in good if g in text or g == it.get("ingredient") or (g == "고기" and it.get("ingredient") in MEAT)
+                or (g == "달걀" and "달걀" in it["contains"])]
+        score = (2 if it.get("kids_only") else 0) + len(hits) + (0.5 if it["cooking"] in PLAIN else 0) \
+            - it["taste"][SPICY] - 0.3 * it["taste"][world.AXES.index("aroma")] + (0.2 * x["match"]["bars"] if x["match"] else 0)
+        if best is None or score > best[0]:
+            best = (score, it, hits)
+    if not best:
+        return None
+    _, it, hits = best
+    return {**_brief(it), "kids_only": bool(it.get("kids_only")), "good": hits}
 
 
 # ---------- 메뉴 조합 ----------
