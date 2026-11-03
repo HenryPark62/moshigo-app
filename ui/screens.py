@@ -699,6 +699,8 @@ def spots_view(geo, slot, left=None, buffer=0):
         spots = None
     finally:
         box.empty()
+    if st.session_state.get("dev"):  # 개발 확인용: 어느 서비스가 왜 실패했는지
+        md('<div class="note">[dev] ' + E(" / ".join(nearby.ERRORS[-6:]) or "오류 없음") + f' / 장소 {len(spots or [])}개</div>')
     if not spots:
         st.info("가까운 곳에서 공원이나 볼거리를 찾지 못했어요.")
         return

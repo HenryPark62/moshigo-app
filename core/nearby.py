@@ -17,6 +17,14 @@ from . import world
 ENDPOINTS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter",
              "https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
 UA = {"User-Agent": "moshigo-mvp/0.1 (+https://moshigo.onrender.com)", "Accept-Language": "ko,en"}
+ERRORS = []  # 최근 실패 기록 (개발 확인용 화면에서 보여 준다)
+
+
+def _err(where, e):
+    import time as _t
+    ERRORS.append(f"{_t.strftime('%H:%M:%S')} {where}: {e!r}"[:200])
+    del ERRORS[:-12]
+    print(f"[nearby] {where} 실패: {e!r}")
 
 # 요리 종류 -> (한국어 이름, 대표 메뉴(세계 음식 표의 이름))
 CUISINE = {
@@ -262,8 +270,8 @@ def find(lat, lng, radius=900):
         if got:
             return "OpenStreetMap", got
     except Exception as e:
-        print(f"[nearby] Nominatim 실패: {e!r}")
-    return "OpenStreetMap", fetch(lat, lng, radius)
+        _err("Nominatim 식당", e)
+    return "OpenStreetMap (Overpass)", fetch(lat, lng, radius)
 
 
 def to_places(elements, lat, lng):
@@ -342,7 +350,7 @@ def fetch_spots(lat, lng, radius=1200):
         try:
             res = _nominatim(q, lat, lng, d)
         except Exception as e:
-            print(f"[nearby] Nominatim {q} 실패: {e!r}")
+            _err(f"Nominatim {q}", e)
             continue
         for x in res:
             key = (x.get("category"), x.get("type"))
@@ -358,7 +366,53 @@ def fetch_spots(lat, lng, radius=1200):
                 name = "어린이 놀이터"
             out.append({"name": name, "lat": float(x["lat"]), "lon": float(x["lon"]), "kind": kind, "group": group,
                         "hours": et.get("opening_hours", "")})
+    if not out:  # 서버(클라우드) 주소에서 Nominatim이 막히면 Overpass로
+        try:
+            out = fetch_spots_overpass(lat, lng, radius)
+        except Exception as e:
+            _err("Overpass 장소", e)
     return "OpenStreetMap", [o for o in out if _dist(lat, lng, o["lat"], o["lon"]) <= radius * 1.2]
+
+
+def fetch_spots_overpass(lat, lng, radius=1200, limit=150):
+    """Overpass에서 공원, 박물관, 볼거리, 놀이터, 전망대를 한 번에. 공개 서버 여러 곳에 동시에 묻는다."""
+    sel = (f'(nwr(around:{radius},{lat},{lng})[leisure~"^(park|garden|playground)$"];'
+           f'nwr(around:{radius},{lat},{lng})[tourism~"^(museum|gallery|attraction|viewpoint|zoo|aquarium|theme_park)$"];'
+           f'nwr(around:{radius},{lat},{lng})[historic~"^(monument|castle|memorial)$"][name];);')
+    q = f"[out:json][timeout:25];{sel}out center {limit};"
+    pool = ThreadPoolExecutor(len(ENDPOINTS))
+    futs = [pool.submit(_overpass, u, q) for u in ENDPOINTS]
+    els, pending = None, set(futs)
+    try:
+        while pending and els is None:
+            done, pending = wait(pending, timeout=40, return_when=FIRST_COMPLETED)
+            if not done:
+                break
+            for f in done:
+                try:
+                    els = f.result()
+                    break
+                except Exception as e:
+                    _err("Overpass 장소 서버", e)
+                    continue
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
+    out = []
+    for el in els or []:
+        t = el.get("tags", {})
+        key = next(((k, t[k]) for k in ("leisure", "tourism", "historic") if (k, t.get(k)) in SPOT_KIND), None)
+        la = el.get("lat") or (el.get("center") or {}).get("lat")
+        lo = el.get("lon") or (el.get("center") or {}).get("lon")
+        if not key or la is None:
+            continue
+        kind, group = SPOT_KIND[key]
+        name = t.get("name:ko") or t.get("name")
+        if not name:
+            if group != "play":
+                continue
+            name = "어린이 놀이터"
+        out.append({"name": name, "lat": la, "lon": lo, "kind": kind, "group": group, "hours": t.get("opening_hours", "")})
+    return out
 
 
 STAY_MIN = {"park": 30, "museum": 45, "sight": 20, "view": 15, "play": 30}  # 머무는 시간 어림값 (자유식 시간 계산용)
