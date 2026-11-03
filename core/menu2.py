@@ -179,11 +179,18 @@ def _stream(system, content, schema, max_tokens, model=LIST_MODEL):
 def _read(source, people, progress=None):
     """1단계: 메뉴 이름 목록만 빠르게 뽑는다. 2단계: 12개씩 나눠 동시에 번역, 설명, 판정을 만든다.
     메뉴가 많은 메뉴판(수십 개)도 출력 한도에 걸리지 않고, 걸리는 시간도 메뉴 수와 덜 상관있다."""
-    from concurrent.futures import ThreadPoolExecutor
-
     say = progress or (lambda *_: None)
     say("메뉴 이름을 찾는 중이에요")
     head = _stream(LIST_SYSTEM, source + [{"type": "text", "text": "이 메뉴판의 메뉴를 순서대로 적어 주세요."}], LIST_SCHEMA, 16000, LIST_MODEL)
+    return describe_list(head, people, progress)
+
+
+def describe_list(head, people, progress=None):
+    """2단계만: 이미 뽑은 메뉴 목록(LIST_SCHEMA 모양: restaurant, menu_language, language_code, lines)에
+    번역, 설명, 사람별 판정을 붙인다. 사진(_read)과 인터넷에서 불러온 메뉴(webmenu)가 같이 쓴다."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    say = progress or (lambda *_: None)
     lines = head.get("lines") or []
     if not head.get("is_menu", True) or not lines:
         return {**{k: head.get(k, "") for k in ("restaurant", "menu_language", "language_code")}, "is_menu": False, "items": []}

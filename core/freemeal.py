@@ -106,6 +106,7 @@ def plan(people, now="12:10", meet="13:30", buffer_min=10, meet_pt=None, restaur
             "need_min": need, "spare_min": spare, "fits": spare >= 0,
             "back_by": _hm(_mins(now) + need - buffer_min), "marks": marks,
             "all_ok": all(m["mark"] != "피하기" for m in marks), "note": r.get("note", ""),
+            **{k: r.get(k, "") for k in ("website", "menu_url", "address", "url")},  # 메뉴 불러오기용
         })
     rows.sort(key=lambda x: (not x["fits"], not x["known"], not x["all_ok"], -sum(m["mark"] == "편히" for m in x["marks"]),
                              -sum((m["match"] or {}).get("level", "") != "" for m in x["marks"]), x["need_min"]))

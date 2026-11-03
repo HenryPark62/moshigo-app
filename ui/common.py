@@ -228,6 +228,7 @@ div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--
 [class*="st-key-pair"] [data-testid="stHorizontalBlock"]{flex-wrap:nowrap!important;gap:8px!important}
 [class*="st-key-pair"] [data-testid="stColumn"]{min-width:0!important;width:auto!important;flex:1 1 0!important}
 [class*="st-key-pair"] button{min-height:40px;font-size:14px;font-weight:500}
+[class*="st-key-pairweb_"] button{min-height:44px!important;font-size:15px!important;font-weight:700}
 [class*="st-key-pair_p"]{margin-top:-4px}
 [class*="st-key-pair_p"] button{min-height:36px;background:var(--surface2);border-color:transparent}
 [data-testid="stBaseButton-primaryFormSubmit"]{background:var(--accent)!important;color:#fff!important;border:0!important;min-height:54px!important}

@@ -32,7 +32,7 @@ def _schedule(order, origin, start, speed, back):
         if p["type"] == "food":
             dur = p["wait_min"] + (10 if p.get("sitdown", True) else 5) * _peak(t) + p["meal_min"]
         else:
-            dur = nearby.STAY_MIN[p["group"]]
+            dur = nearby.stay_min(p)
         stops.append({"place": p, "walk": w, "arrive": t, "leave": t + dur})
         t += dur
         prev = p

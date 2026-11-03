@@ -184,7 +184,8 @@ def fetch_kakao(lat, lng, radius=900, pages=3):
             cuisines = [key for word, key in KAKAO_CAT if word in cat]
             out.append({"type": "kakao", "id": d["id"], "lat": float(d["y"]), "lon": float(d["x"]),
                         "tags": {"name": d["place_name"], "amenity": "restaurant", "cuisine": ";".join(cuisines[:2]),
-                                 "category": cat.split(" > ")[-1] if cat else "", "url": d.get("place_url", "")}})
+                                 "category": cat.split(" > ")[-1] if cat else "", "url": d.get("place_url", ""),
+                                 "addr": d.get("road_address_name") or d.get("address_name", "")}})
         if js.get("meta", {}).get("is_end", True):
             break
     return out
@@ -211,7 +212,8 @@ def fetch_geoapify(lat, lng, radius=900, limit=80):
         raw = (pr.get("datasource") or {}).get("raw") or {}
         out.append({"type": "geoapify", "id": pr.get("place_id", "")[:24], "lat": pr["lat"], "lon": pr["lon"],
                     "tags": {"name": pr["name"], "name:ko": raw.get("name:ko", ""), "amenity": amen,
-                             "cuisine": raw.get("cuisine") or ";".join(cuisines), "opening_hours": pr.get("opening_hours", "")}})
+                             "cuisine": raw.get("cuisine") or ";".join(cuisines), "opening_hours": pr.get("opening_hours", ""),
+                             **web_tags(raw), "addr": pr.get("formatted", "")}})
     return out
 
 
@@ -245,7 +247,8 @@ def fetch_nominatim(lat, lng, radius=900):
             seen.add(x.get("osm_id"))
             out.append({"type": "nominatim", "id": x.get("osm_id"), "lat": float(x["lat"]), "lon": float(x["lon"]),
                         "tags": {"name": name, "name:ko": nd.get("name:ko", ""), "amenity": x.get("type", "restaurant"),
-                                 "cuisine": et.get("cuisine", ""), "opening_hours": et.get("opening_hours", "")}})
+                                 "cuisine": et.get("cuisine", ""), "opening_hours": et.get("opening_hours", ""),
+                                 **web_tags(et), "addr": x.get("display_name", "")}})
     return [e for e in out if _dist(lat, lng, e["lat"], e["lon"]) <= radius * 1.2]
 
 
@@ -268,6 +271,38 @@ def find(lat, lng, radius=900):
     except Exception as e:
         _err("Nominatim 식당", e)
     return "OpenStreetMap (Overpass)", fetch(lat, lng, radius)
+
+
+WEB_TAGS = ("website", "contact:website", "website:menu", "menu:url", "contact:menu")
+
+
+def web_tags(et):
+    """OSM 추가 태그 중 가게 홈페이지와 메뉴 페이지 주소만 (식당 메뉴 불러오기에 쓴다)."""
+    return {k: et[k] for k in WEB_TAGS if et.get(k)}
+
+
+def _http(v):
+    """태그 값 -> http 주소 하나. 여러 개면 첫 번째, 앞에 https://가 없으면 붙인다."""
+    v = (v or "").split(";")[0].strip()
+    if not v or " " in v or "." not in v:
+        return ""
+    return v if v.startswith(("http://", "https://")) else "https://" + v.lstrip("/")
+
+
+def site_of(t):
+    """태그 -> (가게 홈페이지, 메뉴 페이지). 카카오/네이버 지도 장소 페이지는 홈페이지로 치지 않는다."""
+    menu = next((u for k in ("website:menu", "menu:url", "contact:menu") if (u := _http(t.get(k)))), "")
+    site = next((u for k in ("website", "contact:website", "url") if (u := _http(t.get(k)))
+                 and not any(m in u for m in ("place.map.kakao.com", "map.naver.com", "map.kakao.com"))), "")
+    return site, menu
+
+
+def address_of(t):
+    """태그 -> 주소 한 줄 (검색할 때 같은 이름의 다른 가게와 구별하려고)."""
+    if t.get("addr"):
+        return t["addr"]
+    parts = [t.get(k, "") for k in ("addr:housenumber", "addr:street", "addr:postcode", "addr:city", "addr:country")]
+    return " ".join(p for p in parts if p)
 
 
 def to_places(elements, lat, lng):
@@ -305,76 +340,122 @@ def to_places(elements, lat, lng):
             "kind": label or amen[0], "lat": la, "lng": lo, "wait_min": cook, "meal_min": meal, "sitdown": t.get("amenity") != "fast_food" and first not in ("burger", "sandwich"),
             "price": "", "note": ("영업시간: " + hours_ko(t["opening_hours"])) if t.get("opening_hours") else "", "url": t.get("url", ""),
             "dishes": [dish(f) for f in foods[:4]], "distance_m": round(_dist(lat, lng, la, lo)),
+            "website": site_of(t)[0], "menu_url": site_of(t)[1], "address": address_of(t),
         })
     return out
 
 
-# ---------- 주변 둘러볼 곳 (공원, 박물관, 볼거리, 놀이터, 전망대) ----------
+# ---------- 주변 둘러볼 곳 (볼거리, 공원, 문화, 쇼핑, 여가) ----------
+CATS = {"sight": "볼거리", "park": "공원", "culture": "문화", "shop": "쇼핑", "play": "여가"}  # 묶음 -> 화면 이름 (칩 순서)
 SPOT_KIND = {  # (분류, 종류) -> (한국어 이름, 묶음)
-    ("leisure", "park"): ("공원", "park"), ("leisure", "garden"): ("정원", "park"), ("leisure", "nature_reserve"): ("자연 공원", "park"),
-    ("tourism", "museum"): ("박물관", "museum"), ("tourism", "gallery"): ("미술관", "museum"), ("amenity", "arts_centre"): ("문화 공간", "museum"),
+    # 기념 명판(historic=memorial)과 공연장(amenity=theatre)은 기획사, 동호회까지 섞여 너무 많아서 뺀다
     ("tourism", "attraction"): ("볼거리", "sight"), ("historic", "monument"): ("기념물", "sight"), ("historic", "castle"): ("성", "sight"),
-    ("historic", "memorial"): ("기념물", "sight"), ("tourism", "viewpoint"): ("전망 좋은 곳", "view"),
-    ("leisure", "playground"): ("놀이터", "play"), ("tourism", "zoo"): ("동물원", "play"), ("tourism", "aquarium"): ("아쿠아리움", "play"),
-    ("tourism", "theme_park"): ("놀이공원", "play"),
+    ("tourism", "viewpoint"): ("전망 좋은 곳", "sight"),
+    ("leisure", "park"): ("공원", "park"), ("leisure", "garden"): ("정원", "park"), ("leisure", "nature_reserve"): ("자연 공원", "park"),
+    ("tourism", "museum"): ("박물관", "culture"), ("tourism", "gallery"): ("미술관", "culture"), ("amenity", "arts_centre"): ("문화 공간", "culture"),
+    ("shop", "mall"): ("쇼핑몰", "shop"), ("shop", "department_store"): ("백화점", "shop"), ("amenity", "marketplace"): ("시장", "shop"),
+    ("leisure", "playground"): ("놀이터", "play"), ("amenity", "cinema"): ("영화관", "play"), ("tourism", "zoo"): ("동물원", "play"),
+    ("tourism", "aquarium"): ("아쿠아리움", "play"), ("tourism", "theme_park"): ("놀이공원", "play"), ("leisure", "water_park"): ("워터파크", "play"),
 }
-SPOT_QUERIES = ["park", "museum", "attraction", "playground", "viewpoint", "gallery"]
-KAKAO_SPOT = {"AT4": ("볼거리", "sight"), "CT1": ("문화 공간", "museum")}
+# 묶음별 Nominatim 검색어. 브라우저가 1.1초에 하나씩 부르므로 사용자가 고른 묶음만 묻는다
+SPOT_QUERIES = {"sight": ["attraction", "viewpoint", "monument"], "park": ["park", "garden"], "culture": ["museum", "gallery"],
+                "shop": ["mall", "department store", "marketplace"], "play": ["playground", "cinema", "aquarium"]}
+# 카카오 카테고리 코드 -> (기본 이름, 기본 묶음, 이 코드로 찾을 수 있는 묶음). 카테고리 이름을 보고 다시 나눈다
+KAKAO_SPOT = {"AT4": ("볼거리", "sight", ("sight", "park", "play")), "CT1": ("문화 공간", "culture", ("culture", "play")),
+              "MT1": ("대형마트", "shop", ("shop",))}
+KAKAO_KEYWORD = {"shop": ["백화점", "전통시장"], "play": ["놀이터"]}  # 카테고리 코드가 따로 없는 곳은 검색어로
+KAKAO_WORDS = [("테마파크", "play"), ("놀이", "play"), ("아쿠아리움", "play"), ("동물원", "play"), ("영화", "play"), ("공원", "park"),
+               ("백화점", "shop"), ("시장", "shop"), ("쇼핑", "shop")]
 
 
-def fetch_spots(lat, lng, radius=1200):
-    """주변 둘러볼 곳 원본: 카카오(한국, 키) > Nominatim. [{name, lat, lon, kind, group, hours}]"""
+def default_cats(people):
+    """처음 보여 줄 묶음. 아이가 있으면 문화 대신 여가."""
+    kid = any(p.get("child") or p.get("relation") == "아이" for p in people)
+    return ["sight", "park", "play" if kid else "culture"]
+
+
+def _named(name):
+    """찾아갈 수 있는 이름인지 (숫자만 있는 출입구 번호, 회사 이름은 뺀다)."""
+    return bool(name) and any(c.isalpha() for c in name) and "(주)" not in name and "㈜" not in name
+
+
+def spot_of(x):
+    """Nominatim 결과 하나 -> 둘러볼 곳. 모르는 종류거나 이름이 없으면 None."""
+    key = (x.get("category"), x.get("type"))
+    if key not in SPOT_KIND:
+        return None
+    kind, group = SPOT_KIND[key]
+    nd, et = x.get("namedetails") or {}, x.get("extratags") or {}
+    name = nd.get("name:ko") or x.get("name") or nd.get("name")
+    if not _named(name):
+        if kind != "놀이터":  # 이름 없는 공원, 전망대는 찾아가기 어렵다
+            return None
+        name = "어린이 놀이터"
+    return {"id": f"{(x.get('osm_type') or 'n')[0]}{x.get('osm_id')}", "name": name, "lat": float(x["lat"]), "lon": float(x["lon"]),
+            "kind": kind, "group": group, "hours": et.get("opening_hours", "")}
+
+
+def merge_spots(old, new):
+    """같은 곳은 한 번만 (먼저 찾은 것을 남긴다)."""
+    seen = {o["id"] for o in old}
+    return old + [n for n in new if n["id"] not in seen and not seen.add(n["id"])]
+
+
+def _kakao_spots(lat, lng, radius, groups):
+    hdr = {"Authorization": f"KakaoAK {os.environ['KAKAO_REST_KEY']}"}
+    calls = [("category", {"category_group_code": code}, kind, group) for code, (kind, group, serves) in KAKAO_SPOT.items()
+             if set(serves) & set(groups)]
+    calls += [("keyword", {"query": w}, w, None) for g in groups for w in KAKAO_KEYWORD.get(g, [])]
     out = []
+    for path, extra, kind, group in calls:
+        r = httpx.get(f"https://dapi.kakao.com/v2/local/search/{path}.json", timeout=10, headers=hdr,
+                      params={**extra, "x": lng, "y": lat, "radius": radius, "sort": "distance", "size": 15})
+        r.raise_for_status()
+        for d in r.json().get("documents", []):
+            cat = d.get("category_name", "")
+            g = next((g for w, g in KAKAO_WORDS if w in cat), group)
+            if g is None:  # 검색어로 찾았는데 가게 이름에만 그 말이 들어간 곳 (시장 안 식당 등)
+                continue
+            out.append({"id": f"k{d['id']}", "name": d["place_name"], "lat": float(d["y"]), "lon": float(d["x"]),
+                        "kind": cat.split(" > ")[-1] or kind, "group": g, "hours": ""})
+    return out
+
+
+def fetch_spots(lat, lng, radius=1200, groups=None):
+    """주변 둘러볼 곳 원본: 카카오(한국, 키) > Nominatim > Overpass. [{id, name, lat, lon, kind, group, hours}]"""
+    groups = [g for g in (groups or CATS) if g in CATS]
     if kakao_available() and in_korea(lat, lng):
         try:
-            for code, (kind, group) in KAKAO_SPOT.items():
-                r = httpx.get("https://dapi.kakao.com/v2/local/search/category.json", timeout=10,
-                              headers={"Authorization": f"KakaoAK {os.environ['KAKAO_REST_KEY']}"},
-                              params={"category_group_code": code, "x": lng, "y": lat, "radius": radius, "sort": "distance", "size": 15})
-                r.raise_for_status()
-                for d in r.json().get("documents", []):
-                    cat = d.get("category_name", "")
-                    g, k = ("park", "공원") if "공원" in cat else (group, cat.split(" > ")[-1] or kind)
-                    out.append({"name": d["place_name"], "lat": float(d["y"]), "lon": float(d["x"]), "kind": k, "group": g, "hours": ""})
+            out = merge_spots([], _kakao_spots(lat, lng, radius, groups))
             if out:
                 return "카카오맵", out
         except Exception as e:
             print(f"[nearby] 카카오 장소 실패: {e!r}")
     d = radius / 111000 * 1.1
-    seen = set()
-    for q in SPOT_QUERIES:
+    res = []
+    for q in (q for g in groups for q in SPOT_QUERIES[g]):
         try:
-            res = _nominatim(q, lat, lng, d)
+            res.append(_nominatim(q, lat, lng, d))
         except Exception as e:
             _err(f"Nominatim {q}", e)
-            continue
-        for x in res:
-            key = (x.get("category"), x.get("type"))
-            if key not in SPOT_KIND or x.get("osm_id") in seen:
-                continue
-            seen.add(x.get("osm_id"))
-            kind, group = SPOT_KIND[key]
-            nd, et = x.get("namedetails") or {}, x.get("extratags") or {}
-            name = nd.get("name:ko") or x.get("name") or nd.get("name")
-            if not name:
-                if group != "play":  # 이름 없는 공원, 전망대는 찾아가기 어렵다
-                    continue
-                name = "어린이 놀이터"
-            out.append({"name": name, "lat": float(x["lat"]), "lon": float(x["lon"]), "kind": kind, "group": group,
-                        "hours": et.get("opening_hours", "")})
-    if not out:  # 서버(클라우드) 주소에서 Nominatim이 막히면 Overpass로
-        try:
-            out = fetch_spots_overpass(lat, lng, radius)
-        except Exception as e:
-            _err("Overpass 장소", e)
+    if res:
+        return "OpenStreetMap", spots_from_browser(res, lat, lng, radius)
+    try:  # 서버(클라우드) 주소에서 Nominatim이 막히면 Overpass로
+        out = fetch_spots_overpass(lat, lng, radius)
+    except Exception as e:
+        _err("Overpass 장소", e)
+        raise
     return "OpenStreetMap", [o for o in out if _dist(lat, lng, o["lat"], o["lon"]) <= radius * 1.2]
 
 
-def fetch_spots_overpass(lat, lng, radius=1200, limit=150):
-    """Overpass에서 공원, 박물관, 볼거리, 놀이터, 전망대를 한 번에. 공개 서버 여러 곳에 동시에 묻는다."""
-    sel = (f'(nwr(around:{radius},{lat},{lng})[leisure~"^(park|garden|playground)$"];'
-           f'nwr(around:{radius},{lat},{lng})[tourism~"^(museum|gallery|attraction|viewpoint|zoo|aquarium|theme_park)$"];'
-           f'nwr(around:{radius},{lat},{lng})[historic~"^(monument|castle|memorial)$"][name];);')
+def fetch_spots_overpass(lat, lng, radius=1200, limit=200):
+    """Overpass에서 모든 묶음을 한 번에. 공개 서버 여러 곳에 동시에 묻는다."""
+    a = f"(around:{radius},{lat},{lng})"
+    sel = (f'(nwr{a}[leisure~"^(park|garden|nature_reserve|playground|water_park)$"];'
+           f'nwr{a}[tourism~"^(museum|gallery|attraction|viewpoint|zoo|aquarium|theme_park)$"];'
+           f'nwr{a}[historic~"^(monument|castle)$"][name];'
+           f'nwr{a}[amenity~"^(arts_centre|cinema|marketplace)$"][name];'
+           f'nwr{a}[shop~"^(mall|department_store)$"][name];);')
     q = f"[out:json][timeout:25];{sel}out center {limit};"
     pool = ThreadPoolExecutor(len(ENDPOINTS))
     futs = [pool.submit(_overpass, u, q) for u in ENDPOINTS]
@@ -393,47 +474,60 @@ def fetch_spots_overpass(lat, lng, radius=1200, limit=150):
                     continue
     finally:
         pool.shutdown(wait=False, cancel_futures=True)
+    if els is None:
+        raise RuntimeError("Overpass 장소 실패")
     out = []
-    for el in els or []:
+    for el in els:
         t = el.get("tags", {})
-        key = next(((k, t[k]) for k in ("leisure", "tourism", "historic") if (k, t.get(k)) in SPOT_KIND), None)
+        key = next(((k, t[k]) for k in ("leisure", "tourism", "historic", "amenity", "shop") if (k, t.get(k)) in SPOT_KIND), None)
         la = el.get("lat") or (el.get("center") or {}).get("lat")
         lo = el.get("lon") or (el.get("center") or {}).get("lon")
         if not key or la is None:
             continue
-        kind, group = SPOT_KIND[key]
-        name = t.get("name:ko") or t.get("name")
-        if not name:
-            if group != "play":
-                continue
-            name = "어린이 놀이터"
-        out.append({"name": name, "lat": la, "lon": lo, "kind": kind, "group": group, "hours": t.get("opening_hours", "")})
+        sp = spot_of({"category": key[0], "type": key[1], "osm_type": el.get("type"), "osm_id": el.get("id"), "lat": la, "lon": lo,
+                      "name": t.get("name"), "namedetails": {"name:ko": t.get("name:ko")}, "extratags": t})
+        if sp:
+            out.append(sp)
     return out
 
 
-STAY_MIN = {"park": 30, "museum": 45, "sight": 20, "view": 15, "play": 30}  # 머무는 시간 어림값 (자유식 시간 계산용)
-SPOT_WHY = {
-    "park": ("쉬어 가기 좋아요", "뛰어놀기 좋아요"), "museum": ("실내라 날씨와 상관없어요", "볼거리가 많아요"),
-    "sight": ("천천히 둘러보기 좋아요", "사진 찍기 좋아요"), "view": ("앉아서 경치 보기 좋아요", "사진 찍기 좋아요"),
-    "play": ("아이와 같이 가기 좋아요", "아이가 좋아해요"),
+STAY_MIN = {"sight": 20, "park": 30, "culture": 45, "shop": 40, "play": 40}  # 머무는 시간 어림값 (분, 자유식과 추천 플랜 계산용)
+STAY_KIND = {"전망 좋은 곳": 15, "기념물": 10, "놀이터": 30, "시장": 30, "영화관": 120}
+
+
+def stay_min(sp):
+    return STAY_KIND.get(sp.get("kind"), STAY_MIN[sp["group"]])
+
+
+SPOT_WHY = {  # 묶음 -> (어른끼리, 아이와 함께)
+    "sight": ("천천히 둘러보기 좋아요", "사진 찍기 좋아요"), "park": ("쉬어 가기 좋아요", "뛰어놀기 좋아요"),
+    "culture": ("실내라 날씨와 상관없어요", "실내라 날씨와 상관없어요"), "shop": ("선물이나 기념품 사기 좋아요", "구경할 거리가 많아요"),
+    "play": ("같이 즐기기 좋아요", "아이가 좋아해요"),
 }
+KIND_WHY = {"전망 좋은 곳": "앉아서 경치 보기 좋아요", "시장": "현지 먹거리를 구경하기 좋아요", "영화관": "앉아서 쉬어 가기 좋아요",
+            "놀이터": "아이와 같이 가기 좋아요"}  # 어른끼리 갈 때 종류별로 더 맞는 말
+
+
+def _bonus(sp, kid, elder):
+    if "놀이터" in sp["kind"]:
+        return 1.2 if kid else -0.5
+    if sp["kind"] == "전망 좋은 곳":
+        return 0.3 + 0.3 * elder
+    return {"sight": 0.5, "park": 0.6 + 0.4 * (kid or elder), "culture": 0.4 + 0.5 * elder, "shop": 0.4, "play": 0.4 + 0.6 * kid}[sp["group"]]
 
 
 def rank_spots(spots, lat, lng, people, speed):
-    """같이 가는 사람에 맞춰 순서: 아이가 있으면 놀이터와 공원, 부모님이 있으면 공원과 박물관을 앞에."""
+    """같이 가는 사람에 맞춰 순서: 아이가 있으면 놀이터와 공원, 부모님이 있으면 공원과 문화를 앞에."""
     kid = any(p.get("child") or p.get("relation") == "아이" for p in people)
     elder = any(p.get("relation") == "부모님" for p in people)
-    bonus = {"park": 0.6 + 0.4 * (kid or elder), "museum": 0.4 + 0.5 * elder, "sight": 0.5, "view": 0.3 + 0.3 * elder,
-             "play": (1.2 if kid else -0.5)}
     rows = []
     for sp in spots:
-        dist = _dist(lat, lng, sp["lat"], sp["lon"])
-        walk = burden.walk_min(dist, speed)
-        why = SPOT_WHY[sp["group"]][1 if kid and sp["group"] in ("park", "play") else 0]
+        walk = burden.walk_min(_dist(lat, lng, sp["lat"], sp["lon"]), speed)
+        why = SPOT_WHY[sp["group"]][1] if kid else KIND_WHY.get(sp["kind"], SPOT_WHY[sp["group"]][0])
         if sp["group"] == "park" and kid and elder:
             why = "아이는 뛰어놀고, 부모님은 쉬어 가기 좋아요"
         hours = ("영업시간: " + hours_ko(sp["hours"])) if sp.get("hours") else ""
-        rows.append({**sp, "lng": sp["lon"], "walk_min": walk, "why": why, "note": hours, "score": bonus[sp["group"]] - walk / 15})
+        rows.append({**sp, "lng": sp["lon"], "walk_min": walk, "why": why, "note": hours, "score": _bonus(sp, kid, elder) - walk / 15})
     rows.sort(key=lambda r: -r["score"])
     out, names = [], set()
     for r in rows:  # 같은 이름은 하나만
@@ -444,19 +538,31 @@ def rank_spots(spots, lat, lng, people, speed):
     return out
 
 
+def pick_spots(rows, groups, n=12):
+    """고른 묶음의 곳만 n곳. 점수 순서를 따르되 한 묶음이 자리를 다 차지하지 않게 묶음마다 먼저 몇 곳씩 담고 남는 자리를 채운다."""
+    rows = [r for r in rows if r["group"] in groups]
+    base = max(1, n // max(1, len(set(groups))))
+    first, rest, per = [], [], {}
+    for r in rows:
+        per[r["group"]] = per.get(r["group"], 0) + 1
+        (first if per[r["group"]] <= base else rest).append(r)
+    out = first[:n] + rest[:max(0, n - len(first))]
+    return sorted(out, key=lambda r: -r["score"])
+
+
 # ---------- 휴대폰 브라우저가 직접 묻기 ----------
 # 서버(Render 무료)는 여러 앱이 같은 주소를 나눠 써서 Nominatim이 '너무 많은 요청(429)'으로 막는다.
 # 사용자 휴대폰에서 직접 물으면 사람마다 주소가 달라 막히지 않는다. 서버는 받은 결과를 정리만 한다.
 FOOD_QUERIES = ["restaurant", "fast food"]
 
 
-def nominatim_urls(lat, lng, kind="food"):
-    """kind: food(식당, 900m) / spots(둘러볼 곳, 1200m). 브라우저가 차례로 부를 주소."""
+def nominatim_urls(lat, lng, kind="food", groups=None):
+    """kind: food(식당, 900m) / spots(둘러볼 곳, 1200m, groups 묶음만). 브라우저가 차례로 부를 주소."""
     from urllib.parse import urlencode
 
     radius = 900 if kind == "food" else 1200
     d = radius / 111000 * 1.1
-    qs = FOOD_QUERIES if kind == "food" else SPOT_QUERIES
+    qs = FOOD_QUERIES if kind == "food" else [q for g in (groups or CATS) for q in SPOT_QUERIES.get(g, [])]
     return [("https://nominatim.openstreetmap.org/search?" + urlencode({
         "q": q, "format": "jsonv2", "limit": 50, "extratags": 1, "namedetails": 1, "bounded": 1,
         "accept-language": "ko,en", "viewbox": f"{lng - d},{lat + d},{lng + d},{lat - d}"})) for q in qs]
@@ -476,30 +582,18 @@ def places_from_browser(results, lat, lng, radius=900):
             seen.add(x.get("osm_id"))
             out.append({"type": "nominatim", "id": x.get("osm_id"), "lat": float(x["lat"]), "lon": float(x["lon"]),
                         "tags": {"name": name, "name:ko": nd.get("name:ko", ""), "amenity": x.get("type", "restaurant"),
-                                 "cuisine": et.get("cuisine", ""), "opening_hours": et.get("opening_hours", "")}})
+                                 "cuisine": et.get("cuisine", ""), "opening_hours": et.get("opening_hours", ""),
+                                 **web_tags(et), "addr": x.get("display_name", "")}})
     els = [e for e in out if _dist(lat, lng, e["lat"], e["lon"]) <= radius * 1.2]
     return to_places(els, lat, lng)
 
 
 def spots_from_browser(results, lat, lng, radius=1200):
-    out, seen = [], set()
+    """브라우저(또는 서버)가 받아 온 Nominatim 결과 목록 -> 둘러볼 곳 목록."""
+    out = []
     for res in results or []:
-        if not isinstance(res, list):
-            continue
-        for x in res:
-            key = (x.get("category"), x.get("type"))
-            if key not in SPOT_KIND or x.get("osm_id") in seen:
-                continue
-            seen.add(x.get("osm_id"))
-            kind, group = SPOT_KIND[key]
-            nd, et = x.get("namedetails") or {}, x.get("extratags") or {}
-            name = nd.get("name:ko") or x.get("name") or nd.get("name")
-            if not name:
-                if group != "play":
-                    continue
-                name = "어린이 놀이터"
-            out.append({"name": name, "lat": float(x["lat"]), "lon": float(x["lon"]), "kind": kind, "group": group,
-                        "hours": et.get("opening_hours", "")})
+        if isinstance(res, list):
+            out = merge_spots(out, [sp for sp in map(spot_of, res) if sp])
     return [o for o in out if _dist(lat, lng, o["lat"], o["lon"]) <= radius * 1.2]
 
 

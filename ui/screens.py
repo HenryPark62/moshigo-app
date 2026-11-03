@@ -5,7 +5,7 @@ import os
 import streamlit as st
 import streamlit.components.v1 as components
 
-from core import burden, freemeal, menu2, nearby, ocr, order, plan, reviews, store, world
+from core import burden, freemeal, menu2, nearby, ocr, order, plan, reviews, store, webmenu, world
 from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, avatar, badges, chips, ghost_avatar, go, josa, level, loader, marks, md, momo, nav
 
 RELATIONS = ["나", "부모님", "아이", "배우자", "친구", "가족"]
@@ -215,6 +215,8 @@ def edit():
 # ---------------- 찍기 ----------------
 def scan():
     s = st.session_state
+    if s.pop("web_go", False) and s.get("place"):
+        run_web()  # 찾으면 메뉴 화면으로 간다. 못 찾으면 아래 찍기 화면을 그대로 보여 준다
     title("메뉴판 찍기", "글씨가 다 보이게 한 장씩 찍어 주세요.")
     if s.get("place"):
         md(f'<div class="card sunbox small"><div><b>{E(s.place["name"])}</b>에서 찍는 메뉴판이에요.</div></div>')
@@ -289,6 +291,48 @@ def run_scan(data, mime):
     go("menu", menu_mode_w="번역만", combo_w=None)
 
 
+WEB_MISS = "이 식당 메뉴를 인터넷에서 찾지 못했어요. 메뉴판을 찍어 주세요."
+
+
+def run_web():
+    """고른 식당(s.place)의 메뉴를 인터넷에서 불러와 메뉴판을 찍은 것과 같은 화면으로. 못 찾으면 찍기 화면에 알림만 남긴다."""
+    s = st.session_state
+    place = s.place
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        s.scan_warn = WEB_MISS
+        return
+    if not store.take_scan():
+        s.scan_warn = "오늘 메뉴 읽기 횟수를 다 썼어요. 내일 다시 해 주세요."
+        return
+    # 식당 목록 아래쪽에서 눌러도 로딩이 보이게: 지난 화면(흐리게 남는 목록)을 숨기고 맨 위로 올린다
+    md('<style>[data-stale="true"]{display:none!important}</style>')
+    components.html("<script>const d = window.parent.document; (d.querySelector('[data-testid=\"stMain\"]') || d.scrollingElement).scrollTo(0, 0);"
+                    " window.parent.scrollTo(0, 0);</script>", height=0)
+    box = st.empty()
+
+    def show(text):
+        box.markdown(loader(text, place["name"]), unsafe_allow_html=True)
+
+    show("이 식당 메뉴를 찾는 중이에요")
+    try:
+        raw = webmenu.read_web(place, active(), show)
+    except Exception as e:
+        if type(e).__name__ in ("StopException", "RerunException"):
+            raise
+        print(f"[web] 실패: {e!r}")
+        raw = None
+    box.empty()
+    if not raw:
+        s.scan_warn = WEB_MISS
+        return
+    s.scan_raw, s.scan_img, s.scan_note, s.scan_source = raw, None, raw.get("note"), "web"
+    if (s.get("hurry") or {}).get("id") != place.get("id"):
+        s.hurry = None  # 자유식에서 고른 식당이 아니면 남은 시간을 보여 주지 않는다
+    s.place = None
+    rejudge()
+    go("menu", menu_mode_w="번역만", combo_w=None)
+
+
 # ---------------- 메뉴판 ----------------
 def menu():
     s = st.session_state
@@ -301,11 +345,18 @@ def menu():
         hurry_banner(left)
     if s.get("scan_note"):
         st.info(s.scan_note)
-    with st.expander("찍은 메뉴판 보기"):
-        st.image(s.scan_img, width="stretch")
-        h = s.get("hurry")  # 자유식이면 같은 식당의 다른 장으로 본다
-        st.button("다른 메뉴판 찍기", icon=":material/photo_camera:", width="stretch", on_click=nav, args=('scan',),
-                  kwargs={"place": {"name": h["place"], "id": h["id"]}} if h else {})
+    h = s.get("hurry")  # 자유식이면 같은 식당의 다른 장으로 본다
+    again = {"place": {"name": h["place"], "id": h["id"]}} if h else {}
+    web = scan.get("source") or {}
+    if web.get("kind") == "web":  # 인터넷에서 불러온 메뉴: 사진 대신 출처
+        where = "가게 홈페이지에서 불러온 메뉴예요." if web.get("own") else "인터넷에서 찾은 이 가게 메뉴예요."
+        md(f'<div class="card small">{where} 지금 메뉴와 다를 수 있어요.'
+           f'<div><a href="{E(web["url"])}" target="_blank" rel="noopener">{E(web.get("title") or web.get("site") or "메뉴 페이지")} 열기</a></div></div>')
+        st.button("메뉴판 찍어서 보기", icon=":material/photo_camera:", width="stretch", on_click=nav, args=('scan',), kwargs=again)
+    elif s.get("scan_img"):
+        with st.expander("찍은 메뉴판 보기"):
+            st.image(s.scan_img, width="stretch")
+            st.button("다른 메뉴판 찍기", icon=":material/photo_camera:", width="stretch", on_click=nav, args=('scan',), kwargs=again)
     if not s.get("menu_mode_w"):
         s.menu_mode_w = "번역만"
     mode = st.segmented_control("보기", ["번역만", "원문과 함께", "누가 먹을까"], key="menu_mode_w", label_visibility="collapsed") or "번역만"
@@ -829,9 +880,11 @@ def geo_block(key, slot=None):
 
 
 BROWSER_FETCH = """(async () => {
-  const urls = %s; const out = [];
+  const urls = %s; const out = []; let last = 0;
   for (let i = 0; i < urls.length; i++) {
-    if (i) await new Promise((r) => setTimeout(r, 1100));  // Nominatim 사용 정책: 1초에 한 번
+    const gap = 1100 - (Date.now() - last);  // Nominatim 사용 정책: 1초에 한 번 (앞 요청을 시작한 때부터 1.1초, 동시에 둘은 안 보낸다)
+    if (i && gap > 0) await new Promise((r) => setTimeout(r, gap));
+    last = Date.now();
     try { const r = await fetch(urls[i]); out.push(r.ok ? await r.json() : {error: r.status}); }
     catch (e) { out.push({error: String(e)}); }
   }
@@ -847,8 +900,8 @@ def browser_fetch(urls, key):
 
 
 @st.cache_data(ttl=900, show_spinner=False)
-def _spots(lat, lng):
-    return nearby.fetch_spots(lat, lng)
+def _spots(lat, lng, groups):
+    return nearby.fetch_spots(lat, lng, groups=groups)
 
 
 def rank_restaurants(places, act, speed):
@@ -868,59 +921,101 @@ def walk_link(lat, lng):
     return f'<a class="golink" href="https://www.google.com/maps/dir/?api=1&destination={lat},{lng}&travelmode=walking" target="_blank" rel="noopener">길 찾기</a>'
 
 
-def get_spots(geo, slot=None):
-    """주변 둘러볼 곳 원본. 브라우저가 묻는 중이면 'wait', 없으면 빈 목록."""
+SPOT_COLORS = {"sight": "#c99a1e", "park": "#2f7a50", "culture": "#8b6b4a", "shop": "#c0617f", "play": "#4c8fc9"}
+
+
+def _keep_cats():
+    st.session_state.spot_sel = list(st.session_state.spot_cats)
+
+
+def spot_cats():
+    """둘러볼 곳 종류 칩. 고른 것은 내 주변, 자유식, 추천 플랜에서 같이 쓴다."""
+    s = st.session_state
+    if "spot_sel" not in s:
+        s.spot_sel = nearby.default_cats(active())
+    if "spot_cats" not in s:  # 칩이 없는 화면을 다녀오면 위젯 값이 지워져서 다시 채운다
+        s.spot_cats = list(s.spot_sel)
+    st.pills("둘러볼 곳 종류", list(nearby.CATS), selection_mode="multi", format_func=nearby.CATS.get, key="spot_cats",
+             label_visibility="collapsed", on_change=_keep_cats)
+    return [g for g in nearby.CATS if g in s.spot_sel]
+
+
+def get_spots(geo, groups, slot=None):
+    """주변 둘러볼 곳 원본 {done: 찾아본 묶음, items}. 브라우저가 묻는 중이면 'wait'.
+    고른 묶음만 묻고, 이 위치에서 한 번 찾은 묶음은 다시 묻지 않는다."""
     s = st.session_state
     lat, lng = round(geo["lat"], 3), round(geo["lng"], 3)
     ck = f"spots_{lat}_{lng}"
-    if s.get(ck):
-        return s[ck]
+    have = s[ck] if isinstance(s.get(ck), dict) else {"done": [], "items": []}
+    need = [g for g in groups if g not in have["done"]]
+    if not need:
+        return have
     box = slot or st.empty()
     box.markdown(loader("주변 둘러볼 곳을 찾는 중"), unsafe_allow_html=True)
-    spots = None
+    got = None
     if not nearby.server_keys():
-        res = browser_fetch(nearby.nominatim_urls(lat, lng, "spots"), key=f"bf_spots_{lat}_{lng}")
+        res = browser_fetch(nearby.nominatim_urls(lat, lng, "spots", need), key=f"bf_spots_{lat}_{lng}_{'_'.join(need)}")
         if res is None:
             return "wait"
-        spots = nearby.spots_from_browser(res, lat, lng)
-        if not spots:
+        if any(isinstance(r, list) for r in res):
+            got = nearby.spots_from_browser(res, lat, lng)
+        else:
             nearby._err("브라우저 장소", [r.get("error") for r in res if isinstance(r, dict)] or "결과 없음")
-    if not spots:
+    if got is None:
         try:
-            spots = _spots(lat, lng)[1]
+            got = _spots(lat, lng, tuple(need))[1]
         except Exception as e:
             print(f"[nearby] 장소 실패: {e!r}")
     box.empty()
-    if spots:
-        s[ck] = spots
-    return spots or []
+    if got is None:  # 못 찾은 묶음은 다음에 다시 묻는다
+        return have
+    s[ck] = {"done": have["done"] + need, "items": nearby.merge_spots(have["items"], got)}
+    return s[ck]
+
+
+def _cat_names(groups):
+    names = ", ".join(nearby.CATS[g] for g in groups)
+    return names + josa(names, "은", "는")
 
 
 def spots_view(geo, slot, left=None, buffer=0):
     """주변 둘러볼 곳. left(남은 분)가 있으면 그 안에 다녀올 수 있는 곳만."""
-    spots = get_spots(geo, slot)
-    if spots == "wait":
+    sel = spot_cats()
+    if not sel:
+        md('<div class="note">보고 싶은 종류를 골라 주세요.</div>')
+        return
+    got = get_spots(geo, sel)
+    if got == "wait":
         return
     if st.session_state.get("dev"):  # 개발 확인용: 어느 서비스가 왜 실패했는지
-        md('<div class="note">[dev] ' + E(" / ".join(nearby.ERRORS[-6:]) or "오류 없음") + f' / 장소 {len(spots or [])}개</div>')
-    if not spots:
-        st.info("가까운 곳에서 공원이나 볼거리를 찾지 못했어요.")
-        return
+        md('<div class="note">[dev] ' + E(" / ".join(nearby.ERRORS[-6:]) or "오류 없음") + f' / 장소 {len(got["items"])}개</div>')
     act = active()
     speed, slowest = freemeal.group_speed(act)
-    rows = nearby.rank_spots(spots, geo["lat"], geo["lng"], act, speed)
+    rows = nearby.rank_spots([x for x in got["items"] if x["group"] in sel], geo["lat"], geo["lng"], act, speed)
+    found = {g for g in sel if any(r["group"] == g for r in rows)}
     if left is not None:
         for r in rows:
-            r["need"] = r["walk_min"] * 2 + nearby.STAY_MIN[r["group"]] + buffer
+            r["need"] = r["walk_min"] * 2 + nearby.stay_min(r) + buffer
         rows = [r for r in rows if r["need"] <= left]
-        if not rows:
-            st.info("이 시간 안에 다녀올 수 있는 곳이 없어요.")
-            return
-    rows = rows[:12]
-    md(f'<div class="small">같이 가는 사람에게 맞는 순서 {len(rows)}곳 <span class="muted">({E(slowest)} 걸음 기준)</span></div>')
-    colors = {"park": "#2f7a50", "play": "#4c8fc9", "museum": "#8b6b4a", "sight": "#c99a1e", "view": "#7466c4"}
-    _map(geo, "지금 여기", rows, lambda r: f'{rows.index(r) + 1}', lambda r: colors[r["group"]], "spotmap")
-    for i, r in enumerate(rows):
+    count = {g: sum(r["group"] == g for r in rows) for g in sel}
+    failed = [g for g in sel if g not in got["done"]]
+    none = [g for g in sel if g in got["done"] and g not in found]
+    late = [g for g in sel if g in found and not count[g]]
+    notes = ([f"{_cat_names(failed)} 불러오지 못했어요. 잠시 뒤 다시 골라 주세요."] if failed else []) + \
+            ([f"{_cat_names(none)} 가까운 곳에서 찾지 못했어요."] if none else []) + \
+            ([f"{_cat_names(late)} 이 시간 안에 다녀올 수 있는 곳이 없어요."] if late else [])
+    if not rows:
+        for n in notes:
+            st.info(n)
+        return
+    shown = nearby.pick_spots(rows, sel, 12)
+    md(f'<div class="small">같이 가는 사람에게 맞는 순서 {len(shown)}곳 <span class="muted">({E(slowest)} 걸음 기준)</span></div>')
+    found_txt = ", ".join(f"{nearby.CATS[g]} {count[g]}곳" for g in sel if count[g])
+    md(f'<div class="note">{"시간 안에 다녀올 수 있는 곳은 " + found_txt + "이에요" if left is not None else "주변에서 " + found_txt + "을 찾았어요"}</div>')
+    for n in notes:
+        md(f'<div class="note">{E(n)}</div>')
+    _map(geo, "지금 여기", shown, lambda r: f'{shown.index(r) + 1}', lambda r: SPOT_COLORS[r["group"]], "spotmap")
+    for i, r in enumerate(shown):
         extra = f' · 다녀오면 {r["need"]}분' if left is not None else ""
         md(f'<div class="card"><div class="row"><div><span class="tag">{i + 1}</span> <b style="font-size:16px">{E(r["name"])}</b>'
            f'<div class="small muted">{E(r["kind"])} · 걸어서 {r["walk_min"]}분{extra}</div></div>{walk_link(r["lat"], r["lng"])}</div>'
@@ -1000,8 +1095,14 @@ def _marks(marks):
 def _pick(r, key, until=None):
     """이 식당을 고르고 메뉴판 찍기로. until(식당을 나설 시각, 자정 기준 분)을 주면 자유식이라 메뉴판에서 남은 시간을 보여 준다."""
     hurry = {"until": until, "place": r["name"], "id": r["id"]} if until is not None else None
-    st.button("이 식당 메뉴판 찍기", key=key, icon=":material/photo_camera:", width="stretch", on_click=nav, args=('scan',),
-              kwargs={"place": {'name': r['name'], 'id': r['id']}, "hurry": hurry})
+    place = {"name": r["name"], "id": r["id"]}
+    web = dict(place, **{k: r.get(k) or "" for k in ("orig_name", "address", "website", "menu_url", "url")}, lat=r["lat"], lng=r["lng"])
+    with st.container(key=f"pairweb_{key}"):  # 메뉴 불러오기는 누를 때만 찾는다 (카드마다 미리 찾으면 비용이 크다)
+        c1, c2 = st.columns(2)
+        c1.button("메뉴 불러오기", key=f"web_{key}", icon=":material/menu_book:", type="primary", width="stretch", on_click=nav, args=('scan',),
+                  kwargs={"place": web, "hurry": hurry, "web_go": True})
+        c2.button("메뉴판 찍기", key=key, icon=":material/photo_camera:", width="stretch", on_click=nav, args=('scan',),
+                  kwargs={"place": place, "hurry": hurry, "web_go": False})
 
 
 def hurry_left():
@@ -1078,16 +1179,12 @@ def plan_view(geo, slot, start=None, end=None, buffer=10):
     src, places = places_here(geo, slot)
     if src == "wait":
         return
-    spots = get_spots(geo, slot)
-    if spots == "wait":
-        return
     if not places:
         st.info("주변 식당을 찾지 못해서 플랜을 만들 수 없어요.")
         return
     act = active()
     speed, slowest = freemeal.group_speed(act)
     rests = [r for r in rank_restaurants(places, act, speed) if r["dishes"]]
-    sps = nearby.rank_spots(spots or [], geo["lat"], geo["lng"], act, speed)
     back = True
     if start is None:
         if "plan_start" not in s:
@@ -1105,6 +1202,13 @@ def plan_view(geo, slot, start=None, end=None, buffer=10):
     if end <= start:
         st.warning("도착 시간이 출발 시간보다 늦어야 해요.")
         return
+    sel = spot_cats()  # 둘러볼 곳 탭과 같은 종류만 플랜에 넣는다
+    got = get_spots(geo, sel) if sel else {"done": [], "items": []}
+    if got == "wait":
+        return
+    if not sel:
+        md('<div class="note">둘러볼 곳 없이 식당만 넣었어요.</div>')
+    sps = nearby.pick_spots(nearby.rank_spots([x for x in got["items"] if x["group"] in sel], geo["lat"], geo["lng"], act, speed), sel, 6)
     plans = plan.make_plans(geo, start, end, rests, sps, speed, back, buffer)
     if not plans:
         st.info(f"이 시간 안에 다녀올 수 있는 식당이 없어요. {'도착 시간' if free is None else '모이는 시간'}을 늦춰 보세요.")
@@ -1128,7 +1232,7 @@ def plan_view(geo, slot, start=None, end=None, buffer=10):
             detail = f'나오기 {x["leave"] - x["arrive"] - p["meal_min"]}분, 식사 {p["meal_min"]}분'
             body = f'<div class="small muted">{E(p["kind"])} · {detail}</div>' + _marks(p["marks"])
         else:
-            body = f'<div class="small muted">{E(p["kind"])} · {nearby.STAY_MIN[p["group"]]}분 둘러보기</div><div class="small">{E(p["why"])}</div>'
+            body = f'<div class="small muted">{E(p["kind"])} · {nearby.stay_min(p)}분 둘러보기</div><div class="small">{E(p["why"])}</div>'
         h += (f'<div class="tl-row"><b>{plan.hm(x["arrive"])}<br><span class="muted">~{plan.hm(x["leave"])}</span></b>'
               f'<div class="card tl-card"><div class="row"><div><span class="tag">{i + 1}</span> <b>{E(p["name"])}</b></div>{walk_link(p["lat"], p["lng"])}</div>{body}</div></div>')
     if back:
