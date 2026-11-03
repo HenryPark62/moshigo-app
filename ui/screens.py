@@ -119,7 +119,7 @@ def people():
     if st.button(f"{n}명 기준으로 {nxt}", type="primary", width="stretch", disabled=n == 0):
         go("free" if s.get("trip") == "package" else ("menu" if s.get("scan") else "scan"))
     md(f'<div class="card soft"><div class="small"><b>내 코드 {E(s.code)}</b> · 입맛은 이 코드로 이 앱에 저장돼요. '
-       '로그인은 없어요. 다른 휴대폰에서는 아래에 코드를 넣으면 같은 목록을 불러와요.</div></div>')
+       '로그인은 없어요. 이 브라우저가 기억하고, 다른 휴대폰에서는 아래에 코드를 넣으면 같은 목록을 불러와요.</div></div>')
     with st.expander("다른 기기에서 쓰던 코드 불러오기"):
         code = st.text_input("코드 6자리", max_chars=6, key="load_code").strip().lower()
         if st.button("불러오기", disabled=len(code) != 6):
@@ -127,8 +127,7 @@ def people():
             if got is None:
                 st.error("이 코드로 저장된 입맛이 없어요.")
             else:
-                s.code, s.people = code, got
-                st.query_params["me"] = code
+                s.code, s.people, s.cookie_set = code, got, False
                 st.rerun()
 
 
@@ -588,11 +587,11 @@ def free():
     if data["left_min"] <= 0:
         st.warning("모이는 시간이 지금보다 늦어야 해요.")
         return
-    md(f'<div><b style="font-size:24px;color:var(--accent-text)">{data["left_min"]}분</b> 남았어요 · {E(data["meet"]["name"])}</div>'
+    md(f'<div><b style="font-size:24px;color:var(--accent-text)">{data["left_min"]}분</b> 남았어요</div><div class="small">모이는 곳: {E(data["meet"]["name"])}</div>'
        f'<div class="note">걷는 속도는 가장 천천히 걷는 {E(data["slowest"])} 기준 (분당 {round(data["speed"] * 60)}m)</div>')
     m = Map(location=[data["meet"]["lat"], data["meet"]["lng"]], zoom_start=16, tiles="OpenStreetMap", control_scale=False)
     pill = 'position:absolute;transform:translate(-50%,-100%);white-space:nowrap;padding:3px 9px;border-radius:999px;font:700 12px sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.25);'
-    Marker([data["meet"]["lat"], data["meet"]["lng"]], icon=DivIcon(html=f'<span style="{pill}background:#22302a;color:#fff">{data["meet"]["time"]} 모여요</span>')).add_to(m)
+    Marker([data["meet"]["lat"], data["meet"]["lng"]], icon=DivIcon(html=f'<span style="{pill.replace("translate(-50%,-100%)", "translate(calc(-100% - 8px),-50%)")}background:#22302a;color:#fff">{data["meet"]["time"]} 모여요</span>')).add_to(m)
     for r in data["restaurants"]:
         bg = "#2f7a50;color:#fff" if r["fits"] else "#8a8f8b;color:#fff"
         Marker([r["lat"], r["lng"]], icon=DivIcon(html=f'<span style="{pill}background:{bg};border:2px solid #fff">{r["need_min"]}분</span>' if r["fits"]
@@ -600,7 +599,7 @@ def free():
     m.fit_bounds([[data["meet"]["lat"], data["meet"]["lng"]]] + [[r["lat"], r["lng"]] for r in data["restaurants"]], padding=(30, 30))
     st_folium(m, height=260, use_container_width=True, returned_objects=[], key="freemap")
     md('<div class="legend"><span><i style="background:#8ccb9f"></i>가고 오기</span><span><i style="background:#f2c6b6"></i>기다림</span>'
-       '<span><i style="background:#ffc94a"></i>식사</span><span><i style="background:#dce2da"></i>여유</span><span>┃ 모이는 시간</span></div>')
+       '<span><i style="background:#ffc94a"></i>식사</span><span><i style="background:#dce2da"></i>여유</span><span>┃ 모이는 시간</span><span>(숫자는 분)</span></div>')
     fits = [r for r in data["restaurants"] if r["fits"]]
     rest = [r for r in data["restaurants"] if not r["fits"]]
     for t, lst in [("시간 안에 다녀와요", fits), ("시간이 모자라요", rest)]:
@@ -609,7 +608,7 @@ def free():
         md(f'<div class="sec">{t} <span class="n">{len(lst)}곳</span></div>')
         for r in lst:
             scale = max(data["left_min"], r["need_min"])
-            seg = lambda v, cls, lab: f'<span class="{cls}" style="width:{v / scale * 100}%">{lab + " " + str(v) if v / scale > .12 else ""}</span>'
+            seg = lambda v, cls, lab: f'<span class="{cls}" style="width:{v / scale * 100}%" title="{lab} {v}분">{str(v) if v / scale > .07 else ""}</span>'
             bar = (f'<div class="tb">{seg(r["walk_min"], "w", "가기")}{seg(r["wait_min"], "q", "기다림")}{seg(r["meal_min"], "m", "식사")}'
                    f'{seg(r["walk_min"], "w", "오기")}{seg(r["buffer_min"], "b", "여유")}<i style="left:{data["left_min"] / scale * 100}%"></i></div>')
             mk = '<ul class="marks col">' + "".join(

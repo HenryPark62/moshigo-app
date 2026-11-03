@@ -20,6 +20,9 @@ header[data-testid="stHeader"],#MainMenu,footer,[data-testid="stToolbar"],[data-
 [data-testid="stVerticalBlock"]{gap:12px}
 h1,h2,h3{color:var(--ink)!important;padding:0!important;margin:0!important}
 .stMarkdown p{margin:0}
+/* Streamlit 기본값(margin-bottom:-16px) 때문에 글 아래가 다음 요소에 가려지던 것을 없앤다 */
+[data-testid="stMarkdownContainer"]{margin-bottom:0!important}
+.sub{margin-bottom:4px}
 /* 버튼 */
 .stButton>button,.stDownloadButton>button,.stFormSubmitButton>button{min-height:48px;border-radius:14px;font-weight:700;font-size:15px;border:1px solid var(--hair);background:var(--surface);color:var(--ink);box-shadow:none}
 .stButton>button:hover{border-color:var(--accent);color:var(--accent-text)}
@@ -31,12 +34,12 @@ h1,h2,h3{color:var(--ink)!important;padding:0!important;margin:0!important}
 .top .brand{display:flex;align-items:center;gap:6px;font-family:var(--display);font-size:24px}
 .pill{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--tint-sun);font-size:12px;font-weight:700}
 .pill.ink{background:var(--ink);color:#fff}
-.h1{font-family:var(--display);font-size:26px;line-height:1.3;margin:8px 0 2px}
+.h1{font-family:var(--display);font-size:26px;line-height:1.3;margin:10px 0 4px}
 .h2d{font-family:var(--display);font-size:22px;line-height:1.3}
 .sub{color:var(--muted);font-size:14px;line-height:1.6}
 .small{font-size:13px}.muted{color:var(--muted)}
-.sec{font-size:17px;font-weight:700;margin-top:6px;display:flex;gap:8px;align-items:baseline}
-.sec .n{font-size:13px;color:var(--muted)}
+.sec{font-size:17px;font-weight:700;margin-top:10px;display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline}
+.sec .n{font-size:13px;font-weight:400;color:var(--muted)}
 .card{background:var(--surface);border:1px solid var(--hair);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
 .card.soft{background:var(--surface2)}
 .card.warnbox{background:var(--tint-warn);border-color:transparent;color:var(--warn)}
@@ -94,6 +97,7 @@ h1,h2,h3{color:var(--ink)!important;padding:0!important;margin:0!important}
 [data-testid="stFileUploaderDropzone"]{border-radius:18px;background:var(--sun);border:0;padding:22px}
 [data-testid="stFileUploaderDropzone"] *{color:#22302a!important}
 [data-testid="stFileUploaderDropzoneInstructions"] span{font-size:15px;font-weight:700}
+[data-testid="stCheckbox"]{padding:4px 0}
 div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--hair);background:var(--surface)}
 /* 큰 선택 버튼 */
 .st-key-choices button{min-height:84px;justify-content:flex-start;text-align:left;padding:14px 16px;border-width:2px}
@@ -101,8 +105,8 @@ div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--
 .st-key-choices [data-testid="stBaseButton-primary"]{background:var(--tint-green)!important;color:var(--ink)!important;border:2px solid var(--accent)!important;min-height:84px!important}
 .st-key-choices [data-testid="stBaseButton-primary"] p{color:var(--ink)!important}
 /* 메뉴 줄 */
-[class*="st-key-mrow_"]{background:var(--surface);border:1px solid var(--hair);border-radius:16px;padding:12px 14px 8px}
-[class*="st-key-mrow_"] [data-testid="stVerticalBlock"]{gap:4px}
+[class*="st-key-mrow_"]{background:var(--surface);border:1px solid var(--hair);border-radius:16px;padding:12px 14px}
+[class*="st-key-mrow_"] [data-testid="stVerticalBlock"]{gap:8px}
 [class*="st-key-mrow_"] .stButton{display:flex;justify-content:flex-end}
 [class*="st-key-mrow_"] .stButton>button{min-height:34px;padding:0 12px;font-size:13px;border-radius:999px}
 /* 아래 탭바 */

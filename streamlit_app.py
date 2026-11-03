@@ -19,16 +19,24 @@ from ui.common import CSS, E, md, momo  # noqa: E402
 
 s = st.session_state
 if "code" not in s:
-    code = st.query_params.get("me")
-    if not code or store.load(code) is None:
-        code = code if code and len(code) == 6 else store.new_code()
+    # 기기 코드: 주소의 ?me= (다른 기기에서 불러올 때) > 이 브라우저 쿠키 > 새로 만들기
+    code = st.query_params.get("me") or st.context.cookies.get("moshigo_me")
+    if not code or len(code) != 6:
+        code = store.new_code()
     s.code = code
     s.people = store.load_or_default(code, menu2.DEFAULT_PEOPLE)
     store.save(code, s.people)
     s.view = "start"
     s.picks = {}
-if st.query_params.get("me") != s.code:
-    st.query_params["me"] = s.code
+    s.cookie_set = False
+if "me" in st.query_params:
+    # 주소에 코드를 남기지 않는다: 링크를 공유해도 받은 사람이 내 입맛 목록을 같이 고치지 않게
+    del st.query_params["me"]
+if not s.get("cookie_set"):
+    import streamlit.components.v1 as components
+    components.html(f'''<script>document.cookie = "moshigo_me={s.code}; max-age=31536000; path=/; SameSite=Lax";
+try {{ window.parent.document.cookie = "moshigo_me={s.code}; max-age=31536000; path=/; SameSite=Lax"; }} catch (e) {{}}</script>''', height=0)
+    s.cookie_set = True
 
 st.markdown(CSS, unsafe_allow_html=True)
 act = [p["name"] for p in s.people if p.get("active", True)]
