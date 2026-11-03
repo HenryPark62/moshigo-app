@@ -114,3 +114,15 @@ def test_survey_feedback_moves_liked_menus_up():
     s = menu2.apply_feedback(menu2.demo(menu2.DEFAULT_PEOPLE), fb)
     croque = next(i for i in s["items"] if i["name_orig"].startswith("Croque"))
     assert croque["fb"]["again"] == 100 and croque["boost"] > 0
+
+
+def test_cook_time_by_food_and_rush_hour():
+    from core import nearby
+    els = [{"type": "node", "id": 1, "lat": 37.567, "lon": 126.979, "tags": {"name": "BBQ치킨", "amenity": "fast_food"}},
+           {"type": "node", "id": 2, "lat": 37.567, "lon": 126.979, "tags": {"name": "McDonald's", "amenity": "fast_food", "cuisine": "burger"}}]
+    pl = {p["name"]: p for p in nearby.to_places(els, 37.5665, 126.978)}
+    assert pl["BBQ치킨"]["wait_min"] == 20 and pl["McDonald's"]["wait_min"] == 5  # 치킨은 패스트푸드로 등록돼도 튀기는 시간
+    calm = freemeal.plan(menu2.DEFAULT_PEOPLE, "15:00", "16:30", 10, {"name": "x", "lat": 37.5665, "lng": 126.978}, list(pl.values()))
+    rush = freemeal.plan(menu2.DEFAULT_PEOPLE, "12:10", "13:40", 10, {"name": "x", "lat": 37.5665, "lng": 126.978}, list(pl.values()))
+    w = lambda f, n: next(r["wait_min"] for r in f["restaurants"] if r["name"] == n)
+    assert rush["peak"] and not calm["peak"] and w(rush, "BBQ치킨") > w(calm, "BBQ치킨")

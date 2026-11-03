@@ -75,7 +75,15 @@ def guess_cuisine(name):
 
 
 # 가게 종류 -> (이름, 기다림, 식사 시간 어림값)
-AMENITY = {"restaurant": ("식당", 10, 45), "fast_food": ("빨리 먹는 집", 5, 20), "cafe": ("카페", 5, 30)}
+AMENITY = {"restaurant": ("식당", 12, 40), "fast_food": ("빨리 먹는 집", 5, 20), "cafe": ("카페", 5, 30)}
+# 요리 종류 -> (주문하고 나오기까지, 먹는 시간) 분. 가게 종류보다 이것을 먼저 쓴다 (치킨은 패스트푸드로 등록돼도 튀기는 데 오래 걸린다)
+COOK = {
+    "chicken": (20, 30), "fried_chicken": (20, 30), "steak_house": (20, 45), "seafood": (20, 45), "fish": (20, 40),
+    "french": (15, 45), "sushi": (15, 40), "pizza": (15, 35), "pasta": (15, 40), "italian": (15, 45), "american": (15, 35),
+    "dim_sum": (15, 40), "korean": (12, 40), "japanese": (12, 40), "chinese": (12, 40), "thai": (12, 35), "mexican": (10, 30),
+    "ramen": (10, 25), "vietnamese": (8, 25), "noodle": (8, 25), "curry": (8, 25), "bunsik": (7, 20), "crepe": (8, 25),
+    "breakfast": (10, 30), "burger": (5, 20), "sandwich": (5, 20), "cake": (3, 25), "dessert": (3, 25),
+}
 
 # 세계 음식 표의 주재료만으로 알 수 없는 재료 (알레르기 확인용, 일반적인 조리법 기준 짐작)
 EXTRA = {
@@ -282,11 +290,15 @@ def to_places(elements, lat, lng):
             label, foods = "카페", ["치즈케이크", "크레페"]
         if not label and t.get("category"):
             label = t["category"]
+        first = next((c for c in cuisines if c in COOK), None)
+        cook, meal = COOK[first] if first else (amen[1], amen[2])
+        if first == "burger" and t.get("amenity") != "fast_food":  # 수제 버거집은 체인보다 오래 걸린다
+            cook, meal = 15, 30
         name = t.get("name:ko") or t.get("name")
         sub = t.get("name") if t.get("name:ko") and t.get("name") != t.get("name:ko") else ""
         out.append({
             "id": f"osm{el.get('type', 'n')[0]}{el.get('id')}", "name": name, "orig_name": sub,
-            "kind": label or amen[0], "lat": la, "lng": lo, "wait_min": amen[1], "meal_min": amen[2],
+            "kind": label or amen[0], "lat": la, "lng": lo, "wait_min": cook, "meal_min": meal, "sitdown": t.get("amenity") != "fast_food" and first not in ("burger", "sandwich"),
             "price": "", "note": ("영업시간: " + hours_ko(t["opening_hours"])) if t.get("opening_hours") else "", "url": t.get("url", ""),
             "dishes": [dish(f) for f in foods[:4]], "distance_m": round(_dist(lat, lng, la, lo)),
         })

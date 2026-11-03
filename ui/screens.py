@@ -882,13 +882,15 @@ def free():
         spots_view(geo, slot, data["left_min"], buf)
         st.button("위치 다시 잡기", width="stretch", key="free_regeo2", on_click=_set, kwargs={"geo": None})
         return
+    if data.get("peak"):
+        md('<div class="note">붐비는 시간이라 나오기를 10분 더 잡았어요.</div>')
     fits = [r for r in data["restaurants"] if r["fits"] and r["known"]][:12]
     rest = [r for r in data["restaurants"] if not r["fits"] and r["known"]][:3]
     if not fits:
         st.info("이 시간 안에 다녀올 수 있는 식당이 없어요. 모이는 시간을 늦추거나 미리 돌아오기를 줄여 보세요.")
     _map(data["meet"], f'{data["meet"]["time"]} 모여요', fits + rest, lambda r: f'{r["need_min"]}분' if r["fits"] else "부족",
          lambda r: "#2f7a50" if r["fits"] else "#8a8f8b", "freemap")
-    md('<div class="legend"><span><i style="background:#8ccb9f"></i>가고 오기</span><span><i style="background:#f2c6b6"></i>기다림</span>'
+    md('<div class="legend"><span><i style="background:#8ccb9f"></i>가고 오기</span><span><i style="background:#f2c6b6"></i>나오기</span>'
        '<span><i style="background:#ffc94a"></i>식사</span><span><i style="background:#dce2da"></i>여유</span><span>┃ 모이는 시간</span><span>(숫자는 분)</span></div>')
     for t, lst in [("시간 안에 다녀와요", fits), ("시간이 모자라요", rest)]:
         if not lst:
@@ -897,7 +899,7 @@ def free():
         for r in lst:
             scale = max(data["left_min"], r["need_min"])
             seg = lambda v, cls, lab: f'<span class="{cls}" style="width:{v / scale * 100}%" title="{lab} {v}분">{str(v) if v / scale > .07 else ""}</span>'
-            bar = (f'<div class="tb">{seg(r["walk_min"], "w", "가기")}{seg(r["wait_min"], "q", "기다림")}{seg(r["meal_min"], "m", "식사")}'
+            bar = (f'<div class="tb">{seg(r["walk_min"], "w", "가기")}{seg(r["wait_min"], "q", "나오기")}{seg(r["meal_min"], "m", "식사")}'
                    f'{seg(r["walk_min"], "w", "오기")}{seg(r["buffer_min"], "b", "여유")}<i style="left:{data["left_min"] / scale * 100}%"></i></div>')
             tag = f'<span class="tag good">{r["back_by"]} 도착 · {r["spare_min"]}분 남아요</span>' if r["fits"] else f'<span class="tag warn">{-r["spare_min"]}분 모자라요</span>'
             md(f'<div class="card {"" if r["fits"] else "soft"}"><div class="row"><div><b style="font-size:16px">{E(r["name"])}</b> <span class="small muted">{E(r["kind"])}</span></div>{walk_link(r["lat"], r["lng"])}</div>'
