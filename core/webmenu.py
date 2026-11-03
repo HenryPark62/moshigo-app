@@ -212,6 +212,8 @@ def find_menu(place, progress=None, asker=None):
         data, pages = (asker or ask)(place, say)
     except Exception as e:  # 네트워크나 API 오류는 기억하지 않는다 (다음에 다시 찾는다)
         print(f"[webmenu] 실패: {e!r}")
+        from .nearby import _err
+        _err("메뉴 불러오기", e)  # ?dev=1 화면에서 보이게
         return None
     got = check(data, pages, place)
     cache_put(key, got)

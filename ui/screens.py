@@ -223,6 +223,8 @@ def scan():
     warn = s.pop("scan_warn", None)
     if warn:
         st.warning(warn)
+        if s.get("dev") and nearby.ERRORS:
+            md('<div class="note">[dev] ' + E(" / ".join(nearby.ERRORS[-3:])) + "</div>")
     up = st.file_uploader("메뉴판 사진", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
     if up is not None:
         st.image(up.getvalue(), width="stretch")
