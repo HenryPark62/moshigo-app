@@ -2,7 +2,6 @@
 import base64
 import json
 import os
-from datetime import time as dtime
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -332,9 +331,8 @@ def row(it, mode):
         al = [c for c in it["contains"] if c in ALLERGENS]
         if al and mode != "누가 먹을까":
             body += chips([f"{a} 들어 있어요" for a in al], "kw care")
-        if it["course"] != "drink":
-            body += marks(it["per"], reasons=mode == "누가 먹을까")
-        md(f'<div class="row"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">{head}{body}</div><span class="price">{E(it["price"])}</span></div>')
+        tail = marks(it["per"], reasons=mode == "누가 먹을까") if it["course"] != "drink" else ""  # 표시 줄은 카드 전체 폭으로
+        md(f'<div class="row"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">{head}{body}</div><span class="price">{E(it["price"])}</span></div>{tail}')
         if it["course"] != "drink":
             st.button("무슨 맛인지 보기 ›", key=f"open_{it['id']}_{mode}", on_click=nav, args=('dish',), kwargs={"dish_id": it['id']})
 
@@ -728,13 +726,34 @@ def nearby_view():
         st.rerun()
 
 
+def local_now():
+    """휴대폰(브라우저) 시간대의 지금 시각. 시간대를 모르면 서버 시각."""
+    from datetime import datetime, timedelta, timezone
+
+    try:
+        from zoneinfo import ZoneInfo
+
+        if st.context.timezone:
+            return datetime.now(ZoneInfo(st.context.timezone))
+    except Exception:
+        pass
+    off = st.context.timezone_offset  # 분, 자바스크립트 getTimezoneOffset 기준(UTC보다 빠르면 음수)
+    return datetime.now(timezone(timedelta(minutes=-off))) if off is not None else datetime.now()
+
+
 def free():
+    from datetime import timedelta
+
     s = st.session_state
     title("자유 식사 시간", "모이는 시간에 늦지 않게 다녀올 수 있는 식당만 먼저 보여 드려요.")
+    if "free_now" not in s:  # 처음 열 때 지금 시각으로 채우고, 모이는 시간은 1시간 10분 뒤로
+        n = local_now()
+        n = n.replace(minute=n.minute - n.minute % 5, second=0, microsecond=0)
+        s.free_now, s.free_meet = n.time(), (n + timedelta(minutes=70)).time()
     with st.container(key="pair_time"):
         c1, c2 = st.columns(2)
-        now = c1.time_input("지금", dtime(12, 10), step=300)
-        meet = c2.time_input("모이는 시간", dtime(13, 30), step=300)
+        now = c1.time_input("지금", step=300, key="free_now")
+        meet = c2.time_input("모이는 시간", step=300, key="free_meet")
     buf = st.segmented_control("미리 돌아오기", [5, 10, 15], default=10, format_func=lambda b: f"{b}분 전") or 10
     geo = geo_block("free")
     if not geo:  # 위치가 없으면 계산하지 않는다 (예시 데이터를 보여 주지 않음)

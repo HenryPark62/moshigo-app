@@ -72,8 +72,8 @@ background:linear-gradient(90deg,transparent,#2f7a50,#ffc94a,transparent);backgr
 .tag.sun{background:var(--sun)}.tag.good{background:var(--tint-green);color:var(--accent-text)}.tag.warn{background:var(--tint-warn);color:var(--warn)}
 .vm{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:12px;font-weight:800;flex-shrink:0;line-height:1}
 .v-easy .vm,.vm.v-easy{background:var(--accent);color:#fff}.v-care .vm,.vm.v-care{background:var(--sun);color:#22302a}.v-avoid .vm,.vm.v-avoid{background:var(--warn-line);color:#fff}
-.marks{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 12px}
-.marks li{display:inline-flex;align-items:center;gap:5px;font-size:13px}.marks b{white-space:nowrap}
+.marks{list-style:none;margin:2px 0 0!important;padding:0!important;display:flex;flex-wrap:wrap;gap:6px 9px}
+.marks li{display:inline-flex;align-items:center;gap:4px;font-size:13px}.marks b{white-space:nowrap}
 .marks.col{flex-direction:column;gap:6px}.marks.col li{align-items:flex-start}
 .marks .why{color:var(--muted)}.marks .v-avoid .why,.marks li.v-avoid .why{color:var(--warn)}
 .lv{display:inline-flex;gap:2px;vertical-align:middle;margin-left:4px}.lv i{width:6px;height:13px;border-radius:2px;background:var(--hair-strong)}.lv i.on{background:var(--accent)}
