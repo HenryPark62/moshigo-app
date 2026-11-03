@@ -171,7 +171,7 @@ def edit():
     orig = next((p for p in s.people if p["id"] == s.get("edit_id")), None)
     p = dict(orig) if orig else {"id": "", "name": "", "relation": "", "age": "", "likes": [], "favorites": [], "avoid": [],
                                  "cannot": [], "allergies": [], "child": None, "active": True}
-    st.button("← 목록으로", type="tertiary", on_click=nav, args=('people',))
+    st.button("목록으로", icon=":material/arrow_back:", type="tertiary", on_click=nav, args=('people',))
     title(f"{p['name']} 입맛 고치기" if orig else "사람 추가하기", None if orig else "별명은 편하게 불러요. 엄마, 아빠, 동생처럼 직접 써 주세요.")
     k = p["id"] or "new"
     name = st.text_input("별명", p["name"], max_chars=10, placeholder="예: 엄마, 아빠, 동생", key=f"nm_{k}")
@@ -399,7 +399,7 @@ def dish():
     it = next((i for i in scan["items"] if i["id"] == s.get("dish_id")), None)
     if not it:
         go("menu")
-    st.button("← 메뉴판으로", type="tertiary", on_click=nav, args=('menu',))
+    st.button("메뉴판으로", icon=":material/arrow_back:", type="tertiary", on_click=nav, args=('menu',))
     tags = ' <span class="tag sun">가게 추천</span>' if it.get("chef_pick") else ""
     md(f'<div class="small muted">{E(it["section_ko"])} · {E(it["price"])}</div><div class="h1">{E(it["name_ko"])}{tags}</div>'
        f'<div class="reading" style="font-size:14px"><i>{E(it["name_orig"])}</i> · {E(it["reading"])}</div>')
@@ -518,7 +518,7 @@ def show_dialog(it, x):
 def survey():
     s = st.session_state
     it = next((i for i in s.scan["items"] if i["id"] == s.get("dish_id")), None)
-    st.button("← 메뉴로", type="tertiary", on_click=nav, args=('dish',))
+    st.button("메뉴로", icon=":material/arrow_back:", type="tertiary", on_click=nav, args=('dish',))
     title("먹어 보니 어땠어요?", f"{it['name_ko']} · 남겨 주신 답은 다음에 이 메뉴를 보는 사람에게 알려 줘요.")
     with st.form("survey"):
         ordered = st.segmented_control("이 메뉴를 실제로 시켰나요?", ["네", "아니요"], default="네")
@@ -645,7 +645,7 @@ def geo_block(key):
             s.geo_asking, s.geo_err = None, ("위치를 가져오지 못했어요. 휴대폰은 설정에서 브라우저 위치 권한을, 노트북(맥)은 시스템 설정 > 개인정보 보호 및 보안 > "
                                              "위치 서비스에서 브라우저를 켜 주세요. 주소창 왼쪽 자물쇠에서 이 사이트 위치 허용도 확인해 주세요.")
             st.rerun()
-        md('<div class="card soft small">위치 허용 창이 뜨면 <b>허용</b>을 눌러 주세요.</div>')
+        md('<div class="note one-line">위치 허용 창이 뜨면 <b>허용</b>을 눌러 주세요.</div>')
         return None
     if s.get("geo_err"):
         st.warning(s.pop("geo_err"))
@@ -698,7 +698,7 @@ def _pick(r, key):
 
 def nearby_view():
     s = st.session_state
-    st.button("← 메뉴판 찍기로", type="tertiary", on_click=nav, args=('scan',))
+    st.button("메뉴판 찍기로", icon=":material/arrow_back:", type="tertiary", on_click=nav, args=('scan',))
     title("주변 식당", "지금 있는 곳에서 가까운 식당이에요. 같이 먹는 사람마다 먹을 메뉴를 미리 보여 드려요.")
     geo = geo_block("near")
     if not geo:

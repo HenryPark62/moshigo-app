@@ -124,7 +124,9 @@ LIST_SCHEMA = {"type": "object", "properties": {
 LIST_SYSTEM = """메뉴판에 적힌 메뉴를 위에서 아래, 왼쪽에서 오른쪽 순서대로 빠짐없이 적는다. 음료도 적는다.
 요리 이름은 원래 글자 그대로(악센트, 한자, 가나 포함) 적고, 번역하지 않는다. 흐려서 못 읽은 줄은 name_orig에 읽은 만큼 적는다.
 메뉴판이 아니면 is_menu=false, lines는 빈 배열."""
-CHUNK = 12        # 한 번에 설명을 만드는 메뉴 수 (나눠서 동시에 만든다)
+CHUNK = 6         # 한 번에 설명을 만드는 메뉴 수 (나눠서 동시에 만든다)
+LIST_MODEL = "claude-opus-5-5"     # 1단계: 메뉴 이름 빠짐없이 (사진 읽기는 가장 정확한 모델로)
+DESC_MODEL = "claude-sonnet-5-5"   # 2단계: 글자만 보고 설명과 판정 (빠른 모델)
 MAX_ITEMS = 60    # 너무 긴 메뉴판은 앞쪽부터 이만큼만
 
 
@@ -134,9 +136,9 @@ def _client():
     return anthropic.Anthropic()
 
 
-def _stream(system, content, schema, max_tokens):
+def _stream(system, content, schema, max_tokens, model=LIST_MODEL):
     with _client().beta.messages.stream(
-        model="claude-opus-5-5",
+        model=model,
         max_tokens=max_tokens,
         system=system,
         messages=[{"role": "user", "content": content}],
@@ -162,7 +164,7 @@ def _read(source, people, progress=None):
 
     say = progress or (lambda *_: None)
     say("메뉴 이름을 찾는 중이에요")
-    head = _stream(LIST_SYSTEM, source + [{"type": "text", "text": "이 메뉴판의 메뉴를 순서대로 적어 주세요."}], LIST_SCHEMA, 16000)
+    head = _stream(LIST_SYSTEM, source + [{"type": "text", "text": "이 메뉴판의 메뉴를 순서대로 적어 주세요."}], LIST_SCHEMA, 16000, LIST_MODEL)
     lines = head.get("lines") or []
     if not head.get("is_menu", True) or not lines:
         return {**{k: head.get(k, "") for k in ("restaurant", "menu_language", "language_code")}, "is_menu": False, "items": []}
@@ -176,17 +178,18 @@ def _read(source, people, progress=None):
     def one(group):
         listing = "\n".join(f"{i + 1:02d} | {g['section_orig']} | {g['name_orig']} | {g['price']}" + (f" | {g['note']}" if g["note"] else "")
                             for i, g in enumerate(group))
-        ask = [{"type": "text", "text": f"이 메뉴판에서 아래 {len(group)}개 메뉴만, 이 순서 그대로 하나씩 옮기고 판정해 주세요. "
+        ask = [{"type": "text", "text": f"{lang} 메뉴판에서 읽은 아래 {len(group)}개 메뉴만, 이 순서 그대로 하나씩 옮기고 판정해 주세요. "
                                          f"다른 메뉴는 넣지 마세요.\n(번호 | 묶음 | 이름 | 가격 | 메뉴판 설명)\n{listing}"}]
         for attempt in range(2):
             try:
-                return _stream(system, source + ask, schema, 16000).get("items") or []
+                return _stream(system, ask, schema, 8000, DESC_MODEL).get("items") or []
             except Exception as e:  # 한 번 더 해 보고, 그래도 안 되면 이 묶음은 이름만 남긴다
                 err = e
         print(f"[menu2] 묶음 실패: {err!r}")
         return [_bare(g) for g in group]
 
-    with ThreadPoolExecutor(min(6, len(groups))) as pool:
+    lang = head.get("menu_language") or ""
+    with ThreadPoolExecutor(min(10, len(groups))) as pool:
         parts = list(pool.map(one, groups))
     items = [it for part in parts for it in part]
     out = {"is_menu": True, "restaurant": head.get("restaurant", ""), "menu_language": head.get("menu_language", ""),

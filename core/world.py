@@ -85,6 +85,8 @@ def similarity(item, food):
             shared.append(BOTH_HIGH[axis])
     if not same_ing:  # 주재료가 다르면 '조금 닮았어요'까지만
         s = min(s - 0.06, 0.62)
+        if item.get("cooking") != cook:  # 주재료도 조리법도 다르면 맛 수치만 비슷한 것이라 닮은꼴로 치지 않는다
+            s = min(s, 0.45)
     return min(1.0, s), shared
 
 

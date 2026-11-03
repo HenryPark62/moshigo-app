@@ -37,7 +37,10 @@ background:linear-gradient(90deg,transparent,#2f7a50,#ffc94a,transparent);backgr
 /* 아직 누를 수 없는 버튼은 흐리게: 초록색이 비활성 상태를 덮지 않게 */
 [data-testid="stBaseButton-primary"]:disabled{background:var(--hair)!important;color:var(--muted)!important;cursor:not-allowed;opacity:1}
 [data-testid="stBaseButton-primary"]:disabled p{color:var(--muted)!important}
-[data-testid="stBaseButton-tertiary"]{min-height:32px!important;padding:0!important;color:var(--accent-text)!important;text-decoration:underline;font-weight:700}
+[data-testid="stBaseButton-tertiary"]{min-height:36px!important;padding:0 14px 0 10px!important;border:1px solid var(--hair)!important;border-radius:999px!important;
+background:var(--surface)!important;color:var(--ink)!important;text-decoration:none!important;font-weight:500!important;font-size:14px!important;gap:4px}
+[data-testid="stBaseButton-tertiary"] p{color:var(--ink)!important;text-decoration:none!important;font-size:14px!important}
+[data-testid="stBaseButton-tertiary"] [data-testid="stIconMaterial"]{font-size:18px;color:var(--ink)}
 /* 위 머리 */
 .top{display:flex;align-items:center;justify-content:space-between;padding:10px 0 6px;border-bottom:1px solid var(--hair);margin:0 -16px;padding-left:12px;padding-right:12px;background:var(--surface)}
 .top .brand{display:flex;align-items:center;gap:6px;font-family:var(--display);font-size:24px}
@@ -99,6 +102,9 @@ background:linear-gradient(90deg,transparent,#2f7a50,#ffc94a,transparent);backgr
 .legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted)}.legend i{display:inline-block;width:12px;height:9px;border-radius:2px;margin-right:4px}
 .thumb{width:100%;max-height:200px;object-fit:cover;object-position:top;border-radius:14px;border:1px solid var(--hair)}
 .note{font-size:12px;color:var(--muted);line-height:1.6}
+/* 위치 묻기, 쿠키 저장 같은 보이지 않는 틀은 자리를 차지하지 않게 */
+[data-testid="stElementContainer"]:has(iframe[title^="streamlit_js_eval"]),[data-testid="stElementContainer"]:has(iframe[height="0"]){position:absolute!important;width:1px;height:0!important;overflow:hidden;margin:0!important}
+.note.one-line{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:18px 0 4px}
 /* 선택 버튼 묶음: 둥근 막대, 고른 것은 진한 색 */
 [data-testid="stButtonGroup"] [data-testid^="stBaseButton-segmented_control"]{min-height:40px;border-radius:999px!important;border:1px solid var(--hair-strong)!important;
@@ -168,7 +174,7 @@ display:flex;align-items:center;justify-content:center;gap:12px}
 [data-testid="stBaseButton-secondary"]:hover,[data-testid="stBaseButton-secondary"]:focus:not(:active){background:var(--surface)!important;border-color:var(--hair)!important;color:var(--ink)!important;box-shadow:none!important}
 [data-testid="stBaseButton-secondary"]:hover p,[data-testid="stBaseButton-secondary"]:focus p{color:var(--ink)!important}
 [data-testid="stBaseButton-primary"]:hover:not(:disabled),[data-testid="stBaseButton-primary"]:focus:not(:active):not(:disabled){background:var(--accent)!important;border-color:transparent!important;box-shadow:none!important}
-[data-testid="stBaseButton-tertiary"]:hover{color:var(--accent-text)!important;background:none!important}
+[data-testid="stBaseButton-tertiary"]:hover,[data-testid="stBaseButton-tertiary"]:focus{color:var(--ink)!important;background:var(--surface)!important;border-color:var(--hair)!important}
 [data-testid="stButtonGroup"] [data-testid="stBaseButton-pills"]:hover,[data-testid="stButtonGroup"] [data-testid="stBaseButton-pills"]:focus:not(:active){background:var(--surface)!important;border-color:var(--hair-strong)!important;color:var(--ink)!important}
 [data-testid="stButtonGroup"] [data-testid="stBaseButton-pills"]:hover p{color:var(--ink)!important}
 [data-testid="stButtonGroup"] [data-testid="stBaseButton-pillsActive"]:hover{background:var(--tint-green)!important;border-color:var(--accent)!important}
