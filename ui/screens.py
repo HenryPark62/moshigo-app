@@ -1,12 +1,11 @@
 """화면들. 휴대폰 한 칸 기준."""
-import base64
 import json
 import os
 
 import streamlit as st
 import streamlit.components.v1 as components
 
-from core import freemeal, menu2, nearby, ocr, order, plan, reviews, store, world
+from core import burden, freemeal, menu2, nearby, ocr, order, plan, reviews, store, world
 from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, avatar, badges, chips, ghost_avatar, go, josa, level, loader, marks, md, momo, nav
 
 RELATIONS = ["나", "부모님", "아이", "배우자", "친구", "가족"]
@@ -114,7 +113,7 @@ def person_tile(p, alone, many):
     if not fav:
         tags = '<span class="kw care">즐겨 먹는 음식 없음</span>'
     tags += "".join(f'<span class="kw bad">{E(b)}</span>' for b in bad[:2])
-    state = "" if alone or not many else (f'<span class="state">오늘 같이</span>' if on else '<span class="state off">오늘은 빠져요</span>')
+    state = "" if alone or not many else ('<span class="state">오늘 같이</span>' if on else '<span class="state off">오늘은 빠져요</span>')
     with st.container(key=f"pc_{'' if on else 'off_'}{p['id']}"):
         md(f'<div class="pcard">{avatar(p.get("relation", "가족"), 64)}<div class="pname">{E(p["name"])}</div>'
            + (f'<div class="pmeta">{E(meta)}</div>' if meta else "") + state + f'<div class="chips">{tags}</div></div>')
@@ -176,7 +175,7 @@ def edit():
     md('<div class="sec">즐겨 먹는 음식</div>')
     fav = []
     countries = []
-    for food, v in world.WORLD.items():
+    for v in world.WORLD.values():
         if v[0] not in countries:
             countries.append(v[0])
     for c in countries:
@@ -543,7 +542,7 @@ def asks_view(pairs, scan, where, names=False):
     key = order.lang_key(scan)
     md('<div class="sec">직원이 물어볼 수 있어요</div>')
     for n, (it, q) in enumerate(pairs):
-        md(f'<div class="ask">' + (f'<span>{E(it["name_ko"])}</span>' if names else "") + f'<b>{E(q["q_orig"])}</b><span>{E(q["q_ko"])}</span></div>')
+        md('<div class="ask">' + (f'<span>{E(it["name_ko"])}</span>' if names else "") + f'<b>{E(q["q_orig"])}</b><span>{E(q["q_ko"])}</span></div>')
         speak_block([(order.speakable(a["orig"], key), a["ko"], a["orig"]) for a in q["answers"]], order.voice(scan), 60 * len(q["answers"]) + 8)
         if st.button("대답 크게 보여 주기", key=f"askbig_{where}_{it['id']}_{n}", type="tertiary", icon=":material/open_in_full:"):
             st.dialog("직원에게 보여 주기")(ask_dialog)(q, order.LANG[key]["voice"])
@@ -747,7 +746,7 @@ def rank_restaurants(places, act, speed):
     rows = []
     for r in places:
         marks = freemeal.person_marks(r["dishes"], act)
-        walk = max(1, round(r["distance_m"] * 1.3 / speed / 60))
+        walk = burden.walk_min(r["distance_m"], speed)
         score = sum((1 if m["mark"] == "편히" else 0.4 if m["mark"] == "조심" else -1) + (m["match"] and 0.5 or 0) for m in marks) / max(1, len(act))
         score -= walk / 30 + (0.3 if r["kind"] == "카페" else 0) + (0.6 if r["wait_min"] <= 5 else 0) + (0 if r["dishes"] else 0.8)
         rows.append(dict(r, marks=marks, walk_min=walk, score=score, all_ok=all(m["mark"] == "편히" for m in marks)))
@@ -989,7 +988,7 @@ def plan_view(geo, slot, start=None, end=None, buffer=10):
        + ("" if free is not None else f'<div class="note">{E(slowest)} 걸음 기준 (분당 {round(speed * 60)}m)</div>'))
     pts = [x["place"] for x in pl["stops"]]
     route = [[geo["lat"], geo["lng"]]] + [[p["lat"], p["lng"]] for p in pts] + ([[geo["lat"], geo["lng"]]] if back else [])
-    _map(geo, "출발", pts, lambda r: f'{pts.index(r) + 1}', lambda r: "#c0617f" if r["type"] == "food" else "#2f7a50", f"planmap", route=route)
+    _map(geo, "출발", pts, lambda r: f'{pts.index(r) + 1}', lambda r: "#c0617f" if r["type"] == "food" else "#2f7a50", "planmap", route=route)
     h = f'<div class="tl"><div class="tl-row edge"><b>{plan.hm(start)}</b><span>출발 (지금 있는 곳)</span></div>'
     for i, x in enumerate(pl["stops"]):
         p = x["place"]
@@ -1085,7 +1084,7 @@ def free():
         md(f'<div class="sec">{t} <span class="n">{len(lst)}곳</span></div>')
         for r in lst:
             scale = max(data["left_min"], r["need_min"])
-            seg = lambda v, cls, lab: f'<span class="{cls}" style="width:{v / scale * 100}%" title="{lab} {v}분">{str(v) if v / scale > .07 else ""}</span>'
+            seg = lambda v, cls, lab, scale=scale: f'<span class="{cls}" style="width:{v / scale * 100}%" title="{lab} {v}분">{str(v) if v / scale > .07 else ""}</span>'
             bar = (f'<div class="tb">{seg(r["walk_min"], "w", "가기")}{seg(r["wait_min"], "q", "나오기")}{seg(r["meal_min"], "m", "식사")}'
                    f'{seg(r["walk_min"], "w", "오기")}{seg(r["buffer_min"], "b", "여유")}<i style="left:{data["left_min"] / scale * 100}%"></i></div>')
             tag = f'<span class="tag good">{r["back_by"]} 도착 · {r["spare_min"]}분 남아요</span>' if r["fits"] else f'<span class="tag warn">{-r["spare_min"]}분 모자라요</span>'

@@ -169,11 +169,6 @@ def _stream(system, content, schema, max_tokens, model=LIST_MODEL):
     return json.loads(next(b.text for b in response.content if b.type == "text"))
 
 
-def _call(content, people):
-    """한 번에 옮기고 판정한다 (짧은 메뉴판, 테스트용)."""
-    return _stream(SYSTEM.format(people="\n".join("- " + describe(p) for p in people)), content, _schema([p["name"] for p in people]), 32000)
-
-
 def _read(source, people, progress=None):
     """1단계: 메뉴 이름 목록만 빠르게 뽑는다. 2단계: 12개씩 나눠 동시에 번역, 설명, 판정을 만든다.
     메뉴가 많은 메뉴판(수십 개)도 출력 한도에 걸리지 않고, 걸리는 시간도 메뉴 수와 덜 상관있다."""
@@ -197,7 +192,7 @@ def _read(source, people, progress=None):
                             for i, g in enumerate(group))
         ask = [{"type": "text", "text": f"{lang} 메뉴판에서 읽은 아래 {len(group)}개 메뉴만, 이 순서 그대로 하나씩 옮기고 판정해 주세요. "
                                          f"다른 메뉴는 넣지 마세요.\n(번호 | 묶음 | 이름 | 가격 | 메뉴판 설명)\n{listing}"}]
-        for attempt in range(2):
+        for _ in range(2):  # 한 번 실패하면 한 번 더
             try:
                 return _stream(system, ask, schema, 8000, DESC_MODEL).get("items") or []
             except Exception as e:  # 한 번 더 해 보고, 그래도 안 되면 이 묶음은 이름만 남긴다
@@ -329,7 +324,7 @@ def _score(item, x):
 
 def combos(scan, people):
     """사람마다 내 메뉴 하나 + 다 같이 나눠 먹을 후식. 가장 덜 맞는 사람의 점수가 가장 높은 조합을 먼저."""
-    judged = [i for i in scan["judged"]]
+    judged = scan["judged"]
     mains = [i for i in judged if i["course"] in ("main", "starter")]
     desserts = [i for i in judged if i["course"] == "dessert"]
     ids = [p["id"] for p in scan["people"]]

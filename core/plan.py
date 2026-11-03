@@ -15,8 +15,7 @@ def hm(m):
 
 
 def _walk(a, b, speed):
-    d = burden.haversine_m({"lat": a["lat"], "lng": a["lng"]}, {"lat": b["lat"], "lng": b["lng"]}) * 1.3
-    return max(1, round(d / speed / 60))
+    return burden.walk_min(burden.haversine_m(a, b), speed)
 
 
 def _peak(t):

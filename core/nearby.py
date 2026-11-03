@@ -4,7 +4,6 @@
 자유 식사 화면에서 사람마다 먹을 메뉴와 닮은꼴을 미리 보여 준다.
 기다림과 식사 시간은 가게 종류별 어림값이다.
 """
-import math
 import os
 import threading
 import time
@@ -12,7 +11,7 @@ from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 
 import httpx
 
-from . import world
+from . import burden, world
 
 ENDPOINTS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter",
              "https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
@@ -122,10 +121,7 @@ def dish(food):
 
 
 def _dist(a_lat, a_lng, b_lat, b_lng):
-    r = 6371000
-    p1, p2 = math.radians(a_lat), math.radians(b_lat)
-    h = math.sin((p2 - p1) / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(math.radians(b_lng - a_lng) / 2) ** 2
-    return 2 * r * math.asin(math.sqrt(h))
+    return burden.haversine_m({"lat": a_lat, "lng": a_lng}, {"lat": b_lat, "lng": b_lng})
 
 
 def _overpass(url, q):
@@ -432,7 +428,7 @@ def rank_spots(spots, lat, lng, people, speed):
     rows = []
     for sp in spots:
         dist = _dist(lat, lng, sp["lat"], sp["lon"])
-        walk = max(1, round(dist * 1.3 / speed / 60))
+        walk = burden.walk_min(dist, speed)
         why = SPOT_WHY[sp["group"]][1 if kid and sp["group"] in ("park", "play") else 0]
         if sp["group"] == "park" and kid and elder:
             why = "아이는 뛰어놀고, 부모님은 쉬어 가기 좋아요"

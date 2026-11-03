@@ -71,8 +71,7 @@ def plan(people, now="12:10", meet="13:30", buffer_min=10, meet_pt=None, restaur
     peak = 11 * 60 + 30 <= t < 13 * 60 or 17 * 60 + 30 <= t < 19 * 60 + 30  # 점심, 저녁 붐비는 시간
     rows = []
     for r in data["restaurants"]:
-        dist = burden.haversine_m(meet_pt, r) * burden.PARAMS["detour_factor"]
-        walk = max(1, round(dist / speed / 60))
+        walk = burden.walk_min(burden.haversine_m(meet_pt, r), speed)
         wait = r["wait_min"] + ((10 if r.get("sitdown", True) else 5) if peak else 0)
         need = walk + wait + r["meal_min"] + walk + buffer_min
         spare = left - need
