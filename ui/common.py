@@ -172,6 +172,11 @@ div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--
 .st-key-padd [data-testid="stElementContainer"]:has(.stButton){position:absolute!important;inset:0;z-index:2;margin:0!important}
 .st-key-padd .stButton,.st-key-padd .stButton>button{width:100%!important;height:100%!important}
 .st-key-padd button{opacity:0!important;min-height:100%!important}
+/* 찍기 화면의 같이 먹는 사람 (작은 캐릭터) */
+.mini-people{display:flex;flex-wrap:wrap;gap:8px}
+.mini{flex:1 1 72px;max-width:110px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;background:var(--surface);border:1px solid var(--hair);border-radius:14px;text-align:center}
+.mini b{font-size:13px}
+.mini .kw{font-size:10.5px;padding:1px 6px;margin-top:2px}
 /* 가게 추천 메뉴 */
 [class*="st-key-pick_"]{background:var(--tint-sun2);border:1px solid #f0d58a;border-radius:16px;padding:12px 14px}
 [class*="st-key-pick_"] [data-testid="stVerticalBlock"]{gap:8px}

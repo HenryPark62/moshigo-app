@@ -227,10 +227,12 @@ def scan():
     st.button("주변 식당 찾기", icon=":material/map:", width="stretch", on_click=nav, args=('nearby',))
     act = active()
     md('<div class="sec">같이 먹는 사람</div>')
-    md('<div class="card soft">' + "".join(
-        f'<div class="small"><b>{E(p["name"])}</b> <span class="muted">{E(", ".join(p.get("favorites", [])[:3]))}</span>'
-        + (f' <span class="kw bad">{E(", ".join([a + " 알레르기" for a in p.get("allergies", [])] + [c + " 못 먹음" for c in p.get("cannot", [])]))}</span>'
-           if p.get("allergies") or p.get("cannot") else "") + "</div>" for p in act) + "</div>")
+    tiles = ""
+    for p in act:
+        bad = [f"{a} 알레르기" for a in p.get("allergies") or []] + [f"{c} 못 먹음" for c in p.get("cannot") or []]
+        tiles += (f'<div class="mini">{avatar(p.get("relation", "가족"), 46)}<b>{E(p["name"])}</b>'
+                  + "".join(f'<span class="kw bad">{E(b)}</span>' for b in bad[:2]) + "</div>")
+    md(f'<div class="mini-people">{tiles}</div>')
     st.button("사람 바꾸기", width="stretch", on_click=nav, args=('people',))
 
 
