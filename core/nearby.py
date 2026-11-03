@@ -446,3 +446,67 @@ def rank_spots(spots, lat, lng, people, speed):
         names.add(r["name"])
         out.append(r)
     return out
+
+
+# ---------- 휴대폰 브라우저가 직접 묻기 ----------
+# 서버(Render 무료)는 여러 앱이 같은 주소를 나눠 써서 Nominatim이 '너무 많은 요청(429)'으로 막는다.
+# 사용자 휴대폰에서 직접 물으면 사람마다 주소가 달라 막히지 않는다. 서버는 받은 결과를 정리만 한다.
+FOOD_QUERIES = ["restaurant", "fast food"]
+
+
+def nominatim_urls(lat, lng, kind="food"):
+    """kind: food(식당, 900m) / spots(둘러볼 곳, 1200m). 브라우저가 차례로 부를 주소."""
+    from urllib.parse import urlencode
+
+    radius = 900 if kind == "food" else 1200
+    d = radius / 111000 * 1.1
+    qs = FOOD_QUERIES if kind == "food" else SPOT_QUERIES
+    return [("https://nominatim.openstreetmap.org/search?" + urlencode({
+        "q": q, "format": "jsonv2", "limit": 50, "extratags": 1, "namedetails": 1, "bounded": 1,
+        "accept-language": "ko,en", "viewbox": f"{lng - d},{lat + d},{lng + d},{lat - d}"})) for q in qs]
+
+
+def places_from_browser(results, lat, lng, radius=900):
+    """브라우저가 받아 온 Nominatim 결과 목록 -> 식당 목록 (to_places와 같은 모양)."""
+    out, seen = [], set()
+    for res in results or []:
+        if not isinstance(res, list):
+            continue
+        for x in res:
+            nd, et = x.get("namedetails") or {}, x.get("extratags") or {}
+            name = x.get("name") or nd.get("name")
+            if not name or x.get("osm_id") in seen or x.get("category") != "amenity":
+                continue
+            seen.add(x.get("osm_id"))
+            out.append({"type": "nominatim", "id": x.get("osm_id"), "lat": float(x["lat"]), "lon": float(x["lon"]),
+                        "tags": {"name": name, "name:ko": nd.get("name:ko", ""), "amenity": x.get("type", "restaurant"),
+                                 "cuisine": et.get("cuisine", ""), "opening_hours": et.get("opening_hours", "")}})
+    els = [e for e in out if _dist(lat, lng, e["lat"], e["lon"]) <= radius * 1.2]
+    return to_places(els, lat, lng)
+
+
+def spots_from_browser(results, lat, lng, radius=1200):
+    out, seen = [], set()
+    for res in results or []:
+        if not isinstance(res, list):
+            continue
+        for x in res:
+            key = (x.get("category"), x.get("type"))
+            if key not in SPOT_KIND or x.get("osm_id") in seen:
+                continue
+            seen.add(x.get("osm_id"))
+            kind, group = SPOT_KIND[key]
+            nd, et = x.get("namedetails") or {}, x.get("extratags") or {}
+            name = nd.get("name:ko") or x.get("name") or nd.get("name")
+            if not name:
+                if group != "play":
+                    continue
+                name = "어린이 놀이터"
+            out.append({"name": name, "lat": float(x["lat"]), "lon": float(x["lon"]), "kind": kind, "group": group,
+                        "hours": et.get("opening_hours", "")})
+    return [o for o in out if _dist(lat, lng, o["lat"], o["lon"]) <= radius * 1.2]
+
+
+def server_keys():
+    """키가 있는 서비스(카카오, Geoapify)는 서버에서 부른다 (키를 브라우저에 보내지 않기 위해)."""
+    return kakao_available() or geoapify_available()

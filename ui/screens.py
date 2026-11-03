@@ -679,6 +679,24 @@ def geo_block(key, slot=None):
     return None
 
 
+BROWSER_FETCH = """(async () => {
+  const urls = %s; const out = [];
+  for (let i = 0; i < urls.length; i++) {
+    if (i) await new Promise((r) => setTimeout(r, 1100));  // Nominatim 사용 정책: 1초에 한 번
+    try { const r = await fetch(urls[i]); out.push(r.ok ? await r.json() : {error: r.status}); }
+    catch (e) { out.push({error: String(e)}); }
+  }
+  return out;
+})()"""
+
+
+def browser_fetch(urls, key):
+    """휴대폰 브라우저가 직접 주소들을 차례로 불러 JSON 목록을 돌려준다. 아직이면 None."""
+    from streamlit_js_eval import streamlit_js_eval
+
+    return streamlit_js_eval(js_expressions=BROWSER_FETCH % json.dumps(urls), key=key)
+
+
 @st.cache_data(ttl=900, show_spinner=False)
 def _spots(lat, lng):
     return nearby.fetch_spots(lat, lng)
@@ -690,15 +708,28 @@ def walk_link(lat, lng):
 
 def spots_view(geo, slot, left=None, buffer=0):
     """주변 둘러볼 곳. left(남은 분)가 있으면 그 안에 다녀올 수 있는 곳만."""
+    s = st.session_state
+    lat, lng = round(geo["lat"], 3), round(geo["lng"], 3)
+    ck = f"spots_{lat}_{lng}"
     box = slot or st.empty()
-    box.markdown(loader("주변 둘러볼 곳을 찾는 중"), unsafe_allow_html=True)
-    try:
-        src, spots = _spots(round(geo["lat"], 3), round(geo["lng"], 3))
-    except Exception as e:
-        print(f"[nearby] 장소 실패: {e!r}")
-        spots = None
-    finally:
+    spots = s.get(ck)
+    if spots is None:
+        box.markdown(loader("주변 둘러볼 곳을 찾는 중"), unsafe_allow_html=True)
+        if not nearby.server_keys():
+            res = browser_fetch(nearby.nominatim_urls(lat, lng, "spots"), key=f"bf_spots_{lat}_{lng}")
+            if res is None:
+                return
+            spots = nearby.spots_from_browser(res, lat, lng)
+            if not spots:
+                nearby._err("브라우저 장소", [r.get("error") for r in res if isinstance(r, dict)] or "결과 없음")
+        if not spots:
+            try:
+                spots = _spots(lat, lng)[1]
+            except Exception as e:
+                print(f"[nearby] 장소 실패: {e!r}")
         box.empty()
+        if spots:
+            s[ck] = spots
     if st.session_state.get("dev"):  # 개발 확인용: 어느 서비스가 왜 실패했는지
         md('<div class="note">[dev] ' + E(" / ".join(nearby.ERRORS[-6:]) or "오류 없음") + f' / 장소 {len(spots or [])}개</div>')
     if not spots:
@@ -726,10 +757,28 @@ def spots_view(geo, slot, left=None, buffer=0):
 
 
 def places_here(geo, slot=None):
+    """주변 식당. 키가 없으면 휴대폰 브라우저가 직접 묻고, 안 되면 서버가 묻는다. 기다리는 중이면 ('wait', None)."""
+    s = st.session_state
+    lat, lng = round(geo["lat"], 3), round(geo["lng"], 3)
+    ck = f"places_{lat}_{lng}"
+    if ck in s:
+        return s[ck]
     box = slot or st.empty()
     box.markdown(loader("주변 식당 지도를 불러오는 중"), unsafe_allow_html=True)
+    if not nearby.server_keys():
+        res = browser_fetch(nearby.nominatim_urls(lat, lng, "food"), key=f"bf_food_{lat}_{lng}")
+        if res is None:
+            return "wait", None
+        places = nearby.places_from_browser(res, lat, lng)
+        if places:
+            box.empty()
+            s[ck] = ("OpenStreetMap", places)
+            return s[ck]
+        nearby._err("브라우저 식당", [r.get("error") for r in res if isinstance(r, dict)] or "결과 없음")
     try:
-        return _places(round(geo["lat"], 3), round(geo["lng"], 3))
+        out = _places(lat, lng)
+        s[ck] = out
+        return out
     except Exception as e:
         print(f"[nearby] 실패: {e!r}")
         return None, None
@@ -795,6 +844,8 @@ def nearby_view():
         st.button("위치 다시 잡기", width="stretch", key="near_regeo2", on_click=_set, kwargs={"geo": None})
         return
     src, places = places_here(geo, slot)
+    if src == "wait":
+        return
     if places is None:
         st.warning("주변 식당을 불러오지 못했어요. 잠시 뒤 다시 찾아 주세요.")
         st.button("다시 찾기", width="stretch", key="near_retry")
@@ -864,6 +915,8 @@ def free():
     if not geo:  # 위치가 없으면 계산하지 않는다 (예시 데이터를 보여 주지 않음)
         return
     src, places = places_here(geo, slot)
+    if src == "wait":
+        return
     if places is None:
         st.warning("주변 식당을 불러오지 못했어요. 잠시 뒤 다시 찾아 주세요.")
         st.button("다시 찾기", width="stretch", key="free_retry")
