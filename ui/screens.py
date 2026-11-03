@@ -137,10 +137,6 @@ def people():
         title("같이 먹는 사람", "사람마다 아는 음식이 달라요. 그 음식에 빗대어 맛을 알려 드려요.")
         if len(shown) == 1:
             md('<div class="card sunbox small"><div>같이 먹는 사람을 <b>사람 추가하기</b>로 넣어 주세요. 엄마, 아빠, 동생처럼 별명을 직접 쓰면 돼요.</div></div>')
-    empty = [p["name"] for p in shown if not p.get("favorites")]
-    if empty:
-        who = "내" if empty == ["나"] else f'<b>{E(", ".join(empty))}</b>의'
-        md(f'<div class="card soft small"><div>{who} 즐겨 먹는 음식을 골라 주세요. 그 음식에 빗대어 처음 보는 메뉴의 맛을 알려 드려요.</div></div>')
     for i, p in enumerate(shown):
         person_card(p)
         with st.container(key=f"pair_p{i}"):
@@ -237,10 +233,6 @@ def scan():
     st.button("주변 식당 찾기", icon=":material/map:", width="stretch", on_click=nav, args=('nearby',))
     act = active()
     md('<div class="sec">이 사람들 기준으로 볼게요</div>')
-    empty = [p["name"] for p in act if not p.get("favorites")]
-    if empty:
-        who = "내" if empty == ["나"] else f'<b>{E(", ".join(empty))}</b>의'
-        md(f'<div class="card sunbox small"><div>{who} 즐겨 먹는 음식을 먼저 골라 두면, 처음 보는 메뉴를 아는 음식에 빗대어 알려 드려요.</div></div>')
     md('<div class="card soft">' + "".join(
         f'<div class="small"><b>{E(p["name"])}</b> <span class="muted">{E(", ".join(p.get("favorites", [])[:3]))}</span>'
         + (f' <span class="kw bad">{E(", ".join([a + " 알레르기" for a in p.get("allergies", [])] + [c + " 못 먹음" for c in p.get("cannot", [])]))}</span>'

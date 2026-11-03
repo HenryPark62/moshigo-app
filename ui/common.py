@@ -25,7 +25,6 @@ h1,h2,h3{color:var(--ink)!important;padding:0!important;margin:0!important}
 .sub{margin-bottom:4px}
 /* 버튼 */
 .stButton>button,.stDownloadButton>button,.stFormSubmitButton>button{min-height:48px;border-radius:14px;font-weight:700;font-size:15px;border:1px solid var(--hair);background:var(--surface);color:var(--ink);box-shadow:none}
-.stButton>button:hover{border-color:var(--accent);color:var(--accent-text)}
 /* 누르는 순간 바로 반응이 보이게 */
 .stButton>button{transition:transform .08s ease,background-color .08s ease}
 .stButton>button:active:not(:disabled){transform:scale(.97);background:var(--tint-green)}
@@ -165,6 +164,27 @@ display:flex;align-items:center;justify-content:center;gap:12px}
 [data-testid="stFileUploaderDropzone"]:active{transform:scale(.99)}
 .st-key-tabbar button [data-testid="stIconMaterial"]{font-size:22px}
 .st-key-tabbar button>div{flex-direction:column;gap:0}
+/* 마우스를 올리기만 해서는 색이 바뀌지 않게: 고른 것(선택 상태)만 색이 들어간다 */
+[data-testid="stBaseButton-secondary"]:hover,[data-testid="stBaseButton-secondary"]:focus:not(:active){background:var(--surface)!important;border-color:var(--hair)!important;color:var(--ink)!important;box-shadow:none!important}
+[data-testid="stBaseButton-secondary"]:hover p,[data-testid="stBaseButton-secondary"]:focus p{color:var(--ink)!important}
+[data-testid="stBaseButton-primary"]:hover:not(:disabled),[data-testid="stBaseButton-primary"]:focus:not(:active):not(:disabled){background:var(--accent)!important;border-color:transparent!important;box-shadow:none!important}
+[data-testid="stBaseButton-tertiary"]:hover{color:var(--accent-text)!important;background:none!important}
+[data-testid="stButtonGroup"] [data-testid="stBaseButton-pills"]:hover,[data-testid="stButtonGroup"] [data-testid="stBaseButton-pills"]:focus:not(:active){background:var(--surface)!important;border-color:var(--hair-strong)!important;color:var(--ink)!important}
+[data-testid="stButtonGroup"] [data-testid="stBaseButton-pills"]:hover p{color:var(--ink)!important}
+[data-testid="stButtonGroup"] [data-testid="stBaseButton-pillsActive"]:hover{background:var(--tint-green)!important;border-color:var(--accent)!important}
+[data-testid="stButtonGroup"] [data-testid="stBaseButton-segmented_control"]:hover,[data-testid="stButtonGroup"] [data-testid="stBaseButton-segmented_control"]:focus:not(:active){background:var(--surface)!important;border-color:var(--hair-strong)!important;color:var(--ink)!important}
+[data-testid="stButtonGroup"] [data-testid="stBaseButton-segmented_control"]:hover p{color:var(--ink)!important}
+[data-testid="stButtonGroup"] [data-testid="stBaseButton-segmented_controlActive"]:hover{background:var(--ink)!important;border-color:var(--ink)!important}
+.st-key-choices [data-testid="stBaseButton-secondary"]:hover{border-color:var(--hair)!important;background:var(--surface)!important}
+.st-key-choices [data-testid="stBaseButton-primary"]:hover{background:var(--tint-green)!important;border-color:var(--accent)!important}
+.st-key-tabbar [data-testid="stBaseButton-secondary"]:hover,.st-key-tabbar [data-testid="stBaseButton-secondary"]:focus{background:none!important;border:0!important}
+.st-key-tabbar [data-testid="stBaseButton-primary"]:hover{background:var(--tint-sun)!important}
+[class*="st-key-mrow_"] .stButton>button:hover,[class*="st-key-mrow_"] .stButton>button:focus{background:none!important;border:0!important;color:var(--accent-text)!important}
+[class*="st-key-mrow_"] .stButton>button:hover p{color:var(--accent-text)!important}
+[class*="st-key-pair_p"] [data-testid="stBaseButton-secondary"]:hover,[class*="st-key-pair_p"] [data-testid="stBaseButton-secondary"]:focus{background:var(--surface2)!important;border-color:transparent!important}
+[data-testid="stFileUploaderDropzone"]:hover{background:var(--sun)!important}
+[data-testid="stExpander"] summary:hover{color:var(--ink)!important}
+[data-testid="stExpander"] summary:hover svg{fill:currentColor}
 </style>
 """
 
