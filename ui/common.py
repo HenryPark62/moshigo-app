@@ -20,6 +20,8 @@ header[data-testid="stHeader"],#MainMenu,footer,[data-testid="stToolbar"],[data-
 [data-testid="stVerticalBlock"]{gap:12px}
 h1,h2,h3{color:var(--ink)!important;padding:0!important;margin:0!important}
 .stMarkdown p{margin:0}
+/* 한글은 낱말 단위로 줄을 바꾼다 (긴 영문 이름은 필요하면 중간에서) */
+body,.stApp,[role="dialog"]{word-break:keep-all;overflow-wrap:anywhere}
 /* Streamlit 기본값(margin-bottom:-16px) 때문에 글 아래가 다음 요소에 가려지던 것을 없앤다 */
 [data-testid="stMarkdownContainer"]{margin-bottom:0!important}
 .sub{margin-bottom:4px}
@@ -104,6 +106,9 @@ background:var(--surface)!important;color:var(--ink)!important;text-decoration:n
 .note{font-size:12px;color:var(--muted);line-height:1.6}
 /* 위치 묻기, 쿠키 저장 같은 보이지 않는 틀은 자리를 차지하지 않게 */
 [data-testid="stElementContainer"]:has(iframe[title^="streamlit_js_eval"]),[data-testid="stElementContainer"]:has(iframe[height="0"]){position:absolute!important;width:1px;height:0!important;overflow:hidden;margin:0!important}
+/* 사진 위에 뜨는 작은 '전체 화면' 단추는 숨기고, 올린 사진 지우기(×)는 누르기 쉽게 */
+[data-testid="stElementToolbar"]{display:none!important}
+[data-testid="stFileUploaderDeleteBtn"] button{min-width:40px!important;min-height:40px!important}
 .note.one-line{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:18px 0 4px}
 /* 선택 버튼 묶음: 둥근 막대, 고른 것은 진한 색 */
