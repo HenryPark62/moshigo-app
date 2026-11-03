@@ -69,7 +69,6 @@ def start():
         people = [dict(p, active=(p["relation"] == "나") if s.alone else True) for p in s.people]
         save_people(people)
         go("scan" if s.alone and s.trip == "free" else ("free" if s.alone else "people"))
-    md('<div class="note" style="text-align:center">건강 정보는 묻지 않아요. 좋아하는 맛과 못 먹는 것만 알려 주세요.</div>')
 
 
 # ---------------- 사람 ----------------

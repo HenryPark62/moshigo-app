@@ -28,6 +28,9 @@ h1,h2,h3{color:var(--ink)!important;padding:0!important;margin:0!important}
 .stButton>button:hover{border-color:var(--accent);color:var(--accent-text)}
 [data-testid="stBaseButton-primary"]{background:var(--accent)!important;color:#fff!important;border-color:transparent!important;min-height:54px!important;font-size:16px!important}
 [data-testid="stBaseButton-primary"] p{color:#fff!important}
+/* 아직 누를 수 없는 버튼은 흐리게: 초록색이 비활성 상태를 덮지 않게 */
+[data-testid="stBaseButton-primary"]:disabled{background:var(--hair)!important;color:var(--muted)!important;cursor:not-allowed;opacity:1}
+[data-testid="stBaseButton-primary"]:disabled p{color:var(--muted)!important}
 [data-testid="stBaseButton-tertiary"]{min-height:32px!important;padding:0!important;color:var(--accent-text)!important;text-decoration:underline;font-weight:700}
 /* 위 머리 */
 .top{display:flex;align-items:center;justify-content:space-between;padding:10px 0 6px;border-bottom:1px solid var(--hair);margin:0 -16px;padding-left:12px;padding-right:12px;background:var(--surface)}
