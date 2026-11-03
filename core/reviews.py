@@ -3,9 +3,7 @@
 후기는 이 식당의 같은 메뉴를 먼저, 없으면 다른 식당의 같은 메뉴로 넓힌다.
 설문(실제로 시켰는지, 설명이 맛을 잘 그려 줬는지, 예상보다 강했던 맛, 다시 추천받고 싶은지)은 SQLite에 쌓고,
 '예상보다 강했다'는 응답이 많으면 그 메뉴 설명에 미리 알려 준다.
-시연용 예시 후기는 data/sample_reviews.json 에 있고 화면에 '예시'라고 표시한다.
 """
-import json
 import os
 import sqlite3
 import time
@@ -67,9 +65,8 @@ def user_reviews(menu, restaurant):
 
 
 def reviews(menu, restaurant):
-    """1순위 이 식당의 이 메뉴, 2순위 다른 식당의 같은 메뉴."""
-    sample = json.loads((DATA / "sample_reviews.json").read_text("utf-8")).get(menu, [])
-    allr = user_reviews(menu, restaurant) + [dict(r, kind="sample") for r in sample]
+    """1순위 이 식당의 이 메뉴, 2순위 다른 식당의 같은 메뉴. 실제 이용자가 남긴 후기만."""
+    allr = user_reviews(menu, restaurant)
     here = [r for r in allr if r["source"] == "here"]
     other = [r for r in allr if r["source"] != "here"]
     stars = [r["stars"] for r in allr]

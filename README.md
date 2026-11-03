@@ -57,11 +57,11 @@ cp .streamlit/secrets.example.toml .streamlit/secrets.toml   # 키 넣기
 .venv/bin/python -m pytest -q tests
 ```
 
-키가 없으면 예시 메뉴판(파리 비스트로)으로 같은 흐름이 동작한다. OCR 키가 없고 Claude 키만 있으면 사진을 Claude가 직접 읽는다.
+OCR 키가 없고 Claude 키만 있으면 사진을 Claude가 직접 읽는다.
 
 ## 시연용이라 바꿔야 하는 것
 
 - `core/world.py` 맛 수치와 `core/order.py` 현지어 문장은 초안 (팀 검토, 원어민 검토 필요)
 - 주변 식당의 기다림과 식사 시간은 가게 종류별 어림값, 걷는 길은 직선 거리 × 1.3 (OpenRouteService로 바꿀 것)
-- `data/paris_places.json` 식당은 [샘플], `data/sample_reviews.json` 후기는 화면에 '예시'로 표시
+- 화면에는 예시 데이터를 보여 주지 않는다. `core/data/demo_paris.json`, `paris_places.json`, `menu2.DEFAULT_PEOPLE`은 테스트용이고, 주소에 `?dev=1`을 붙이면 예시 메뉴판 버튼이 나온다(개발 확인용)
 - Streamlit Community Cloud의 파일은 다시 시작하면 지워질 수 있다 (SQLite). 오래 보관하려면 외부 DB로 옮긴다

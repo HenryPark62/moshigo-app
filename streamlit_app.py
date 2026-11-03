@@ -24,8 +24,9 @@ if "code" not in s:
     if not code or len(code) != 6:
         code = store.new_code()
     s.code = code
-    s.people = store.load_or_default(code, menu2.DEFAULT_PEOPLE)
+    s.people = screens.clean_examples(store.load_or_default(code, menu2.START_PEOPLE))
     store.save(code, s.people)
+    s.dev = st.query_params.get("dev") == "1"  # 개발자 확인용 (예시 메뉴판 버튼)
     s.view = "start"
     s.picks = {}
     s.cookie_set = False

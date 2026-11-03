@@ -30,6 +30,11 @@ DEFAULT_PEOPLE = [
 ]
 
 
+# 앱을 처음 열면 '나' 한 사람, 입맛은 비어 있다 (DEFAULT_PEOPLE은 테스트와 문서용 예시 가족)
+START_PEOPLE = [{"id": "me", "name": "나", "relation": "나", "age": "", "likes": [], "favorites": [], "avoid": [], "cannot": [],
+                 "allergies": [], "child": None, "active": True}]
+
+
 def josa(word, a, b):
     """받침이 있으면 a, 없으면 b. '로/으로'는 ㄹ 받침이면 '로'."""
     ch = re.sub(r"[^가-힣]", "", word)[-1:] or "가"
