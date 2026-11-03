@@ -122,6 +122,7 @@ pre{background:#1d2621;color:#eef2ea;padding:14px 16px;border-radius:12px;overfl
 <tr><td><code>world.best_match(item, favorites)</code></td><td>메뉴, 즐겨 먹는 음식</td><td>Match 또는 None</td></tr>
 <tr><td><code>order.card(scan, people, lines, requests)</code></td><td>lines [{item_id, count}], 부탁(한국어)</td><td>OrderCard. 언어는 <code>order.lang_key(scan)</code>: language_code로 11개 언어 중 고르고(중국어는 간체/번체 구분), 없으면 영어</td></tr>
 <tr><td><code>reviews.feedback(menus)</code>, <code>menu2.apply_feedback(scan, fb)</code></td><td>메뉴 원래 이름 목록</td><td>메뉴별 {n, again, imagine, boost}. boost를 메뉴 순서와 조합 점수에 더함</td></tr>
+<tr><td><code>nearby.fetch_spots(lat, lng, radius)</code>, <code>nearby.rank_spots(...)</code></td><td>위치, 같이 가는 사람, 걷는 속도</td><td>둘러볼 곳: 카카오(AT4 관광명소, CT1 문화시설) 또는 Nominatim(park, museum, attraction, playground, viewpoint, gallery). 사람에 맞춘 순서와 이유 한 줄</td></tr>
 <tr><td><code>nearby.find(lat, lng, radius)</code></td><td>위치</td><td>(출처 이름, 원본 목록). 카카오, Geoapify, Nominatim, Overpass 순</td></tr>
 <tr><td><code>nearby.to_places(elements, lat, lng)</code></td><td>원본 목록</td><td>식당 목록: id, name, kind, lat, lng, wait_min, meal_min, dishes[], distance_m, note(영업시간)</td></tr>
 <tr><td><code>freemeal.plan(people, now, meet, buffer, meet_pt=None, restaurants=None)</code></td><td>"HH:MM" 두 개, 여유 분, (지금 위치, 주변 식당)</td><td>FreeMeal. 위치가 없으면 예시 동네</td></tr>

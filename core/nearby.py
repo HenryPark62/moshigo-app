@@ -291,3 +291,92 @@ def to_places(elements, lat, lng):
             "dishes": [dish(f) for f in foods[:4]], "distance_m": round(_dist(lat, lng, la, lo)),
         })
     return out
+
+
+# ---------- 주변 둘러볼 곳 (공원, 박물관, 볼거리, 놀이터, 전망대) ----------
+SPOT_KIND = {  # (분류, 종류) -> (한국어 이름, 묶음)
+    ("leisure", "park"): ("공원", "park"), ("leisure", "garden"): ("정원", "park"), ("leisure", "nature_reserve"): ("자연 공원", "park"),
+    ("tourism", "museum"): ("박물관", "museum"), ("tourism", "gallery"): ("미술관", "museum"), ("amenity", "arts_centre"): ("문화 공간", "museum"),
+    ("tourism", "attraction"): ("볼거리", "sight"), ("historic", "monument"): ("기념물", "sight"), ("historic", "castle"): ("성", "sight"),
+    ("historic", "memorial"): ("기념물", "sight"), ("tourism", "viewpoint"): ("전망 좋은 곳", "view"),
+    ("leisure", "playground"): ("놀이터", "play"), ("tourism", "zoo"): ("동물원", "play"), ("tourism", "aquarium"): ("아쿠아리움", "play"),
+    ("tourism", "theme_park"): ("놀이공원", "play"),
+}
+SPOT_QUERIES = ["park", "museum", "attraction", "playground", "viewpoint", "gallery"]
+KAKAO_SPOT = {"AT4": ("볼거리", "sight"), "CT1": ("문화 공간", "museum")}
+
+
+def fetch_spots(lat, lng, radius=1200):
+    """주변 둘러볼 곳 원본: 카카오(한국, 키) > Nominatim. [{name, lat, lon, kind, group, hours}]"""
+    out = []
+    if kakao_available() and in_korea(lat, lng):
+        try:
+            for code, (kind, group) in KAKAO_SPOT.items():
+                r = httpx.get("https://dapi.kakao.com/v2/local/search/category.json", timeout=10,
+                              headers={"Authorization": f"KakaoAK {os.environ['KAKAO_REST_KEY']}"},
+                              params={"category_group_code": code, "x": lng, "y": lat, "radius": radius, "sort": "distance", "size": 15})
+                r.raise_for_status()
+                for d in r.json().get("documents", []):
+                    cat = d.get("category_name", "")
+                    g, k = ("park", "공원") if "공원" in cat else (group, cat.split(" > ")[-1] or kind)
+                    out.append({"name": d["place_name"], "lat": float(d["y"]), "lon": float(d["x"]), "kind": k, "group": g, "hours": ""})
+            if out:
+                return "카카오맵", out
+        except Exception as e:
+            print(f"[nearby] 카카오 장소 실패: {e!r}")
+    d = radius / 111000 * 1.1
+    seen = set()
+    for q in SPOT_QUERIES:
+        try:
+            res = _nominatim(q, lat, lng, d)
+        except Exception as e:
+            print(f"[nearby] Nominatim {q} 실패: {e!r}")
+            continue
+        for x in res:
+            key = (x.get("category"), x.get("type"))
+            if key not in SPOT_KIND or x.get("osm_id") in seen:
+                continue
+            seen.add(x.get("osm_id"))
+            kind, group = SPOT_KIND[key]
+            nd, et = x.get("namedetails") or {}, x.get("extratags") or {}
+            name = nd.get("name:ko") or x.get("name") or nd.get("name")
+            if not name:
+                if group != "play":  # 이름 없는 공원, 전망대는 찾아가기 어렵다
+                    continue
+                name = "어린이 놀이터"
+            out.append({"name": name, "lat": float(x["lat"]), "lon": float(x["lon"]), "kind": kind, "group": group,
+                        "hours": et.get("opening_hours", "")})
+    return "OpenStreetMap", [o for o in out if _dist(lat, lng, o["lat"], o["lon"]) <= radius * 1.2]
+
+
+STAY_MIN = {"park": 30, "museum": 45, "sight": 20, "view": 15, "play": 30}  # 머무는 시간 어림값 (자유식 시간 계산용)
+SPOT_WHY = {
+    "park": ("쉬어 가기 좋아요", "뛰어놀기 좋아요"), "museum": ("실내라 날씨와 상관없어요", "볼거리가 많아요"),
+    "sight": ("천천히 둘러보기 좋아요", "사진 찍기 좋아요"), "view": ("앉아서 경치 보기 좋아요", "사진 찍기 좋아요"),
+    "play": ("아이와 같이 가기 좋아요", "아이가 좋아해요"),
+}
+
+
+def rank_spots(spots, lat, lng, people, speed):
+    """같이 가는 사람에 맞춰 순서: 아이가 있으면 놀이터와 공원, 부모님이 있으면 공원과 박물관을 앞에."""
+    kid = any(p.get("child") or p.get("relation") == "아이" for p in people)
+    elder = any(p.get("relation") == "부모님" for p in people)
+    bonus = {"park": 0.6 + 0.4 * (kid or elder), "museum": 0.4 + 0.5 * elder, "sight": 0.5, "view": 0.3 + 0.3 * elder,
+             "play": (1.2 if kid else -0.5)}
+    rows = []
+    for sp in spots:
+        dist = _dist(lat, lng, sp["lat"], sp["lon"])
+        walk = max(1, round(dist * 1.3 / speed / 60))
+        why = SPOT_WHY[sp["group"]][1 if kid and sp["group"] in ("park", "play") else 0]
+        if sp["group"] == "park" and kid and elder:
+            why = "아이는 뛰어놀고, 부모님은 쉬어 가기 좋아요"
+        hours = ("영업시간: " + hours_ko(sp["hours"])) if sp.get("hours") else ""
+        rows.append({**sp, "lng": sp["lon"], "walk_min": walk, "why": why, "note": hours, "score": bonus[sp["group"]] - walk / 15})
+    rows.sort(key=lambda r: -r["score"])
+    out, names = [], set()
+    for r in rows:  # 같은 이름은 하나만
+        if r["name"] in names:
+            continue
+        names.add(r["name"])
+        out.append(r)
+    return out

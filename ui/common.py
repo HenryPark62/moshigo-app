@@ -148,12 +148,38 @@ div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--
 [class*="st-key-mrow_"] .stButton{display:flex;justify-content:flex-end}
 [class*="st-key-mrow_"] .stButton>button{min-height:34px;padding:0 4px;font-size:14px;border:0;background:none;color:var(--accent-text);font-weight:700}
 [class*="st-key-mrow_"] .stButton>button p{color:var(--accent-text)}
+/* 사람 카드 (2열) */
+[class*="st-key-pgrid_"] [data-testid="stHorizontalBlock"]{flex-wrap:nowrap!important;gap:10px!important;align-items:stretch}
+[class*="st-key-pgrid_"] [data-testid="stColumn"]{min-width:0!important;width:auto!important;flex:1 1 0!important}
+[class*="st-key-pc_"]{background:var(--surface);border:1px solid var(--hair);border-radius:18px;padding:12px 10px 10px;height:100%;justify-content:space-between}
+[class*="st-key-pc_"] [data-testid="stVerticalBlock"]{gap:6px}
+[class*="st-key-pc_off_"]{background:var(--surface2)}
+[class*="st-key-pc_off_"] .pcard{opacity:.5}
+.pcard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px}
+.pcard .pname{font-size:17px;font-weight:700;line-height:1.3}
+.pcard .pmeta{font-size:12px;color:var(--muted)}
+.pcard .chips{justify-content:center;margin-top:4px;gap:4px}
+.pcard .kw{font-size:11.5px;padding:2px 8px}
+.pcard .state{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--tint-green);color:var(--accent-text)}
+.pcard .state.off{background:var(--hair);color:var(--muted)}
+[class*="st-key-pc_"] [data-testid="stHorizontalBlock"]{gap:6px!important}
+[class*="st-key-pc_"] button{min-height:34px!important;font-size:13px!important;border-radius:10px!important;background:var(--surface2)!important;border-color:transparent!important;padding:0 4px!important}
+[class*="st-key-pc_"] button p{font-size:13px!important}
+[class*="st-key-pgrid_"] [data-testid="stColumn"]>div{height:100%}
+.st-key-padd{position:relative;height:100%;min-height:190px;border:2px dashed var(--hair-strong);border-radius:18px;justify-content:center}
+.st-key-padd .pcard .pname{font-size:14px;color:var(--muted)}
+/* 칸 전체를 누를 수 있게: 투명한 버튼을 위에 덮는다 */
+.st-key-padd [data-testid="stElementContainer"]:has(.stButton){position:absolute!important;inset:0;z-index:2;margin:0!important}
+.st-key-padd .stButton,.st-key-padd .stButton>button{width:100%!important;height:100%!important}
+.st-key-padd button{opacity:0!important;min-height:100%!important}
 /* 가게 추천 메뉴 */
 [class*="st-key-pick_"]{background:var(--tint-sun2);border:1px solid #f0d58a;border-radius:16px;padding:12px 14px}
 [class*="st-key-pick_"] [data-testid="stVerticalBlock"]{gap:8px}
 [class*="st-key-pick_"] .stButton>button{min-height:34px;padding:0 4px;font-size:14px;border:0!important;background:none!important;color:var(--accent-text);font-weight:700}
 [class*="st-key-pick_"] .stButton>button p{color:var(--accent-text)!important}
 [class*="st-key-pick_"] .stButton>button:hover p,[class*="st-key-mrow_"] .stButton>button:hover p{color:var(--accent-text)!important}
+.stMarkdown a.golink,.stMarkdown a.golink:hover{text-decoration:none!important}
+.golink{flex-shrink:0;font-size:13px;font-weight:700;color:var(--accent-text)!important;text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:4px 10px;background:var(--surface);white-space:nowrap}
 .fbline{font-size:12px;color:var(--accent-text);font-weight:700;margin-top:6px}
 /* 아래 탭바 */
 .st-key-tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);z-index:99;background:var(--surface);border-top:1px solid var(--hair);padding:6px 6px calc(8px + env(safe-area-inset-bottom))}
@@ -220,6 +246,41 @@ def md(h):
 
 def momo(size=40):
     return MOMO.format(s=size)
+
+
+# 관계마다 다른 거북이 캐릭터 (사람 카드용): (등껍질, 등 무늬, 모자 색 또는 None, 안경)
+LOOKS = {
+    "나": ("#3E8E5E", "#6DBA88", "#FFC94A", False),
+    "부모님": ("#8B6B4A", "#B89574", None, True),
+    "아이": ("#4C8FC9", "#86B9E3", "#E8604C", False),
+    "배우자": ("#C0617F", "#E39AB2", "#FFC94A", False),
+    "친구": ("#7466C4", "#A79CE3", "#FFC94A", False),
+    "가족": ("#3E8E86", "#7CC2BA", None, False),
+}
+
+
+def avatar(relation, size=64):
+    shell, plate, hat, glasses = LOOKS.get(relation, LOOKS["가족"])
+    svg = MOMO.format(s=size).replace("#3E8E5E", shell).replace("#6DBA88", plate)
+    hat_parts = ['<path d="M87 52 Q100 36 113 52 Z" fill="#FFC94A" stroke="#22302A" stroke-width="3" stroke-linejoin="round"/>',
+                 '<path d="M83 52 H117" stroke="#22302A" stroke-width="3" stroke-linecap="round"/>']
+    if hat is None:
+        for h in hat_parts:
+            svg = svg.replace(h, "")
+    else:
+        svg = svg.replace(hat_parts[0], hat_parts[0].replace("#FFC94A", hat))
+    if glasses:
+        svg = svg.replace("</svg>", '<circle cx="104" cy="60" r="5.5" fill="none" stroke="#22302A" stroke-width="2.2"/>'
+                                    '<path d="M98.5 59 H92" stroke="#22302A" stroke-width="2.2" stroke-linecap="round"/></svg>')
+    return svg
+
+
+def ghost_avatar(size=64):
+    """아직 없는 사람: 회색 실루엣 거북이와 초록 + 동그라미."""
+    svg = MOMO.format(s=size)
+    for a, b in [("#22302A", "#b9c2b7"), ("#3E8E5E", "#e4e9e1"), ("#6DBA88", "#f2f5ef"), ("#8CCB9F", "#eef1ec"), ("#FFC94A", "#e4e9e1"), ("#F29C8C", "#e4e9e1")]:
+        svg = svg.replace(a, b)
+    return svg.replace("</svg>", '<circle cx="96" cy="26" r="17" fill="#2f7a50"/><path d="M96 17 V35 M87 26 H105" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>')
 
 
 # 다리에 이름을 붙인 걷는 모모 (로딩 표시용)

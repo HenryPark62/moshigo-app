@@ -7,7 +7,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from core import freemeal, menu2, nearby, ocr, order, reviews, store, world
-from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, chips, go, josa, level, loader, marks, md, momo, nav
+from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, avatar, chips, ghost_avatar, go, josa, level, loader, marks, md, momo, nav
 
 RELATIONS = ["나", "부모님", "아이", "배우자", "친구", "가족"]
 AGES = ["3~5살", "6~9살", "10대", "20대", "30대", "40대", "50대", "60대", "70대", "80대 이상"]
@@ -101,30 +101,26 @@ def start():
 
 
 # ---------------- 사람 ----------------
-def person_card(p):
-    facts = ""
-    if p.get("favorites"):
-        facts += f'<dt>즐겨 먹는 음식</dt><dd>{chips(p["favorites"], "kw food")}</dd>'
-    else:
-        facts += '<dt>즐겨 먹는 음식</dt><dd><span class="kw care">아직 안 골랐어요</span></dd>'
-    if p.get("likes"):
-        facts += f'<dt>좋아하는 맛</dt><dd>{chips(p["likes"])}</dd>'
+def person_tile(p, alone, many):
+    """사람 한 명을 캐릭터 카드로."""
+    on = p.get("active", True)
+    fav = p.get("favorites") or []
     bad = [f"{a} 알레르기" for a in p.get("allergies") or []] + [f"{c} 못 먹음" for c in p.get("cannot") or []]
-    care = [f"{a} 피하기" for a in p.get("avoid") or []]
-    if bad or care:
-        tags = "".join('<span class="kw bad">' + E(x) + "</span>" for x in bad) + "".join('<span class="kw care">' + E(x) + "</span>" for x in care)
-        facts += f'<dt>빼야 하는 것</dt><dd><div class="chips">{tags}</div></dd>'
-    c = p.get("child")
-    if c:
-        facts += (f'<dt>아이 입맛</dt><dd><div class="chips"><span class="kw">처음 보는 음식: {E(c.get("new_food", ""))}</span>'
-                  + "".join(f'<span class="kw care">{E(x)} 골라내요</span>' for x in c.get("pick_out") or [])
-                  + (f'<span class="kw">잘 먹는 재료: {E(", ".join(c.get("good") or []))}</span>' if c.get("good") else "") + "</div></dd>")
-    meta = " · ".join(x for x in [p["relation"] if p["relation"] != p["name"] else "", p.get("age", "")] if x)
-    off = "" if p.get("active", True) else ' style="opacity:.55"'
-    md(f'<div class="card"{off}><div class="row" style="align-items:center;justify-content:flex-start">'
-       f'<span class="av">{E(p["name"][:1])}</span><div><div class="name">{E(p["name"])}</div><div class="reading">{E(meta)}</div></div>'
-       f'<span style="margin-left:auto" class="tag {"good" if p.get("active", True) else ""}">{"오늘 같이" if p.get("active", True) else "오늘은 빠져요"}</span></div>'
-       f'<dl class="dl" style="font-size:13px;grid-template-columns:86px 1fr">{facts}</dl></div>')
+    meta = " · ".join(x for x in [p["relation"] if p["relation"] not in (p["name"], "나") else "", p.get("age", "")] if x)
+    tags = "".join(f'<span class="kw food">{E(f)}</span>' for f in fav[:3]) + (f'<span class="kw">+{len(fav) - 3}</span>' if len(fav) > 3 else "")
+    if not fav:
+        tags = '<span class="kw care">즐겨 먹는 음식 없음</span>'
+    tags += "".join(f'<span class="kw bad">{E(b)}</span>' for b in bad[:2])
+    state = "" if alone or not many else (f'<span class="state">오늘 같이</span>' if on else '<span class="state off">오늘은 빠져요</span>')
+    with st.container(key=f"pc_{'' if on else 'off_'}{p['id']}"):
+        md(f'<div class="pcard">{avatar(p.get("relation", "가족"), 64)}<div class="pname">{E(p["name"])}</div>'
+           + (f'<div class="pmeta">{E(meta)}</div>' if meta else "") + state + f'<div class="chips">{tags}</div></div>')
+        btns = ["edit"] + (["act"] if many and not alone else [])
+        cols = dict(zip(btns, st.columns(len(btns))))
+        cols["edit"].button("고치기", key=f"edit_{p['id']}", width="stretch", on_click=nav, args=("edit",), kwargs={"edit_id": p["id"]})
+        if "act" in cols:
+            cols["act"].button("빼기" if on else "같이", key=f"act_{p['id']}", width="stretch",
+                               on_click=lambda pid=p["id"]: save_people([dict(x, active=not x.get("active", True)) if x["id"] == pid else x for x in st.session_state.people]))
 
 
 def people():
@@ -132,23 +128,19 @@ def people():
     alone = s.get("alone") is True
     # 혼자로 들어오면 오늘 같이 먹는 사람(처음엔 나만)만 보여 준다
     shown = [p for p in s.people if p.get("active", True)] if alone else s.people
-    if alone:
-        title("내 입맛")
-    else:
-        title("같이 먹는 사람")
-    for i, p in enumerate(shown):
-        person_card(p)
-        with st.container(key=f"pair_p{i}"):
-            btns = ["edit"] + ([] if alone or len(shown) == 1 else ["act"]) + ([] if p["id"] == "me" else ["del"])
-            cols = dict(zip(btns, st.columns(len(btns))))
-            cols["edit"].button("고치기", key=f"edit{i}", width="stretch", on_click=nav, args=('edit',), kwargs={"edit_id": p['id']})
-            if "act" in cols:
-                cols["act"].button("오늘 빼기" if p.get("active", True) else "오늘 같이", key=f"act{i}", width="stretch",
-                                   on_click=lambda pid=p["id"]: save_people([dict(x, active=not x.get("active", True)) if x["id"] == pid else x for x in st.session_state.people]))
-            if "del" in cols:
-                cols["del"].button("지우기", key=f"del{i}", width="stretch",
-                                   on_click=lambda pid=p["id"]: save_people([x for x in st.session_state.people if x["id"] != pid]))
-    st.button("사람 추가하기", icon=":material/person_add:", width="stretch", on_click=nav, args=('edit',), kwargs={"edit_id": None})
+    title("내 입맛" if alone else "같이 먹는 사람")
+    cells = shown + [None]  # 마지막 칸은 '사람 추가'
+    for r in range(0, len(cells), 2):
+        with st.container(key=f"pgrid_{r}"):
+            cols = st.columns(2)
+            for col, p in zip(cols, cells[r:r + 2]):
+                with col:
+                    if p is None:
+                        with st.container(key="padd"):
+                            md(f'<div class="pcard">{ghost_avatar(64)}<div class="pname">같이 먹을 사람 추가</div></div>')
+                            st.button("같이 먹을 사람 추가", width="stretch", on_click=nav, args=("edit",), kwargs={"edit_id": None})
+                    else:
+                        person_tile(p, alone, len(shown) > 1)
     n = len(active())
     nxt = "자유 식사 식당 보기" if s.get("trip") == "package" else "메뉴판 찍기"
     st.button(f"{n}명 기준으로 {nxt}", type="primary", width="stretch", disabled=n == 0, on_click=nav, args=('free' if s.get('trip') == 'package' else 'menu' if s.get('scan') else 'scan',))
@@ -196,7 +188,11 @@ def edit():
         po = st.pills("이럴 때 골라내요", PICK_OUT, selection_mode="multi", default=c["pick_out"], key=f"po_{k}")
         gd = st.pills("잘 먹는 재료", GOOD, selection_mode="multi", default=c["good"], key=f"gd_{k}")
         child = {"new_food": nf or "망설여요", "pick_out": po or [], "good": gd or []}
-    if st.button("저장하기", type="primary", width="stretch", disabled=not name.strip()):
+    save = st.button("저장하기", type="primary", width="stretch", disabled=not name.strip())
+    if orig and orig["id"] != "me" and st.button(f"{orig['name']} 지우기", icon=":material/delete:", width="stretch", key="del_person"):
+        save_people([x for x in s.people if x["id"] != orig["id"]])
+        go("people")
+    if save:
         nick = name.strip()
         new = dict(p, name=nick, relation=rel or NICK_REL.get(nick, "가족"), age=age or "", favorites=fav, likes=likes or [], avoid=avoid or [],
                    cannot=cannot or [], allergies=allergies or [], child=child,
@@ -681,6 +677,50 @@ def geo_block(key, slot=None):
     return None
 
 
+@st.cache_data(ttl=900, show_spinner=False)
+def _spots(lat, lng):
+    return nearby.fetch_spots(lat, lng)
+
+
+def walk_link(lat, lng):
+    return f'<a class="golink" href="https://www.google.com/maps/dir/?api=1&destination={lat},{lng}&travelmode=walking" target="_blank" rel="noopener">길 찾기</a>'
+
+
+def spots_view(geo, slot, left=None, buffer=0):
+    """주변 둘러볼 곳. left(남은 분)가 있으면 그 안에 다녀올 수 있는 곳만."""
+    box = slot or st.empty()
+    box.markdown(loader("주변 둘러볼 곳을 찾는 중"), unsafe_allow_html=True)
+    try:
+        src, spots = _spots(round(geo["lat"], 3), round(geo["lng"], 3))
+    except Exception as e:
+        print(f"[nearby] 장소 실패: {e!r}")
+        spots = None
+    finally:
+        box.empty()
+    if not spots:
+        st.info("가까운 곳에서 공원이나 볼거리를 찾지 못했어요.")
+        return
+    act = active()
+    speed, slowest = freemeal.group_speed(act)
+    rows = nearby.rank_spots(spots, geo["lat"], geo["lng"], act, speed)
+    if left is not None:
+        for r in rows:
+            r["need"] = r["walk_min"] * 2 + nearby.STAY_MIN[r["group"]] + buffer
+        rows = [r for r in rows if r["need"] <= left]
+        if not rows:
+            st.info("이 시간 안에 다녀올 수 있는 곳이 없어요.")
+            return
+    rows = rows[:12]
+    md(f'<div class="small">같이 가는 사람에게 맞는 순서 {len(rows)}곳 <span class="muted">({E(slowest)} 걸음 기준)</span></div>')
+    colors = {"park": "#2f7a50", "play": "#4c8fc9", "museum": "#8b6b4a", "sight": "#c99a1e", "view": "#7466c4"}
+    _map(geo, "지금 여기", rows, lambda r: f'{rows.index(r) + 1}', lambda r: colors[r["group"]], "spotmap")
+    for i, r in enumerate(rows):
+        extra = f' · 다녀오면 {r["need"]}분' if left is not None else ""
+        md(f'<div class="card"><div class="row"><div><span class="tag">{i + 1}</span> <b style="font-size:16px">{E(r["name"])}</b>'
+           f'<div class="small muted">{E(r["kind"])} · 걸어서 {r["walk_min"]}분{extra}</div></div>{walk_link(r["lat"], r["lng"])}</div>'
+           f'<div class="small">{E(r["why"])}</div>' + (f'<div class="note">{E(r["note"])}</div>' if r.get("note") else "") + "</div>")
+
+
 def places_here(geo, slot=None):
     box = slot or st.empty()
     box.markdown(loader("주변 식당 지도를 불러오는 중"), unsafe_allow_html=True)
@@ -739,10 +779,16 @@ def _pick(r, key):
 def nearby_view():
     s = st.session_state
     st.button("메뉴판 찍기로", icon=":material/arrow_back:", type="tertiary", on_click=nav, args=('scan',))
-    title("주변 식당")
+    title("내 주변")
     slot = st.empty()  # 위치 찾기와 식당 찾기 로딩 표시를 같은 자리에서 바꿔 끼운다
     geo = geo_block("near", slot)
     if not geo:
+        return
+    if not s.get("near_tab"):
+        s.near_tab = "식당"
+    if st.segmented_control("보기", ["식당", "둘러볼 곳"], key="near_tab", label_visibility="collapsed") == "둘러볼 곳":
+        spots_view(geo, slot)
+        st.button("위치 다시 잡기", width="stretch", key="near_regeo2", on_click=_set, kwargs={"geo": None})
         return
     src, places = places_here(geo, slot)
     if places is None:
@@ -771,10 +817,10 @@ def nearby_view():
     for i, r in enumerate(shown):
         orig = f' <span class="small muted">{E(r["orig_name"])}</span>' if r.get("orig_name") else ""
         md(f'<div class="card"><div class="row"><div><span class="tag {"good" if r["all_ok"] else ""}">{i + 1}</span> <b style="font-size:16px">{E(r["name"])}</b>{orig}'
-           f'<div class="small muted">{E(r["kind"])} · 걸어서 {r["walk_min"]}분</div></div></div>{_marks(r["marks"])}'
+           f'<div class="small muted">{E(r["kind"])} · 걸어서 {r["walk_min"]}분</div></div>{walk_link(r["lat"], r["lng"])}</div>{_marks(r["marks"])}'
            + (f'<div class="note">{E(r["note"])}</div>' if r.get("note") else "") + "</div>")
         _pick(r, f"near_pick_{i}_{r['id']}")
-    md(f'<div class="note">대표 메뉴는 요리 종류로 짐작한 거예요. 지도 © {E(src)}</div>')
+    md('<div class="note">대표 메뉴는 요리 종류로 짐작한 거예요.</div>')
     if geo and st.button("위치 다시 잡기", width="stretch"):
         s.geo = None
         st.rerun()
@@ -828,6 +874,12 @@ def free():
         return
     md(f'<div><b style="font-size:24px;color:var(--accent-text)">{data["left_min"]}분</b> 남았어요</div>'
        f'<div class="note">지금 있는 곳에서 출발, {E(data["slowest"])} 걸음 기준 (분당 {round(data["speed"] * 60)}m)</div>')
+    if not s.get("free_tab"):
+        s.free_tab = "식당"
+    if st.segmented_control("보기", ["식당", "둘러볼 곳"], key="free_tab", label_visibility="collapsed") == "둘러볼 곳":
+        spots_view(geo, slot, data["left_min"], buf)
+        st.button("위치 다시 잡기", width="stretch", key="free_regeo2", on_click=_set, kwargs={"geo": None})
+        return
     fits = [r for r in data["restaurants"] if r["fits"] and r["known"]][:12]
     rest = [r for r in data["restaurants"] if not r["fits"] and r["known"]][:3]
     if not fits:
@@ -846,9 +898,8 @@ def free():
             bar = (f'<div class="tb">{seg(r["walk_min"], "w", "가기")}{seg(r["wait_min"], "q", "기다림")}{seg(r["meal_min"], "m", "식사")}'
                    f'{seg(r["walk_min"], "w", "오기")}{seg(r["buffer_min"], "b", "여유")}<i style="left:{data["left_min"] / scale * 100}%"></i></div>')
             tag = f'<span class="tag good">{r["back_by"]} 도착 · {r["spare_min"]}분 남아요</span>' if r["fits"] else f'<span class="tag warn">{-r["spare_min"]}분 모자라요</span>'
-            md(f'<div class="card {"" if r["fits"] else "soft"}"><div><b style="font-size:16px">{E(r["name"])}</b> <span class="small muted">{E(r["kind"])}</span></div>'
+            md(f'<div class="card {"" if r["fits"] else "soft"}"><div class="row"><div><b style="font-size:16px">{E(r["name"])}</b> <span class="small muted">{E(r["kind"])}</span></div>{walk_link(r["lat"], r["lng"])}</div>'
                f'<div>{tag}</div>{bar}{_marks(r["marks"])}' + (f'<div class="note">{E(r["note"])}</div>' if r["note"] else "") + "</div>")
             if r["fits"]:
                 _pick(r, f"free_pick_{t}_{lst.index(r)}_{r['id']}")
-    md(f'<div class="note">기다림과 식사 시간은 어림값이에요. 지도 © {E(src)}</div>')
     st.button("위치 다시 잡기", width="stretch", key="free_regeo", on_click=_set, kwargs={"geo": None})
