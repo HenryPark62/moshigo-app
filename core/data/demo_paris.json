@@ -77,7 +77,15 @@
      "reason": "양파가 보여요. 치즈 올린 빵만 덜어 주세요."
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "달큰하고 짭짤한 양파 국물에 치즈가 녹아 있어요",
+   "ko_compare": "양파를 오래 볶아 단맛을 낸 소고기뭇국에 치즈를 올린 맛이에요",
+   "imagine": "캐러멜처럼 볶은 양파, 국물에 젖은 빵, 늘어나는 치즈",
+   "good_for": [
+    "진한 국물을 좋아하는 분",
+    "치즈를 좋아하는 분"
+   ],
+   "local_popular": true
   },
   {
    "section_orig": "ENTRÉES",
@@ -148,7 +156,15 @@
      "reason": "처음 보는 달팽이에 초록 파슬리가 잔뜩 보여요."
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "마늘 버터 맛이 진하고 짭짤해요",
+   "ko_compare": "골뱅이처럼 쫄깃한데 양념 대신 마늘 버터 맛이 나요",
+   "imagine": "마늘 버터, 쫄깃한 식감, 빵에 찍어 먹는 버터",
+   "good_for": [
+    "골뱅이, 소라를 좋아하는 분",
+    "처음 보는 요리도 즐기는 분"
+   ],
+   "local_popular": true
   },
   {
    "section_orig": "ENTRÉES",
@@ -222,7 +238,15 @@
      "reason": "호두가 들어 있어요."
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "새콤한 드레싱에 꿀의 단맛과 치즈의 짭짤함이 섞여요",
+   "ko_compare": "따뜻한 치즈 토스트를 올린 새콤달콤한 샐러드예요",
+   "imagine": "꼬릿한 염소치즈, 꿀, 고소한 호두",
+   "good_for": [
+    "가볍게 먹고 싶은 분",
+    "향이 있는 치즈도 괜찮은 분"
+   ],
+   "local_popular": false
   },
   {
    "section_orig": "PLATS",
@@ -303,7 +327,15 @@
      "reason": "버섯이 보여요. 고기와 감자만 덜어 주세요."
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "진하고 깊은 국물에 고기가 부드럽게 풀어져요",
+   "ko_compare": "갈비찜과 비슷한데 간장 대신 레드와인으로 졸여 새콤하고 깊어요",
+   "imagine": "결대로 찢어지는 고기, 와인 향 소스, 으깬 감자",
+   "good_for": [
+    "갈비찜을 좋아하는 분",
+    "부드러운 고기를 찾는 분"
+   ],
+   "local_popular": true
   },
   {
    "section_orig": "PLATS",
@@ -377,7 +409,15 @@
      "reason": "감자튀김만 덜어 주세요."
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "국물이 시원하고 감칠맛이 나요",
+   "ko_compare": "홍합탕에 와인과 버터 향을 더한 맛이에요",
+   "imagine": "탱글한 홍합, 와인 향 국물, 바삭한 감자튀김",
+   "good_for": [
+    "홍합탕을 좋아하는 분",
+    "여럿이 나눠 먹고 싶은 분"
+   ],
+   "local_popular": false
   },
   {
    "section_orig": "PLATS",
@@ -454,7 +494,15 @@
      "reason": "후추 소스는 빼고 고기와 감자튀김만 주세요."
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "고소한 고기에 후추 소스가 알싸해요",
+   "ko_compare": "등심구이에 후추 크림소스를 곁들인 맛이에요",
+   "imagine": "육즙 있는 등심, 알싸한 후추, 바삭한 감자튀김",
+   "good_for": [
+    "고기구이를 좋아하는 분",
+    "익숙한 맛을 찾는 분"
+   ],
+   "local_popular": false
   },
   {
    "section_orig": "PLATS",
@@ -527,7 +575,15 @@
      "reason": ""
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "담백한 닭고기에 크림 감자가 고소해요",
+   "ko_compare": "전기구이 통닭에 크림 감자를 곁들인 맛이에요",
+   "imagine": "바삭한 닭 껍질, 닭 육즙, 크림 감자",
+   "good_for": [
+    "순한 맛을 찾는 분",
+    "어르신과 아이"
+   ],
+   "local_popular": false
   },
   {
    "section_orig": "PLATS",
@@ -600,7 +656,15 @@
      "reason": ""
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "짭짤한 햄과 녹은 치즈가 고소해요",
+   "ko_compare": "햄치즈 토스트를 오븐에 한 번 더 구운 맛이에요",
+   "imagine": "바삭한 빵, 쭉 늘어나는 치즈, 크림소스",
+   "good_for": [
+    "간단히 먹고 싶은 분",
+    "아이"
+   ],
+   "local_popular": false
   },
   {
    "section_orig": "PLATS",
@@ -652,7 +716,12 @@
      "reason": "견과류가 있는지 물어보세요."
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "",
+   "ko_compare": "",
+   "imagine": "",
+   "good_for": [],
+   "local_popular": false
   },
   {
    "section_orig": "MENU ENFANT",
@@ -709,7 +778,14 @@
      "reason": ""
     }
    ],
-   "kids_only": true
+   "kids_only": true,
+   "taste_line": "고소한 고기에 달콤한 아이스크림 후식이 붙어요",
+   "ko_compare": "소스 없는 함박스테이크와 감자튀김이에요",
+   "imagine": "부드러운 다진 고기, 감자튀김, 바닐라 아이스크림",
+   "good_for": [
+    "10살까지 아이"
+   ],
+   "local_popular": false
   },
   {
    "section_orig": "DESSERTS",
@@ -777,7 +853,15 @@
      "reason": ""
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "부드러운 바닐라 커스터드에 탄 설탕이 쌉싸름하게 달아요",
+   "ko_compare": "푸딩 위에 달고나를 얇게 덮은 맛이에요",
+   "imagine": "숟가락으로 깨는 설탕, 차가운 커스터드, 바닐라 향",
+   "good_for": [
+    "푸딩을 좋아하는 분",
+    "단 후식을 찾는 분"
+   ],
+   "local_popular": true
   },
   {
    "section_orig": "DESSERTS",
@@ -844,7 +928,14 @@
      "reason": "쌉싸름해요. 견과류가 들었는지 물어보고 주세요."
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "쌉싸름하고 진한 초콜릿 맛이에요",
+   "ko_compare": "초콜릿 생크림을 숟가락으로 떠먹는 맛이에요",
+   "imagine": "공기처럼 가벼운 식감, 진한 카카오",
+   "good_for": [
+    "초콜릿을 좋아하는 분"
+   ],
+   "local_popular": false
   },
   {
    "section_orig": "DESSERTS",
@@ -914,7 +1005,14 @@
      "reason": ""
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "캐러멜 단맛에 사과의 새콤함이 남아요",
+   "ko_compare": "사과조림을 얹은 파이에 크림을 곁들인 맛이에요",
+   "imagine": "캐러멜에 졸인 사과, 바삭한 반죽, 새콤한 크림",
+   "good_for": [
+    "과일 후식을 좋아하는 분"
+   ],
+   "local_popular": false
   },
   {
    "section_orig": "BOISSONS",
@@ -975,7 +1073,12 @@
      "reason": ""
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "",
+   "ko_compare": "",
+   "imagine": "",
+   "good_for": [],
+   "local_popular": false
   },
   {
    "section_orig": "BOISSONS",
@@ -1042,7 +1145,12 @@
      "reason": "어른 음료예요. 사과주스를 주세요."
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "",
+   "ko_compare": "",
+   "imagine": "",
+   "good_for": [],
+   "local_popular": false
   },
   {
    "section_orig": "BOISSONS",
@@ -1101,7 +1209,12 @@
      "reason": ""
     }
    ],
-   "kids_only": false
+   "kids_only": false,
+   "taste_line": "",
+   "ko_compare": "",
+   "imagine": "",
+   "good_for": [],
+   "local_popular": false
   }
  ]
 }

@@ -7,7 +7,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from core import freemeal, menu2, nearby, ocr, order, plan, reviews, store, world
-from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, avatar, chips, ghost_avatar, go, josa, level, loader, marks, md, momo, nav
+from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, avatar, badges, chips, ghost_avatar, go, josa, level, loader, marks, md, momo, nav
 
 RELATIONS = ["나", "부모님", "아이", "배우자", "친구", "가족"]
 AGES = ["3~5살", "6~9살", "10대", "20대", "30대", "40대", "50대", "60대", "70대", "80대 이상"]
@@ -327,12 +327,11 @@ def picks_view(scan):
     md(f'<div class="sec">가게 추천 메뉴 <span class="n">{len(picks)}개</span></div>')
     for it in picks:
         with st.container(key=f"pick_{it['id']}"):
-            kw = (it["taste_kw"] + it["aroma_kw"])[:4]
             known = it.get("headline")
             tag = f'<span class="tag">{E(known)}</span>' if known else '<span class="tag sun">아는 음식과 거리가 먼 현지 맛</span>'
             md(f'<div class="row"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">'
                f'<div class="name">{E(it["name_ko"])}</div><div class="reading"><i>{E(it["name_orig"])}</i></div>'
-               f'<div class="desc">{E(it["desc_ko"])}</div><div>{tag}</div>' + (chips(kw) if kw else "") +
+               f'<div class="desc">{E(it.get("taste_line") or it["desc_ko"])}</div><div>{tag}</div>' + badges(it, 4, True) +
                f'</div><span class="price">{E(it["price"])}</span></div>' + (marks(it["per"]) if it["per"] else ""))
             st.button("무슨 맛인지 보기 ›", key=f"pickopen_{it['id']}", on_click=nav, args=("dish",), kwargs={"dish_id": it["id"]})
 
@@ -346,11 +345,14 @@ def row(it, mode):
         head = ""
         if mode == "원문과 함께":
             head += f'<div class="orig">{E(it["name_orig"])}</div>'
-        tags = (' <span class="tag sun">가게 추천</span>' if it.get("chef_pick") else "") + (' <span class="tag">어린이 메뉴</span>' if it.get("kids_only") else "")
+        tags = ((' <span class="tag sun">가게 추천</span>' if it.get("chef_pick") else "") + (' <span class="pop">현지 인기</span>' if it.get("local_popular") else "")
+                + (' <span class="tag">어린이 메뉴</span>' if it.get("kids_only") else ""))
         body = f'<div class="name">{E(it["name_ko"])}{tags}</div>'
         if mode == "원문과 함께":
             body += f'<div class="reading">{E(it["reading"])}</div>'
         body += f'<div class="desc">{E(it["desc_ko"])}</div>'
+        if mode != "누가 먹을까" and it["course"] != "drink":
+            body += badges(it, 3, True)
         if mode == "원문과 함께" and it["glossary"]:
             body += '<div class="chips">' + "".join(f'<span class="gl"><b>{E(g["term"])}</b>{E(g["meaning"])}</span>' for g in it["glossary"]) + "</div>"
         if mode == "누가 먹을까" and it.get("headline"):
@@ -407,6 +409,12 @@ def speak_block(lines, voice, height):
         f'const u=new SpeechSynthesisUtterance(T[i]);u.lang="{voice}";u.rate=.9;speechSynthesis.speak(u)}}</script>', height=height)
 
 
+ICON = {  # 메뉴 가이드 줄 앞 작은 그림
+    "bowl": '<svg viewBox="0 0 24 24"><path d="M3 12h18a9 9 0 0 1-18 0z"/><path d="M9 3c-1 1.5 1 2.5 0 4.5M14 3c-1 1.5 1 2.5 0 4.5"/></svg>',
+    "dome": '<svg viewBox="0 0 24 24"><path d="M3 18h18M5 18a7 7 0 0 1 14 0M12 8.5V6.5M10.5 6.5h3"/></svg>',
+    "bulb": '<svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>',
+}
+
 REQ_FROM_REASON = [("버섯", "버섯 빼고"), ("양파", "양파 빼고"), ("소스", "소스는 따로"), ("짭", "덜 짜게"), ("짜", "덜 짜게"), ("익혀", "잘 익혀 주세요")]
 
 
@@ -417,21 +425,24 @@ def dish():
     if not it:
         go("menu")
     st.button("메뉴판으로", icon=":material/arrow_back:", type="tertiary", on_click=nav, args=('menu',))
-    tags = ' <span class="tag sun">가게 추천</span>' if it.get("chef_pick") else ""
-    md(f'<div class="small muted">{E(it["section_ko"])} · {E(it["price"])}</div><div class="h1">{E(it["name_ko"])}{tags}</div>'
-       f'<div class="reading" style="font-size:14px"><i>{E(it["name_orig"])}</i> · {E(it["reading"])}</div>')
-    kws = [("맛", it["taste_kw"]), ("향", it["aroma_kw"]), ("식감", it["texture_kw"])]
-    md('<div class="chips">' + "".join(f'<span class="kw">{E(w)}</span>' for _, l in kws for w in l) + "</div>")
+    rv = reviews.reviews(it["name_orig"], scan.get("restaurant", ""))
+    tags = ('<span class="tag sun">가게 추천</span>' if it.get("chef_pick") else "") + ('<span class="pop">현지 인기 메뉴</span>' if it.get("local_popular") else "")
+    md(f'<div class="small muted">{E(it["section_ko"])} · {E(it["price"])}</div><div class="h1">{E(it["name_ko"])}</div>'
+       f'<div class="reading" style="font-size:14px"><i>{E(it["name_orig"])}</i> · {E(it["reading"])}</div>'
+       f'<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">{tags}'
+       f'<a class="rvlink" href="#reviews" target="_self">후기 ' + (f'{rv["count"]}개' + (f' · ★ {rv["avg"]}' if rv["avg"] else "") if rv["count"] else "보기") + ' ›</a></div>'
+       f'<div class="desc">{E(it["desc_ko"])}</div>' + badges(it))
 
-    ok = [x for x in it["per"] if x["verdict"] == "편히"]
-    fans = [x for x in it["per"] if x["match"] and x["match"]["bars"] >= 2]
-    who = ", ".join(f'{x["match"]["food"]} 좋아하는 {x["name"]}' for x in fans) or (", ".join(x["name"] for x in ok) if ok else "")
-    dl = f'<dt>어떤 요리</dt><dd>{E(it["desc_ko"])}</dd>'
-    if it.get("headline"):
-        dl += f'<dt>아는 맛</dt><dd>{E(it["headline"])}</dd>'
-    if who:
-        dl += f'<dt>추천</dt><dd>{E(who)}</dd>'
-    md(f'<div class="card"><dl class="dl">{dl}</dl></div>')
+    rows = [("bowl", "어떤 맛?", it.get("taste_line") or ", ".join(it["taste_kw"] + it["aroma_kw"])),
+            ("dome", "한식에 빗대면", it.get("ko_compare")), ("bulb", "상상 포인트", it.get("imagine"))]
+    g = "".join(f'<div class="g"><span class="ic">{ICON[ic]}</span><b>{t}</b><div>{E(v)}</div></div>' for ic, t, v in rows if v)
+    if g:
+        md(f'<div class="card guide">{g}</div>')
+    fans = [x for x in it["per"] if x["match"] and x["match"]["bars"] >= 2 and x["verdict"] != "피하기"]
+    fit = [f'{x["match"]["food"]} 좋아하는 {x["name"]}' for x in fans]
+    fit += [g for g in it.get("good_for") or [] if not any(x["match"]["food"] in g for x in fans)]  # 같은 음식 이야기는 한 번만
+    if fit and it["course"] != "drink":
+        md('<div class="fit"><div class="t">이런 분께 맞아요</div>' + "".join(f'<div class="c">{E(f)}</div>' for f in fit[:4]) + "</div>")
     warn = reviews.caution(it["name_orig"])
     if warn:
         md(f'<div class="card warnbox small">{E(warn)}</div>')
@@ -479,8 +490,7 @@ def dish():
     if fb:
         md(f'<div class="sec">먹어 본 사람들 <span class="n">{fb["n"]}명이 답했어요</span></div><div class="sum">'
            f'<div><span>맛이 그려졌어요</span><b>{fb["imagine"]} / 5</b></div><div><span>다시 추천받고 싶어요</span><b>{fb["again"]}%</b></div></div>')
-    rv = reviews.reviews(it["name_orig"], scan.get("restaurant", ""))
-    md(f'<div class="sec">후기 <span class="n">{rv["count"]}개' + (f' · ★ {rv["avg"]}' if rv["avg"] else "") + "</span></div>")
+    md(f'<div class="sec" id="reviews">후기 <span class="n">{rv["count"]}개' + (f' · ★ {rv["avg"]}' if rv["avg"] else "") + "</span></div>")
     if rv["count"]:
         h = '<div class="card">'
         for label, lst in [("이 식당", rv["here"]), ("같은 메뉴", rv["other"])]:

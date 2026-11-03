@@ -146,3 +146,13 @@ def test_plan_fits_time_window():
 def test_free_meal_past_midnight():
     d = freemeal.plan(menu2.DEFAULT_PEOPLE, "23:15", "00:25", 10, {"name": "x", "lat": 37.5665, "lng": 126.978}, [])
     assert d["left_min"] == 70
+
+
+def test_menu_guide_fields():
+    s = menu2.demo(menu2.DEFAULT_PEOPLE)
+    beef = next(i for i in s["items"] if i["name_orig"] == "Bœuf bourguignon")
+    assert beef["ko_compare"] and beef["imagine"] and beef["good_for"]
+    assert sum(i["local_popular"] for i in s["items"]) <= 3
+    from ui.common import badges
+    h = badges(beef)
+    assert 'class="bd t"' in h and 'class="bd a"' in h and "오래 끓인 요리" in h

@@ -83,12 +83,18 @@ def _schema(names):
             **{f"t_{a}": {"type": "number", "description": "0~1"} for a in world.AXES},
             "taste_kw": {"type": "array", "items": {"type": "string"}}, "aroma_kw": {"type": "array", "items": {"type": "string"}, "description": "'~ 향'으로 끝나게"},
             "texture_kw": {"type": "array", "items": {"type": "string"}},
+            "taste_line": {"type": "string", "description": "어떤 맛인지 한 줄. 예: 신맛이 또렷하고 매콤한 새우 수프예요"},
+            "ko_compare": {"type": "string", "description": "한국 음식에 빗대어 한 줄. 예: 매운 해물탕보다 신맛과 허브 향이 훨씬 강해요"},
+            "imagine": {"type": "string", "description": "먹을 때 떠올릴 맛 포인트 2~3개를 쉼표로. 예: 레몬그라스 향, 깔끔한 국물, 입안에 남는 새콤함"},
+            "good_for": {"type": "array", "items": {"type": "string"}, "description": "이런 분께 맞아요 1~2개, '~분'으로 끝나게. 예: 새콤한 국물이 궁금한 분"},
+            "local_popular": {"type": "boolean", "description": "그 나라를 대표하는 요리면 true. 메뉴판 전체에서 2~3개까지만"},
             "kids_only": {"type": "boolean", "description": "어린이 메뉴처럼 아이만 시킬 수 있으면 true"},
             "chef_pick": {"type": "boolean"}, "serve_minutes": {"type": "integer"}, "share_ok": {"type": "boolean"},
             "people": {"type": "array", "items": person},
         },
         "required": ["section_orig", "section_ko", "name_orig", "reading", "name_ko", "price", "desc_ko", "glossary", "unreadable", "course", "contains",
-                     "ingredient", "cooking", *[f"t_{a}" for a in world.AXES], "taste_kw", "aroma_kw", "texture_kw", "kids_only", "chef_pick", "serve_minutes", "share_ok", "people"],
+                     "ingredient", "cooking", *[f"t_{a}" for a in world.AXES], "taste_kw", "aroma_kw", "texture_kw",
+                     "taste_line", "ko_compare", "imagine", "good_for", "local_popular", "kids_only", "chef_pick", "serve_minutes", "share_ok", "people"],
         "additionalProperties": False,
     }
     return {"type": "object", "properties": {
@@ -108,6 +114,7 @@ SYSTEM = """너는 가족 여행 메뉴판 도우미 '모시고'다. 가족이 �
    어린이 메뉴(kids_only)는 아이만 판정한다. 이유는 그 사람 기준 한 줄. 건강이나 병 이야기는 하지 않고 입맛과 취향으로 말한다. 아이는 '버섯이 보여요. 고기만 덜어 주세요'처럼 행동으로 말한다.
 5) 말투: 해요체, 짧고 담백하게. 광고나 블로그 같은 말(풍미 가득, 완벽한, 환상적인, 일품, 선사, 어우러져, ~를 추천드립니다), 느낌표, 이모지는 쓰지 않는다.
    맛은 아는 말로 구체적으로 쓴다 (예: '짭짤하고 버터 맛이 진해요').
+   ko_compare는 한국 사람이 아는 음식 하나에 빗대고 무엇이 다른지 말한다. 음료는 taste_line만 쓰고 나머지는 비워 둔다.
 6) 가족:
 {people}"""
 
@@ -204,7 +211,7 @@ def _bare(g):
     return {"section_orig": g["section_orig"], "section_ko": g["section_orig"], "name_orig": g["name_orig"], "reading": "", "name_ko": g["name_orig"],
             "price": g["price"], "desc_ko": "설명을 만들지 못했어요. 직원에게 물어봐 주세요.", "glossary": [], "unreadable": True, "course": "main",
             "contains": [], "ingredient": INGREDIENTS[0], "cooking": COOKING[0], **{f"t_{a}": 0.5 for a in world.AXES},
-            "taste_kw": [], "aroma_kw": [], "texture_kw": [], "kids_only": False, "chef_pick": False, "serve_minutes": 15, "share_ok": False, "people": []}
+            "taste_kw": [], "aroma_kw": [], "texture_kw": [], "taste_line": "", "ko_compare": "", "imagine": "", "good_for": [], "local_popular": False, "kids_only": False, "chef_pick": False, "serve_minutes": 15, "share_ok": False, "people": []}
 
 
 def read_menu_text(ocr, people, progress=None):
@@ -268,6 +275,9 @@ def enrich(raw, people):
         slug = re.sub(r"[^a-z0-9]+", "-", it["name_orig"].lower()).strip("-")[:30]
         it["id"] = f"{slug or 'item'}-{idx}"
         items.append(it)
+    pops = [i for i in items if i.get("local_popular") and i["course"] != "drink"]  # 나눠서 만들면 많아지므로 3개까지만
+    for i in items:
+        i["local_popular"] = i in pops[:3]
     order = {"all": 0, "some": 1, "none": 2}
     return {**{k: v for k, v in raw.items() if k != "items"}, "items": items,
             "judged": sorted([i for i in items if i["course"] != "drink" and not i["unreadable"]], key=lambda i: (order[i["group"]], -sum(x["verdict"] == "편히" for x in i["per"]))),

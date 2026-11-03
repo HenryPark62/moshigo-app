@@ -185,6 +185,21 @@ div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--
 [class*="st-key-pick_"] .stButton>button:hover p,[class*="st-key-mrow_"] .stButton>button:hover p{color:var(--accent-text)!important}
 .stMarkdown a.golink,.stMarkdown a.golink:hover{text-decoration:none!important}
 .golink{flex-shrink:0;font-size:13px;font-weight:700;color:var(--accent-text)!important;text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:4px 10px;background:var(--surface);white-space:nowrap}
+/* 메뉴 가이드: 맛 뱃지와 설명 줄 */
+.bdg{display:flex;flex-wrap:wrap;gap:6px}
+.bd{display:inline-flex;align-items:center;padding:4px 11px;border-radius:999px;font-size:13px;font-weight:700;line-height:1.3}
+.bd.t{background:#fde4ea;color:#a8324f}.bd.a{background:#e9e6fb;color:#4c44a0}.bd.x{background:#e1eef8;color:#2a5f8a}.bd.c{background:var(--tint-green);color:var(--accent-text)}
+.bdg.sm .bd{font-size:11.5px;padding:2px 8px}
+.pop{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;border:1.5px solid #e8a33a;color:#b46a00;background:#fff7e8;font-size:12px;font-weight:700;vertical-align:middle}
+.rvlink{display:inline-flex;align-items:center;padding:4px 12px;border-radius:999px;border:1.5px solid var(--accent);color:var(--accent-text) !important;font-size:13px;font-weight:700;text-decoration:none !important}
+.guide{display:flex;flex-direction:column;padding:2px 14px}
+.guide .g{display:grid;grid-template-columns:30px 82px minmax(0,1fr);gap:8px;align-items:center;padding:11px 0;border-bottom:1px dashed var(--hair-strong)}
+.guide .g:last-child{border-bottom:0}
+.guide .ic{width:30px;height:30px;border-radius:50%;background:var(--tint-green);display:flex;align-items:center;justify-content:center}
+.guide .ic svg{width:17px;height:17px;fill:none;stroke:var(--accent-text);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.guide .g b{font-size:14px}.guide .g div{font-size:14px;line-height:1.55}
+.fit{background:var(--tint-sun2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.fit .t{font-weight:800;font-size:15px}.fit .c{display:flex;gap:8px;align-items:flex-start}.fit .c::before{content:"✓";color:var(--accent-text);font-weight:800}
 /* 추천 플랜 시간표 */
 .tl{display:flex;flex-direction:column;gap:0;margin-top:4px}
 .tl-row{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px;align-items:start}
@@ -339,6 +354,25 @@ def level(bars):
 
 def chips(items, cls="kw"):
     return '<div class="chips">' + "".join(f'<span class="{cls}">{E(x)}</span>' for x in items) + "</div>"
+
+
+COOKED = {"굽기": "구운 요리", "끓이기": "끓인 요리", "날것": "날로 먹는 요리", "볶기": "볶은 요리", "부치기": "부친 요리",
+          "삶기": "삶은 요리", "섞기": "버무린 요리", "오래 끓이기": "오래 끓인 요리", "찌기": "찐 요리", "튀기기": "튀긴 요리"}
+
+
+def badges(it, n=None, small=False):
+    """맛(분홍), 향(보라), 식감(파랑), 조리법(초록) 뱃지. n개까지만 고르게 섞어서."""
+    groups = [("t", it.get("taste_kw") or []), ("a", it.get("aroma_kw") or []), ("x", it.get("texture_kw") or [])]
+    out = []
+    for i in range(3):
+        out += [(c, l[i]) for c, l in groups if len(l) > i]
+    if n:
+        out = out[:n]
+    if it.get("course") not in ("drink", "dessert") and it.get("cooking") in COOKED:
+        out.append(("c", COOKED[it["cooking"]]))
+    if not out:
+        return ""
+    return f'<div class="bdg{" sm" if small else ""}">' + "".join(f'<span class="bd {c}">{E(w)}</span>' for c, w in out) + "</div>"
 
 
 def marks(per, reasons=False):
