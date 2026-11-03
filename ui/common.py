@@ -32,7 +32,7 @@ body,.stApp,[role="dialog"]{word-break:keep-all;overflow-wrap:anywhere}
 .stButton>button:active:not(:disabled){transform:scale(.97);background:var(--tint-green)}
 /* 서버가 일하는 동안 맨 위에 얇은 막대 */
 .stApp[data-test-script-state="running"]::before{content:"";position:fixed;top:0;left:0;right:0;height:3px;z-index:1000;
-background:linear-gradient(90deg,transparent,#2f7a50,#ffc94a,transparent);background-size:40% 100%;background-repeat:no-repeat;animation:moshi-run .9s linear infinite}
+background:linear-gradient(90deg,#2f7a50,#2f7a50);background-size:40% 100%;background-repeat:no-repeat;animation:moshi-run .9s linear infinite}
 @keyframes moshi-run{from{background-position:-40% 0}to{background-position:140% 0}}
 [data-testid="stBaseButton-primary"]{background:var(--accent)!important;color:#fff!important;border-color:transparent!important;min-height:54px!important;font-size:16px!important}
 [data-testid="stBaseButton-primary"] p{color:#fff!important}

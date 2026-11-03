@@ -366,17 +366,18 @@ def combos(scan, people):
                 "summary": {"happy": ok, "people": len(ids), "minutes": max(i["serve_minutes"] for i in chosen),
                             "price": round(price, 2) if price else None},
                 "why": _why(plates, scan) + (" 먹어 본 사람들이 다시 추천받고 싶다고 한 메뉴를 앞에 두었어요."
-                                             if any(it.get("boost", 0) > 0.03 for _, it, _ in pick) else "")}
+                                             if any(it.get("boost", 0) > 0.03 for _, it, _ in pick) else ""),
+                "why_lines": _why_lines(plates, scan, any(it.get("boost", 0) > 0.03 for _, it, _ in pick))}
 
-    out = [package("all", mains, title="모두 만족", note=f"이렇게 시키면 {len(ids)}명 모두 맛있게 먹어요")]
+    out = [package("all", mains, title="모두 만족", note=f"{len(ids)}명 모두 입에 맞는 조합")]
     local = next((i for i in mains if i.get("chef_pick")), None) or next((i for i in mains if not any(x["match"] for x in i["per"])), None)
     if local:
         explore.update(p["id"] for p in people if p.get("active", True) and "새로운 맛" in (p.get("likes") or []))
         out.append(package("local", [m for m in mains if m is not local], extra_share=local, title="현지 맛 도전",
-                           note=f"{local['name_ko']}{josa(local['name_ko'], '을', '를')} 다 같이 맛보고, 새로운 맛을 좋아하는 사람은 처음 보는 메뉴로"))
+                           note=f"현지 메뉴 {local['name_ko']} 하나를 같이 나눠 먹는 조합"))
     explore.clear()
     fast = [m for m in mains if m["serve_minutes"] <= 15]
-    out.append(package("fast", fast or mains, title="빨리 나와요", note="15분 안에 나오는 메뉴로 골랐어요"))
+    out.append(package("fast", fast or mains, title="빨리 나와요", note="15분 안에 나오는 메뉴만"))
     return [o for o in out if o]
 
 
@@ -387,6 +388,23 @@ def _brief(i):
 def _price(p):
     m = re.search(r"\d+(?:[.,]\d+)?", p or "")
     return float(m.group().replace(",", ".")) if m else 0.0
+
+
+def _why_lines(plates, scan, boosted=False):
+    """고른 이유를 사람마다 한 줄씩 (화면용)."""
+    out = []
+    for pl in plates:
+        m = pl["match"]
+        out.append((pl["person"]["name"], pl["item"]["name_ko"], f"{m['food']}{josa(m['food'], '과', '와')} 닮음" if m else "입맛에 맞음"))
+    blocked = []
+    for i in scan["judged"]:
+        for x in i["per"]:
+            r = x.get("rule")
+            if r:
+                t = f"{x['name']}: {'·'.join(r['what'])} {'알레르기' if r['kind'] == 'allergy' else '못 먹음'}"
+                if t not in blocked:
+                    blocked.append(t)
+    return {"plates": out, "blocked": blocked, "boosted": boosted}
 
 
 def _why(plates, scan):
