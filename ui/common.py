@@ -101,10 +101,28 @@ background:linear-gradient(90deg,transparent,#2f7a50,#ffc94a,transparent);backgr
 .thumb{width:100%;max-height:200px;object-fit:cover;object-position:top;border-radius:14px;border:1px solid var(--hair)}
 .note{font-size:12px;color:var(--muted);line-height:1.6}
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:18px 0 4px}
+/* 선택 버튼 묶음: 둥근 막대, 고른 것은 진한 색 */
+[data-testid="stButtonGroup"] [data-testid^="stBaseButton-segmented_control"]{min-height:40px;border-radius:999px!important;border:1px solid var(--hair-strong)!important;
+background:var(--surface)!important;color:var(--ink)!important;font-size:14px;margin-right:6px;padding:0 14px}
+[data-testid="stButtonGroup"] [data-testid="stBaseButton-segmented_controlActive"]{background:var(--ink)!important;border-color:var(--ink)!important;color:#fff!important}
+[data-testid="stButtonGroup"] [data-testid="stBaseButton-segmented_controlActive"] p{color:#fff!important;font-weight:700}
+[data-testid^="stBaseButton-pills"]{min-height:36px;border-radius:999px!important;border:1px solid var(--hair-strong)!important;background:var(--surface)!important;font-size:14px}
+[data-testid="stButtonGroup"] [data-testid="stBaseButton-pillsActive"],[data-testid="stBaseButton-pillsActive"]{background:var(--tint-green)!important;border-color:var(--accent)!important}
+[data-testid="stBaseButton-pillsActive"] p{color:var(--accent-text)!important;font-weight:700}
+/* 알림 상자: 기본 파랑, 노랑 대신 차분한 색 */
+[data-testid="stAlertContainer"]{border-radius:14px!important;padding:12px 14px!important}
+[data-testid="stAlertContentWarning"],[data-testid="stAlertContentInfo"]{font-size:14px;line-height:1.6}
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentWarning"]){background:var(--tint-warn)!important;color:var(--warn)!important}
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentInfo"]){background:var(--tint-sun2)!important;color:var(--ink)!important}
+[data-testid="stAlertContainer"] p{color:inherit!important}
 /* 입력 */
 [data-testid="stTextInput"] input,[data-testid="stTimeInput"] input{min-height:46px;border-radius:12px;font-size:16px}
+/* 입력칸은 테두리로 칸이라는 게 보이게 */
+[data-testid="stTextInput"] [data-baseweb="input"],[data-testid="stTextArea"] [data-baseweb="textarea"],[data-testid="stTimeInput"] [data-baseweb="select"]>div,
+[data-testid="stSelectbox"] [data-baseweb="select"]>div{border:1px solid var(--hair-strong)!important;border-radius:12px!important;background:var(--surface)!important}
+[data-testid="stTextInput"] [data-baseweb="input"]:focus-within,[data-testid="stTextArea"] [data-baseweb="textarea"]:focus-within{border-color:var(--accent)!important}
 [data-testid="stWidgetLabel"] p{font-weight:700;font-size:14px}
-[data-testid="stFileUploaderDropzone"]{border-radius:18px;background:var(--sun);border:0;padding:22px}
+[data-testid="stFileUploaderDropzone"]{border-radius:18px;background:var(--sun);border:0;padding:6px;box-shadow:0 2px 0 #e0ad2e}
 [data-testid="stFileUploaderDropzone"] *{color:#22302a!important}
 [data-testid="stFileUploaderDropzoneInstructions"] span{font-size:15px;font-weight:700}
 [data-testid="stCheckbox"]{padding:4px 0}
@@ -118,7 +136,8 @@ div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--
 [class*="st-key-mrow_"]{background:var(--surface);border:1px solid var(--hair);border-radius:16px;padding:12px 14px}
 [class*="st-key-mrow_"] [data-testid="stVerticalBlock"]{gap:8px}
 [class*="st-key-mrow_"] .stButton{display:flex;justify-content:flex-end}
-[class*="st-key-mrow_"] .stButton>button{min-height:34px;padding:0 12px;font-size:13px;border-radius:999px}
+[class*="st-key-mrow_"] .stButton>button{min-height:34px;padding:0 4px;font-size:14px;border:0;background:none;color:var(--accent-text);font-weight:700}
+[class*="st-key-mrow_"] .stButton>button p{color:var(--accent-text)}
 /* 아래 탭바 */
 .st-key-tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);z-index:99;background:var(--surface);border-top:1px solid var(--hair);padding:6px 6px calc(8px + env(safe-area-inset-bottom))}
 .st-key-tabbar [data-testid="stHorizontalBlock"]{flex-wrap:nowrap!important;gap:2px!important}
@@ -130,15 +149,20 @@ div[data-testid="stExpander"] details{border-radius:16px;border:1px solid var(--
 /* 가로 두 칸 버튼을 휴대폰에서도 가로로 */
 [class*="st-key-pair"] [data-testid="stHorizontalBlock"]{flex-wrap:nowrap!important;gap:8px!important}
 [class*="st-key-pair"] [data-testid="stColumn"]{min-width:0!important;width:auto!important;flex:1 1 0!important}
-[class*="st-key-pair"] button{min-height:42px;font-size:14px}
+[class*="st-key-pair"] button{min-height:40px;font-size:14px;font-weight:500}
+[class*="st-key-pair_p"]{margin-top:-4px}
+[class*="st-key-pair_p"] button{min-height:36px;background:var(--surface2);border-color:transparent}
 [data-testid="stBaseButton-primaryFormSubmit"]{background:var(--accent)!important;color:#fff!important;border:0!important;min-height:54px!important}
 [data-testid="stBaseButton-primaryFormSubmit"] p{color:#fff!important;font-size:16px!important}
 /* 사진 올리기: 영어 안내 대신 우리말 */
 [data-testid="stFileUploaderDropzoneInstructions"]{display:none!important}
 [data-testid="stFileUploaderDropzone"]{justify-content:center}
-[data-testid="stFileUploaderDropzone"] button{font-size:0!important;min-height:64px;width:100%;border-radius:14px;border:3px dashed #22302a!important;background:transparent!important}
-[data-testid="stFileUploaderDropzone"] button::after{content:"메뉴판 찍기 · 사진 고르기";font-size:20px;font-weight:700;font-family:"Gowun Dodum",sans-serif;color:#22302a}
 [data-testid="stFileUploaderDropzone"]{min-height:auto}
+[data-testid="stFileUploaderDropzone"] button{font-size:0!important;min-height:76px;width:100%;border:0!important;background:transparent!important;
+display:flex;align-items:center;justify-content:center;gap:12px}
+[data-testid="stFileUploaderDropzone"] button::before{content:"";width:34px;height:34px;flex-shrink:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322302a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h3l2-3h6l2 3h3v11H4z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E") center/contain no-repeat}
+[data-testid="stFileUploaderDropzone"] button::after{content:"메뉴판 찍기 · 사진 고르기";font-size:21px;font-family:"Gowun Dodum",sans-serif;color:#22302a}
+[data-testid="stFileUploaderDropzone"]:active{transform:scale(.99)}
 .st-key-tabbar button [data-testid="stIconMaterial"]{font-size:22px}
 .st-key-tabbar button>div{flex-direction:column;gap:0}
 </style>

@@ -50,6 +50,17 @@ def _set(**kw):
         st.session_state[k] = v
 
 
+def _swap(key, pid, opts):
+    """접시 바꾸기: 고르는 즉시 반영해서 위의 접시 목록과 금액이 바로 바뀌게."""
+    picks = st.session_state.setdefault("picks", {})
+    i = st.session_state.get(key, 0)
+    if i == 0:
+        picks.pop(pid, None)
+    else:
+        o = opts[i]
+        picks[pid] = {"item": o["item"], "verdict": o["verdict"], "match": o["match"], "reason": o["reason"]}
+
+
 def title(h, sub=None):
     md(f'<div class="h1">{E(h)}</div>' + (f'<div class="sub">{E(sub)}</div>' if sub else ""))
 
@@ -127,7 +138,7 @@ def people():
             if "del" in cols:
                 cols["del"].button("지우기", key=f"del{i}", width="stretch",
                                    on_click=lambda pid=p["id"]: save_people([x for x in st.session_state.people if x["id"] != pid]))
-    st.button("+ 사람 추가하기", width="stretch", on_click=nav, args=('edit',), kwargs={"edit_id": None})
+    st.button("사람 추가하기", icon=":material/person_add:", width="stretch", on_click=nav, args=('edit',), kwargs={"edit_id": None})
     n = len(active())
     nxt = "자유 식사 식당 보기" if s.get("trip") == "package" else "메뉴판 찍기"
     st.button(f"{n}명 기준으로 {nxt}", type="primary", width="stretch", disabled=n == 0, on_click=nav, args=('free' if s.get('trip') == 'package' else 'menu' if s.get('scan') else 'scan',))
@@ -317,7 +328,7 @@ def row(it, mode):
         if mode == "원문과 함께" and it["glossary"]:
             body += '<div class="chips">' + "".join(f'<span class="gl"><b>{E(g["term"])}</b>{E(g["meaning"])}</span>' for g in it["glossary"]) + "</div>"
         if mode == "누가 먹을까" and it.get("headline"):
-            body += f'<div class="like">≈ {E(it["headline"])}</div>'
+            body += f'<div class="like">{E(it["headline"])}</div>'
         al = [c for c in it["contains"] if c in ALLERGENS]
         if al and mode != "누가 먹을까":
             body += chips([f"{a} 들어 있어요" for a in al], "kw care")
@@ -551,13 +562,10 @@ def combo():
             opts = [p] + p["alts"]
             labels = [f'{VMARK[o["verdict"]]} {o["item"]["name_ko"]} · {o["item"]["price"]}' for o in opts]
             cur = s.picks.get(p["person"]["id"], {}).get("item", {}).get("id", p["item"]["id"])
-            i = st.selectbox(p["person"]["name"], range(len(opts)), format_func=lambda k: labels[k],
-                             index=next((k for k, o in enumerate(opts) if o["item"]["id"] == cur), 0), key=f"sw_{idx}_{p['person']['id']}")
-            if i == 0:
-                s.picks.pop(p["person"]["id"], None)
-            else:
-                o = opts[i]
-                s.picks[p["person"]["id"]] = {"item": o["item"], "verdict": o["verdict"], "match": o["match"], "reason": o["reason"]}
+            key = f"sw_{idx}_{p['person']['id']}"
+            st.selectbox(p["person"]["name"], range(len(opts)), format_func=lambda k, labels=labels: labels[k],
+                         index=next((k for k, o in enumerate(opts) if o["item"]["id"] == cur), 0), key=key,
+                         on_change=_swap, args=(key, p["person"]["id"], opts))
     if c["share"]:
         md('<div class="card"><div class="name">가운데 두고 같이</div>' + "".join(
             f'<div class="small"><b>{E(d["item"]["name_ko"])}</b> × {d["count"]} <span class="muted">{E(d["item"]["price"])} · {E(", ".join(d["who"]))} 먹을 수 있어요</span></div>'
