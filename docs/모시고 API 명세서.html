@@ -130,7 +130,7 @@ pre{background:#1d2621;color:#eef2ea;padding:14px 16px;border-radius:12px;overfl
 
 <h2 id="types"><span class="no">4</span>데이터 구조</h2>
 <h3>Person</h3>
-<pre>{ "id": "jiwoo", "name": "지우", "relation": "아이", "age": "6~9살", "sex": null,
+<pre>{ "id": "jiwoo", "name": "아이", "relation": "아이", "age": "6~9살", "sex": null,
   "likes": ["달큰한", "고소한", "바삭한"], "favorites": ["치즈 토스트", "함박스테이크", "감자튀김", "푸딩"],
   "avoid": [], "cannot": [], "allergies": ["견과류"],
   "child": {"new_food": "망설여요", "pick_out": ["채소가 보이면"], "good": ["치즈", "감자", "빵"]},
@@ -145,20 +145,20 @@ pre{background:#1d2621;color:#eef2ea;padding:14px 16px;border-radius:12px;overfl
 <pre>{ "kind": "all", "title": "모두 만족", "note": "이렇게 시키면 4명 모두 맛있게 먹어요",
   "plates": [ { "person": {"id", "name"}, "item": {id, name_orig, reading, name_ko, price, course, serve_minutes},
                 "verdict", "match", "reason", "alts": [ …바꿀 수 있는 메뉴 3개 ] } ],
-  "share": [ { "item": {…}, "count": 2, "who": ["나", "엄마", "아빠", "지우"] } ],
+  "share": [ { "item": {…}, "count": 2, "who": ["나", "엄마", "아빠", "아이"] } ],
   "summary": { "happy": 4, "people": 4, "minutes": 20, "price": 92.0 },
   "why": "나는 좋아하는 비프 스튜와 닮은 레드와인 소고기찜, … 골랐어요." }</pre>
 <h3>OrderCard</h3>
 <pre>{ "lang": "fr", "voice": "fr-FR",
   "first": ["Mon enfant est allergique aux fruits à coque (…). Pouvez-vous vérifier, s'il vous plaît ?", "Mon père ne mange pas de coquillages (…)."],
-  "first_ko": ["지우: 견과류 알레르기가 있어요. 확인해 주세요.", "아빠: 조개류를 못 먹어요."],
+  "first_ko": ["아이: 견과류 알레르기가 있어요. 확인해 주세요.", "아빠: 조개류를 못 먹어요."],
   "hello": "Bonjour ! Nous voudrions commander, s'il vous plaît.",
   "order": [ {"count": 1, "orig": "Bœuf bourguignon", "ko": "레드와인 소고기찜", "price": "22 €"} ],
   "requests": [ {"ko": "소스는 따로", "orig": "La sauce à part, s'il vous plaît."} ],
   "thanks": "Merci beaucoup !", "text": "(카드 전체 문장)", "note": null }</pre>
 <h3>FreeMeal</h3>
 <pre>{ "meet": {"name", "lat", "lng", "time": "13:30"}, "now": "12:10", "left_min": 80, "buffer_min": 10,
-  "speed": 1.0, "slowest": "지우",
+  "speed": 1.0, "slowest": "아이",
   "restaurants": [ { "id", "name", "kind", "lat", "lng", "price", "walk_min": 6, "wait_min": 10, "meal_min": 45,
                      "need_min": 77, "spare_min": 3, "fits": true, "back_by": "13:17",
                      "marks": [ {"id", "name", "mark": "편히", "dish": "뵈프 부르기뇽", "match": {"food", "level"}} ] } ] }</pre>
