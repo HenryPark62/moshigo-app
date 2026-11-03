@@ -1,0 +1,1107 @@
+{
+ "restaurant": "Chez Paulette",
+ "menu_language": "프랑스어",
+ "language_code": "fr-FR",
+ "items": [
+  {
+   "section_orig": "ENTRÉES",
+   "section_ko": "먼저 먹는 요리",
+   "name_orig": "Soupe à l'oignon gratinée",
+   "reading": "수프 아 로니옹 그라티네",
+   "name_ko": "치즈 올린 양파 수프",
+   "price": "9 €",
+   "desc_ko": "소고기 육수에 볶은 양파를 끓이고 빵과 콩테 치즈를 녹여 올린 수프예요.",
+   "glossary": [
+    {
+     "term": "gratinée",
+     "meaning": "치즈를 올려 오븐에 노릇하게 구운"
+    },
+    {
+     "term": "comté",
+     "meaning": "프랑스 쥐라 지방의 고소한 경성 치즈"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "소고기",
+    "양파",
+    "밀가루",
+    "우유"
+   ],
+   "ingredient": "채소",
+   "cooking": "오래 끓이기",
+   "t_salty": 0.7,
+   "t_sweet": 0.4,
+   "t_spicy": 0,
+   "t_sour": 0.05,
+   "t_umami": 0.8,
+   "t_aroma": 0.7,
+   "t_oily": 0.5,
+   "t_soft": 0.7,
+   "taste_kw": [
+    "달큰한",
+    "짭짤한",
+    "진한"
+   ],
+   "aroma_kw": [
+    "캐러멜 양파 향",
+    "구운 치즈 향"
+   ],
+   "texture_kw": [
+    "녹진한",
+    "촉촉한 빵"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 15,
+   "share_ok": false,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "국물이 짠 편이라 치즈 빵 위주로 조금만 드세요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "조심",
+     "reason": "양파가 보여요. 치즈 올린 빵만 덜어 주세요."
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "ENTRÉES",
+   "section_ko": "먼저 먹는 요리",
+   "name_orig": "Escargots de Bourgogne (6)",
+   "reading": "에스카르고 드 부르고뉴",
+   "name_ko": "부르고뉴식 달팽이 요리(6개)",
+   "price": "12 €",
+   "desc_ko": "달팽이를 마늘·파슬리 버터에 구운 요리예요.",
+   "glossary": [
+    {
+     "term": "escargot",
+     "meaning": "식용 달팽이"
+    },
+    {
+     "term": "beurre persillé",
+     "meaning": "파슬리와 마늘을 섞은 버터"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "우유"
+   ],
+   "ingredient": "해산물",
+   "cooking": "굽기",
+   "t_salty": 0.6,
+   "t_sweet": 0.05,
+   "t_spicy": 0,
+   "t_sour": 0,
+   "t_umami": 0.6,
+   "t_aroma": 0.9,
+   "t_oily": 0.85,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "버터 풍미",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "마늘 향",
+    "파슬리 향"
+   ],
+   "texture_kw": [
+    "쫄깃한"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 15,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "버터가 진하고 짭짤해요. 한두 개만 맛보세요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "조개는 아니지만 껍데기 있는 달팽이라 낯설 수 있어요."
+    },
+    {
+     "name": "지우",
+     "verdict": "피하기",
+     "reason": "처음 보는 달팽이에 초록 파슬리가 잔뜩 보여요."
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "ENTRÉES",
+   "section_ko": "먼저 먹는 요리",
+   "name_orig": "Salade de chèvre chaud",
+   "reading": "살라드 드 셰브르 쇼",
+   "name_ko": "따뜻한 염소치즈 샐러드",
+   "price": "11 €",
+   "desc_ko": "구운 염소치즈 토스트에 꿀과 호두를 곁들인 초록 샐러드예요.",
+   "glossary": [
+    {
+     "term": "chèvre",
+     "meaning": "염소젖 치즈"
+    },
+    {
+     "term": "noix",
+     "meaning": "호두"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "견과류",
+    "우유",
+    "밀가루"
+   ],
+   "ingredient": "치즈",
+   "cooking": "섞기",
+   "t_salty": 0.4,
+   "t_sweet": 0.4,
+   "t_spicy": 0,
+   "t_sour": 0.4,
+   "t_umami": 0.4,
+   "t_aroma": 0.7,
+   "t_oily": 0.4,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "새콤한",
+    "달콤짭짤한"
+   ],
+   "aroma_kw": [
+    "염소치즈 향",
+    "꿀 향"
+   ],
+   "texture_kw": [
+    "아삭한",
+    "크리미한"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "염소치즈 향이 강할 수 있어요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기 없는 샐러드라 심심할 수 있어요."
+    },
+    {
+     "name": "지우",
+     "verdict": "피하기",
+     "reason": "호두가 들어 있어요."
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "PLATS",
+   "section_ko": "주요리",
+   "name_orig": "Bœuf bourguignon",
+   "reading": "뵈프 부르기뇽",
+   "name_ko": "레드와인 소고기찜",
+   "price": "22 €",
+   "desc_ko": "소고기를 레드와인에 베이컨·버섯과 오래 졸이고 수제 으깬 감자를 곁들여요.",
+   "glossary": [
+    {
+     "term": "mijoté",
+     "meaning": "약불에 오래 졸인"
+    },
+    {
+     "term": "lardons",
+     "meaning": "깍둑 썬 베이컨"
+    },
+    {
+     "term": "purée",
+     "meaning": "으깬 감자"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "소고기",
+    "돼지고기",
+    "버섯",
+    "양파",
+    "술",
+    "우유"
+   ],
+   "ingredient": "소고기",
+   "cooking": "오래 끓이기",
+   "t_salty": 0.6,
+   "t_sweet": 0.25,
+   "t_spicy": 0,
+   "t_sour": 0.2,
+   "t_umami": 0.9,
+   "t_aroma": 0.8,
+   "t_oily": 0.6,
+   "t_soft": 0.85,
+   "taste_kw": [
+    "진한",
+    "깊은"
+   ],
+   "aroma_kw": [
+    "레드와인 향",
+    "훈연 베이컨 향"
+   ],
+   "texture_kw": [
+    "결대로 찢어지는",
+    "부드러운"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 20,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "조심",
+     "reason": "버섯이 보여요. 고기와 감자만 덜어 주세요."
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "PLATS",
+   "section_ko": "주요리",
+   "name_orig": "Moules marinières frites",
+   "reading": "물 마리니에르 프리트",
+   "name_ko": "화이트와인 홍합찜과 감자튀김",
+   "price": "19 €",
+   "desc_ko": "홍합을 화이트와인·샬롯·파슬리로 쪄 감자튀김과 내요.",
+   "glossary": [
+    {
+     "term": "moules",
+     "meaning": "홍합"
+    },
+    {
+     "term": "échalotes",
+     "meaning": "작은 양파 종류인 샬롯"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "조개류",
+    "양파",
+    "술"
+   ],
+   "ingredient": "조개류",
+   "cooking": "찌기",
+   "t_salty": 0.55,
+   "t_sweet": 0.15,
+   "t_spicy": 0,
+   "t_sour": 0.2,
+   "t_umami": 0.85,
+   "t_aroma": 0.75,
+   "t_oily": 0.4,
+   "t_soft": 0.6,
+   "taste_kw": [
+    "시원한",
+    "감칠맛"
+   ],
+   "aroma_kw": [
+    "바다 향",
+    "화이트와인 향"
+   ],
+   "texture_kw": [
+    "탱글한",
+    "바삭한 감자"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 15,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "피하기",
+     "reason": "홍합은 조개류예요."
+    },
+    {
+     "name": "지우",
+     "verdict": "조심",
+     "reason": "감자튀김만 덜어 주세요."
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "PLATS",
+   "section_ko": "주요리",
+   "name_orig": "Steak frites",
+   "reading": "스테이크 프리트",
+   "name_ko": "스테이크와 감자튀김",
+   "price": "24 €",
+   "desc_ko": "구운 꽃등심에 후추 소스와 감자튀김, 굽기는 고를 수 있어요.",
+   "glossary": [
+    {
+     "term": "entrecôte",
+     "meaning": "꽃등심"
+    },
+    {
+     "term": "sauce au poivre",
+     "meaning": "후추 크림 소스"
+    },
+    {
+     "term": "cuisson au choix",
+     "meaning": "굽기 정도 선택"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "소고기",
+    "우유"
+   ],
+   "ingredient": "소고기",
+   "cooking": "굽기",
+   "t_salty": 0.55,
+   "t_sweet": 0.05,
+   "t_spicy": 0.3,
+   "t_sour": 0,
+   "t_umami": 0.8,
+   "t_aroma": 0.6,
+   "t_oily": 0.7,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "고소한",
+    "후추 맛"
+   ],
+   "aroma_kw": [
+    "숯불 향",
+    "후추 향"
+   ],
+   "texture_kw": [
+    "육즙 있는",
+    "바삭한 감자"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 20,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "소스는 따로 달라고 하고 잘 익혀 달라고 하세요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "조심",
+     "reason": "후추 소스는 빼고 고기와 감자튀김만 주세요."
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "PLATS",
+   "section_ko": "주요리",
+   "name_orig": "Poulet rôti, gratin dauphinois",
+   "reading": "풀레 로티, 그라탱 도피누아",
+   "name_ko": "통닭구이와 감자 그라탱",
+   "price": "19 €",
+   "desc_ko": "농장 닭 반 마리를 구워 크림 감자 그라탱과 닭 육즙을 곁들여요.",
+   "glossary": [
+    {
+     "term": "gratin dauphinois",
+     "meaning": "얇은 감자를 크림에 구운 요리"
+    },
+    {
+     "term": "jus de volaille",
+     "meaning": "닭 육즙 소스"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "닭고기",
+    "우유"
+   ],
+   "ingredient": "닭고기",
+   "cooking": "굽기",
+   "t_salty": 0.45,
+   "t_sweet": 0.1,
+   "t_spicy": 0,
+   "t_sour": 0,
+   "t_umami": 0.7,
+   "t_aroma": 0.5,
+   "t_oily": 0.6,
+   "t_soft": 0.75,
+   "taste_kw": [
+    "고소한",
+    "담백한"
+   ],
+   "aroma_kw": [
+    "구운 닭 향",
+    "크림 향"
+   ],
+   "texture_kw": [
+    "바삭한 껍질",
+    "부드러운 감자"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 20,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "PLATS",
+   "section_ko": "주요리",
+   "name_orig": "Croque-monsieur, salade",
+   "reading": "크로크 무슈, 살라드",
+   "name_ko": "햄치즈 토스트와 샐러드",
+   "price": "12 €",
+   "desc_ko": "햄과 베샤멜 소스를 넣고 에멘탈 치즈를 녹여 구운 토스트예요.",
+   "glossary": [
+    {
+     "term": "béchamel",
+     "meaning": "우유·버터·밀가루로 만든 흰 소스"
+    },
+    {
+     "term": "jambon",
+     "meaning": "햄"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "돼지고기",
+    "우유",
+    "밀가루"
+   ],
+   "ingredient": "빵",
+   "cooking": "굽기",
+   "t_salty": 0.65,
+   "t_sweet": 0.15,
+   "t_spicy": 0,
+   "t_sour": 0.1,
+   "t_umami": 0.7,
+   "t_aroma": 0.5,
+   "t_oily": 0.6,
+   "t_soft": 0.55,
+   "taste_kw": [
+    "고소한",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "구운 치즈 향"
+   ],
+   "texture_kw": [
+    "바삭한",
+    "쭉 늘어나는"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "햄과 치즈로 짭짤해요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "PLATS",
+   "section_ko": "주요리",
+   "name_orig": "Plat du jour — selon arrivage",
+   "reading": "플라 뒤 주르",
+   "name_ko": "오늘의 요리",
+   "price": "18 €",
+   "desc_ko": "글씨가 흐려요. 직원에게 물어봐 주세요.",
+   "glossary": [],
+   "unreadable": true,
+   "course": "main",
+   "contains": [],
+   "ingredient": "채소",
+   "cooking": "굽기",
+   "t_salty": 0.5,
+   "t_sweet": 0.2,
+   "t_spicy": 0,
+   "t_sour": 0.1,
+   "t_umami": 0.5,
+   "t_aroma": 0.5,
+   "t_oily": 0.5,
+   "t_soft": 0.5,
+   "taste_kw": [],
+   "aroma_kw": [],
+   "texture_kw": [],
+   "chef_pick": true,
+   "serve_minutes": 20,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "조심",
+     "reason": "재료를 먼저 물어보세요."
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "재료를 먼저 물어보세요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "조개가 들었는지 물어보세요."
+    },
+    {
+     "name": "지우",
+     "verdict": "조심",
+     "reason": "견과류가 있는지 물어보세요."
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "MENU ENFANT",
+   "section_ko": "어린이 메뉴",
+   "name_orig": "Steak haché frites + boule de glace",
+   "reading": "스테크 아셰 프리트 + 불 드 글라스",
+   "name_ko": "다진 고기 스테이크와 감자튀김, 아이스크림 한 스쿱",
+   "price": "11 €",
+   "desc_ko": "10살까지 어린이용 함박 같은 고기와 감자튀김, 아이스크림이에요.",
+   "glossary": [
+    {
+     "term": "haché",
+     "meaning": "다진"
+    },
+    {
+     "term": "jusqu'à 10 ans",
+     "meaning": "10살까지"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "소고기",
+    "우유"
+   ],
+   "ingredient": "소고기",
+   "cooking": "굽기",
+   "t_salty": 0.45,
+   "t_sweet": 0.3,
+   "t_spicy": 0,
+   "t_sour": 0,
+   "t_umami": 0.7,
+   "t_aroma": 0.4,
+   "t_oily": 0.6,
+   "t_soft": 0.7,
+   "taste_kw": [
+    "고소한",
+    "달콤한 후식"
+   ],
+   "aroma_kw": [
+    "구운 고기 향"
+   ],
+   "texture_kw": [
+    "바삭한",
+    "부드러운"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 15,
+   "share_ok": false,
+   "people": [
+    {
+     "name": "지우",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "kids_only": true
+  },
+  {
+   "section_orig": "DESSERTS",
+   "section_ko": "후식",
+   "name_orig": "Crème brûlée",
+   "reading": "크렘 브륄레",
+   "name_ko": "바닐라 커스터드 설탕구이",
+   "price": "8 €",
+   "desc_ko": "마다가스카르 바닐라 커스터드 위 설탕을 바삭하게 그을린 후식이에요.",
+   "glossary": [
+    {
+     "term": "brûlée",
+     "meaning": "설탕을 불로 그을린"
+    }
+   ],
+   "unreadable": false,
+   "course": "dessert",
+   "contains": [
+    "달걀",
+    "우유"
+   ],
+   "ingredient": "달걀",
+   "cooking": "굽기",
+   "t_salty": 0.05,
+   "t_sweet": 0.85,
+   "t_spicy": 0,
+   "t_sour": 0,
+   "t_umami": 0.1,
+   "t_aroma": 0.6,
+   "t_oily": 0.5,
+   "t_soft": 0.9,
+   "taste_kw": [
+    "달콤한"
+   ],
+   "aroma_kw": [
+    "바닐라 향",
+    "캐러멜 향"
+   ],
+   "texture_kw": [
+    "탁 깨지는",
+    "푸딩처럼 부드러운"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 5,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "DESSERTS",
+   "section_ko": "후식",
+   "name_orig": "Mousse au chocolat",
+   "reading": "무스 오 쇼콜라",
+   "name_ko": "초콜릿 무스",
+   "price": "8 €",
+   "desc_ko": "카카오 70% 다크 초콜릿으로 만든 폭신한 무스예요.",
+   "glossary": [
+    {
+     "term": "chocolat noir",
+     "meaning": "다크 초콜릿"
+    }
+   ],
+   "unreadable": false,
+   "course": "dessert",
+   "contains": [
+    "달걀",
+    "우유"
+   ],
+   "ingredient": "달걀",
+   "cooking": "섞기",
+   "t_salty": 0.05,
+   "t_sweet": 0.6,
+   "t_spicy": 0,
+   "t_sour": 0.1,
+   "t_umami": 0.1,
+   "t_aroma": 0.7,
+   "t_oily": 0.5,
+   "t_soft": 0.9,
+   "taste_kw": [
+    "쌉싸름한",
+    "달콤한"
+   ],
+   "aroma_kw": [
+    "카카오 향"
+   ],
+   "texture_kw": [
+    "폭신한"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 5,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "조심",
+     "reason": "쌉싸름해요. 견과류가 들었는지 물어보고 주세요."
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "DESSERTS",
+   "section_ko": "후식",
+   "name_orig": "Tarte Tatin",
+   "reading": "타르트 타탱",
+   "name_ko": "캐러멜 사과 타르트",
+   "price": "9 €",
+   "desc_ko": "캐러멜에 졸인 사과를 뒤집어 구운 타르트에 크렘 프레슈를 곁들여요.",
+   "glossary": [
+    {
+     "term": "crème fraîche",
+     "meaning": "살짝 새콤한 진한 크림"
+    }
+   ],
+   "unreadable": false,
+   "course": "dessert",
+   "contains": [
+    "밀가루",
+    "우유",
+    "달걀"
+   ],
+   "ingredient": "밀가루",
+   "cooking": "굽기",
+   "t_salty": 0.1,
+   "t_sweet": 0.85,
+   "t_spicy": 0,
+   "t_sour": 0.25,
+   "t_umami": 0.1,
+   "t_aroma": 0.6,
+   "t_oily": 0.5,
+   "t_soft": 0.7,
+   "taste_kw": [
+    "달콤한",
+    "새콤한"
+   ],
+   "aroma_kw": [
+    "캐러멜 향",
+    "구운 사과 향"
+   ],
+   "texture_kw": [
+    "촉촉한",
+    "바삭한 반죽"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 5,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "BOISSONS",
+   "section_ko": "음료",
+   "name_orig": "Carafe d'eau",
+   "reading": "카라프 도",
+   "name_ko": "물 한 병",
+   "price": "무료",
+   "desc_ko": "무료로 주는 수돗물 한 병이에요.",
+   "glossary": [
+    {
+     "term": "gratuit",
+     "meaning": "무료"
+    }
+   ],
+   "unreadable": false,
+   "course": "drink",
+   "contains": [],
+   "ingredient": "채소",
+   "cooking": "섞기",
+   "t_salty": 0,
+   "t_sweet": 0,
+   "t_spicy": 0,
+   "t_sour": 0,
+   "t_umami": 0,
+   "t_aroma": 0,
+   "t_oily": 0,
+   "t_soft": 1,
+   "taste_kw": [
+    "깔끔한"
+   ],
+   "aroma_kw": [],
+   "texture_kw": [
+    "시원한"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 1,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "BOISSONS",
+   "section_ko": "음료",
+   "name_orig": "Verre de vin rouge",
+   "reading": "베르 드 뱅 루주",
+   "name_ko": "레드와인 한 잔",
+   "price": "6 €",
+   "desc_ko": "레드와인 한 잔이에요.",
+   "glossary": [
+    {
+     "term": "verre",
+     "meaning": "잔"
+    }
+   ],
+   "unreadable": false,
+   "course": "drink",
+   "contains": [
+    "술"
+   ],
+   "ingredient": "채소",
+   "cooking": "섞기",
+   "t_salty": 0,
+   "t_sweet": 0.15,
+   "t_spicy": 0,
+   "t_sour": 0.4,
+   "t_umami": 0.1,
+   "t_aroma": 0.8,
+   "t_oily": 0,
+   "t_soft": 0.6,
+   "taste_kw": [
+    "떫은",
+    "새콤한"
+   ],
+   "aroma_kw": [
+    "포도 향",
+    "오크 향"
+   ],
+   "texture_kw": [
+    "묵직한"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 2,
+   "share_ok": false,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "떫은맛이 있어요. 취향에 따라 고르세요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "피하기",
+     "reason": "어른 음료예요. 사과주스를 주세요."
+    }
+   ],
+   "kids_only": false
+  },
+  {
+   "section_orig": "BOISSONS",
+   "section_ko": "음료",
+   "name_orig": "Jus de pomme",
+   "reading": "쥐 드 폼",
+   "name_ko": "사과주스",
+   "price": "4 €",
+   "desc_ko": "달콤한 사과주스예요.",
+   "glossary": [],
+   "unreadable": false,
+   "course": "drink",
+   "contains": [],
+   "ingredient": "채소",
+   "cooking": "섞기",
+   "t_salty": 0,
+   "t_sweet": 0.75,
+   "t_spicy": 0,
+   "t_sour": 0.3,
+   "t_umami": 0,
+   "t_aroma": 0.4,
+   "t_oily": 0,
+   "t_soft": 1,
+   "taste_kw": [
+    "달콤한",
+    "새콤한"
+   ],
+   "aroma_kw": [
+    "사과 향"
+   ],
+   "texture_kw": [
+    "시원한"
+   ],
+   "chef_pick": false,
+   "serve_minutes": 2,
+   "share_ok": false,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "지우",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "kids_only": false
+  }
+ ]
+}

@@ -1,0 +1,32 @@
+{
+ "Bœuf bourguignon": [
+  {"source": "here", "stars": 5, "text": "고기가 숟가락으로 잘릴 만큼 부드러웠어요. 갈비찜 좋아하시는 어머니가 잘 드셨어요.", "date": "2026.10.12"},
+  {"source": "here", "stars": 4, "text": "와인 향이 생각보다 진해요. 감자 퓌레랑 같이 먹으면 덜해요.", "date": "2026.09.28"},
+  {"source": "same_menu", "stars": 4, "text": "다른 비스트로보다 덜 짰어요. 빵에 소스 찍어 먹으면 좋아요.", "date": "2026.10.03"}
+ ],
+ "Moules marinières frites": [
+  {"source": "here", "stars": 5, "text": "국물이 홍합탕이랑 거의 같아요. 화이트와인 향만 조금 더 나요.", "date": "2026.10.15"},
+  {"source": "same_menu", "stars": 4, "text": "양이 많아서 둘이 나눠 먹어도 돼요. 감자튀김이 같이 나와요.", "date": "2026.09.30"}
+ ],
+ "Steak frites": [
+  {"source": "here", "stars": 4, "text": "à point로 시키면 한국 미디엄보다 덜 익어 나와요. 잘 익힌 걸 원하면 bien cuit.", "date": "2026.10.08"},
+  {"source": "same_menu", "stars": 4, "text": "후추 소스가 꽤 매콤해요. 아이는 소스 빼고 줬어요.", "date": "2026.10.01"}
+ ],
+ "Soupe à l'oignon gratinée": [
+  {"source": "here", "stars": 4, "text": "양파를 오래 볶아서 달큰해요. 치즈가 짭짤해서 국물은 조금 짠 편.", "date": "2026.10.10"},
+  {"source": "same_menu", "stars": 5, "text": "추운 날 먹기 좋아요. 빵이 국물에 불어서 부드러워요.", "date": "2026.09.21"}
+ ],
+ "Escargots de Bourgogne (6)": [
+  {"source": "here", "stars": 4, "text": "골뱅이 식감이랑 비슷해요. 마늘 버터가 진해서 빵이랑 먹어야 해요.", "date": "2026.10.11"},
+  {"source": "same_menu", "stars": 3, "text": "모양 때문에 망설였는데 맛은 버터 마늘 맛이 대부분이에요.", "date": "2026.09.19"}
+ ],
+ "Crème brûlée": [
+  {"source": "here", "stars": 5, "text": "위를 톡 깨면 푸딩 같아요. 아이가 제일 좋아했어요.", "date": "2026.10.14"}
+ ],
+ "Croque-monsieur, salade": [
+  {"source": "same_menu", "stars": 4, "text": "햄치즈 토스트인데 치즈가 듬뿍. 아이 메뉴로도 괜찮아요.", "date": "2026.10.02"}
+ ],
+ "Poulet rôti, gratin dauphinois": [
+  {"source": "here", "stars": 5, "text": "껍질은 바삭, 살은 촉촉. 그라탱이 부드러워서 부모님도 잘 드셨어요.", "date": "2026.10.09"}
+ ]
+}
