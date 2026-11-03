@@ -93,7 +93,7 @@ def scan():
     s = st.session_state
     p = person()
     md(f'<div class="hero">{avatar(p.get("relation", "가족"), 76)}<div class="h1">메뉴판을 찍어 주세요</div>'
-       f'<div class="sub">메뉴판을 찍으면 {E(p["name"])} 입맛에 맞는 순서로 보여요.</div></div>')
+       f'<div class="sub">메뉴판을 찍으면 {"내" if p["id"] == "me" else E(p["name"])} 입맛에 맞는 순서로 보여요.</div></div>')
     warn = s.pop("scan_warn", None)
     if warn:
         st.warning(warn)
@@ -121,7 +121,7 @@ def menu():
     scan = s.scan
     p = person()
     md(f'<div class="h1">{E(scan.get("restaurant") or "메뉴판")}</div>'
-       f'<div class="sub">{E(p["name"])} 입맛에 맞는 순서예요. 메뉴를 누르면 자세히 보여요.</div>')
+       f'<div class="sub">{"내" if p["id"] == "me" else E(p["name"])} 입맛에 맞는 순서예요. 메뉴를 누르면 자세히 보여요.</div>')
     if s.get("scan_note"):
         st.info(s.scan_note)
     g = simple.groups(scan, p["id"])
