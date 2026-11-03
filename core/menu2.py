@@ -112,17 +112,35 @@ SYSTEM = """너는 가족 여행 메뉴판 도우미 '모시고'다. 가족이 �
 {people}"""
 
 
-def _call(content, people):
+LIST_SCHEMA = {"type": "object", "properties": {
+    "is_menu": {"type": "boolean", "description": "음식점 메뉴판(요리 이름이나 가격 목록)이면 true. 음식 사진, 풍경, 영수증, 간판만 있으면 false"},
+    "restaurant": {"type": "string", "description": "가게 이름. 모르면 빈 문자열"},
+    "menu_language": {"type": "string", "description": "예: 프랑스어"}, "language_code": {"type": "string", "description": "BCP 47. 예: fr-FR"},
+    "lines": {"type": "array", "items": {"type": "object", "properties": {
+        "section_orig": {"type": "string"}, "name_orig": {"type": "string"}, "price": {"type": "string"},
+        "note": {"type": "string", "description": "메뉴판에 이 메뉴 아래 적힌 설명(원문 그대로, 없으면 빈 문자열)"}},
+        "required": ["section_orig", "name_orig", "price", "note"], "additionalProperties": False}}},
+    "required": ["is_menu", "restaurant", "menu_language", "language_code", "lines"], "additionalProperties": False}
+LIST_SYSTEM = """메뉴판에 적힌 메뉴를 위에서 아래, 왼쪽에서 오른쪽 순서대로 빠짐없이 적는다. 음료도 적는다.
+요리 이름은 원래 글자 그대로(악센트, 한자, 가나 포함) 적고, 번역하지 않는다. 흐려서 못 읽은 줄은 name_orig에 읽은 만큼 적는다.
+메뉴판이 아니면 is_menu=false, lines는 빈 배열."""
+CHUNK = 12        # 한 번에 설명을 만드는 메뉴 수 (나눠서 동시에 만든다)
+MAX_ITEMS = 60    # 너무 긴 메뉴판은 앞쪽부터 이만큼만
+
+
+def _client():
     import anthropic
 
-    names = [p["name"] for p in people]
-    client = anthropic.Anthropic()
-    with client.beta.messages.stream(
+    return anthropic.Anthropic()
+
+
+def _stream(system, content, schema, max_tokens):
+    with _client().beta.messages.stream(
         model="claude-opus-5-5",
-        max_tokens=32000,
-        system=SYSTEM.format(people="\n".join("- " + describe(p) for p in people)),
+        max_tokens=max_tokens,
+        system=system,
         messages=[{"role": "user", "content": content}],
-        output_config={"effort": "low", "format": {"type": "json_schema", "schema": _schema(names)}},
+        output_config={"effort": "low", "format": {"type": "json_schema", "schema": schema}},
         betas=["server-side-fallback-2026-07-01"],
         fallbacks="default",
     ) as stream:
@@ -132,21 +150,73 @@ def _call(content, people):
     return json.loads(next(b.text for b in response.content if b.type == "text"))
 
 
-def read_menu_text(ocr, people):
+def _call(content, people):
+    """한 번에 옮기고 판정한다 (짧은 메뉴판, 테스트용)."""
+    return _stream(SYSTEM.format(people="\n".join("- " + describe(p) for p in people)), content, _schema([p["name"] for p in people]), 32000)
+
+
+def _read(source, people, progress=None):
+    """1단계: 메뉴 이름 목록만 빠르게 뽑는다. 2단계: 12개씩 나눠 동시에 번역, 설명, 판정을 만든다.
+    메뉴가 많은 메뉴판(수십 개)도 출력 한도에 걸리지 않고, 걸리는 시간도 메뉴 수와 덜 상관있다."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    say = progress or (lambda *_: None)
+    say("메뉴 이름을 찾는 중이에요")
+    head = _stream(LIST_SYSTEM, source + [{"type": "text", "text": "이 메뉴판의 메뉴를 순서대로 적어 주세요."}], LIST_SCHEMA, 16000)
+    lines = head.get("lines") or []
+    if not head.get("is_menu", True) or not lines:
+        return {**{k: head.get(k, "") for k in ("restaurant", "menu_language", "language_code")}, "is_menu": False, "items": []}
+    cut = len(lines) > MAX_ITEMS
+    lines = lines[:MAX_ITEMS]
+    groups = [lines[i:i + CHUNK] for i in range(0, len(lines), CHUNK)]
+    say(f"메뉴 {len(lines)}개를 찾았어요. 무슨 맛인지 적는 중이에요")
+    system = SYSTEM.format(people="\n".join("- " + describe(p) for p in people))
+    schema = _schema([p["name"] for p in people])
+
+    def one(group):
+        listing = "\n".join(f"{i + 1:02d} | {g['section_orig']} | {g['name_orig']} | {g['price']}" + (f" | {g['note']}" if g["note"] else "")
+                            for i, g in enumerate(group))
+        ask = [{"type": "text", "text": f"이 메뉴판에서 아래 {len(group)}개 메뉴만, 이 순서 그대로 하나씩 옮기고 판정해 주세요. "
+                                         f"다른 메뉴는 넣지 마세요.\n(번호 | 묶음 | 이름 | 가격 | 메뉴판 설명)\n{listing}"}]
+        for attempt in range(2):
+            try:
+                return _stream(system, source + ask, schema, 16000).get("items") or []
+            except Exception as e:  # 한 번 더 해 보고, 그래도 안 되면 이 묶음은 이름만 남긴다
+                err = e
+        print(f"[menu2] 묶음 실패: {err!r}")
+        return [_bare(g) for g in group]
+
+    with ThreadPoolExecutor(min(6, len(groups))) as pool:
+        parts = list(pool.map(one, groups))
+    items = [it for part in parts for it in part]
+    out = {"is_menu": True, "restaurant": head.get("restaurant", ""), "menu_language": head.get("menu_language", ""),
+           "language_code": head.get("language_code", ""), "items": items}
+    if cut:
+        out["note"] = f"메뉴가 많아서 앞쪽 {MAX_ITEMS}개만 옮겼어요. 나머지는 해당 부분을 가까이서 다시 찍어 주세요."
+    return out
+
+
+def _bare(g):
+    """설명을 만들지 못한 메뉴: 이름과 가격만 보여 준다."""
+    return {"section_orig": g["section_orig"], "section_ko": g["section_orig"], "name_orig": g["name_orig"], "reading": "", "name_ko": g["name_orig"],
+            "price": g["price"], "desc_ko": "설명을 만들지 못했어요. 직원에게 물어봐 주세요.", "glossary": [], "unreadable": True, "course": "main",
+            "contains": [], "ingredient": INGREDIENTS[0], "cooking": COOKING[0], **{f"t_{a}": 0.5 for a in world.AXES},
+            "taste_kw": [], "aroma_kw": [], "texture_kw": [], "kids_only": False, "chef_pick": False, "serve_minutes": 15, "share_ok": False, "people": []}
+
+
+def read_menu_text(ocr, people, progress=None):
     """CLOVA OCR 줄 -> 번역, 설명, 사람별 판정. '(?)'는 OCR이 확신하지 못한 글자다."""
     text = "\n".join(f"{i + 1:02d} | {ln['text']}" + (" [흐림]" if ln["low"] else "") for i, ln in enumerate(ocr["lines"]))
-    return _call([{"type": "text", "text": (
+    return _read([{"type": "text", "text": (
         "아래는 메뉴판 사진을 OCR로 읽은 글자예요. 위에서 아래 순서이고 한 줄이 한 행이에요. "
-        "OCR이 악센트(é, è, ô 등)를 빠뜨리거나 글자를 틀렸을 수 있으니 요리 이름으로 바로잡아 name_orig에 적어 주세요. "
-        "'(?)'나 [흐림]이 붙은 줄은 확실하지 않아요. 요리 이름을 짐작할 수 없으면 unreadable=true로 두세요. "
-        "가게 이름, 설명 줄, 가격 줄은 해당 메뉴에 합쳐 주세요.\n\n" + text)}], people)
+        "OCR이 악센트(é, è, ô 등)를 빠뜨리거나 글자를 틀렸을 수 있으니 요리 이름으로 바로잡아 주세요. "
+        "'(?)'나 [흐림]이 붙은 줄은 확실하지 않아요. 가게 이름, 설명 줄, 가격 줄은 해당 메뉴에 합쳐 주세요.\n\n" + text)}], people, progress)
 
 
-def read_menu(image_bytes, media_type, people):
+def read_menu(image_bytes, media_type, people, progress=None):
     """OCR 키가 없을 때: 사진을 바로 읽는다."""
-    return _call([
-        {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": base64.standard_b64encode(image_bytes).decode()}},
-        {"type": "text", "text": "이 메뉴판을 옮기고 가족마다 판정해 주세요."}], people)
+    return _read([{"type": "image", "source": {"type": "base64", "media_type": media_type,
+                                                "data": base64.standard_b64encode(image_bytes).decode()}}], people, progress)
 
 
 def _hard_rules(item, p):

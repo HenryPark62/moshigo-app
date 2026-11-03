@@ -260,11 +260,10 @@ def run_scan(data, mime):
                     if len(o["lines"]) < 2:  # 글씨가 거의 없으면 메뉴판이 아닐 가능성이 크다
                         box.update(label="메뉴판을 찾지 못했어요", state="error")
                         go("scan", scan_warn=NOT_MENU)
-                    box.write(f"{len(o['lines'])}줄을 읽었어요. 메뉴마다 무슨 맛인지 적는 중이에요 (1분쯤 걸려요)")
-                    raw, source = menu2.read_menu_text(o, act), "ocr"
+                    box.write(f"글씨 {len(o['lines'])}줄을 읽었어요")
+                    raw, source = menu2.read_menu_text(o, act, box.write), "ocr"
                 else:
-                    box.write("메뉴를 읽고 무슨 맛인지 적는 중이에요 (1분쯤 걸려요)")
-                    raw, source = menu2.read_menu(ocr.to_jpeg(data, 1600), "image/jpeg", act), "vision"
+                    raw, source = menu2.read_menu(ocr.to_jpeg(data, 1600), "image/jpeg", act, box.write), "vision"
             except Exception as e:
                 if type(e).__name__ in ("StopException", "RerunException"):
                     raise
@@ -280,6 +279,7 @@ def run_scan(data, mime):
         data, source = DEMO_IMG.read_bytes(), "demo"
     elif s.get("place") and not raw.get("restaurant"):
         raw["restaurant"] = s.place["name"]
+    note = note or raw.get("note")
     s.scan_raw, s.scan_img, s.scan_note, s.scan_source = raw, data, note, source
     s.place = None  # 고른 식당은 이번 메뉴판에만 쓴다
     rejudge()
@@ -432,7 +432,9 @@ def dish():
             if m:
                 h += f'<span>좋아하는 <b>{E(m["food"])}</b>{josa(m["food"], "과", "와")} {E(m["level"])}{level(m["bars"])}</span></div>'
             else:
-                h += '<span class="muted">즐겨 먹는 음식 중엔 닮은 게 없어요. 새로운 맛이에요</span></div>'
+                fav = next((p.get("favorites") for p in s.people if p["id"] == x["id"]), None)
+                h += ('<span class="muted">즐겨 먹는 음식 중엔 닮은 게 없어요. 새로운 맛이에요</span></div>' if fav
+                      else '<span class="muted">즐겨 먹는 음식을 고르면 아는 맛으로 알려 드려요</span></div>')
             if x["verdict"] != "편히":
                 h += f'<div style="{"color:var(--warn);font-weight:700" if x["verdict"] == "피하기" else ""}">{E(x["reason"])}</div>'
             if m:
