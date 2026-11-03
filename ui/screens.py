@@ -465,12 +465,14 @@ def dish():
                     h += '<div class="chips"><span class="small muted">같은 점</span>' + "".join(f'<span class="kw same">{E(w)}</span>' for w in m["shared"]) + "</div>"
                 h += f'<div class="muted">{E(m["difference"])}</div>'
             md(h + "</div>")
-        md('<div class="sec">휴대폰 건네서 크게 보여 주기</div>')
-        with st.container(key="pair_show"):
-            cols = st.columns(len(it["per"]))
-            for c, x in zip(cols, it["per"]):
-                if c.button(x["name"], key=f"show_{x['id']}", width="stretch"):
-                    show_dialog(it, x)
+        others = [x for x in it["per"] if x["id"] != "me"]  # 휴대폰을 건넬 사람만 (나는 빼기)
+        if others:
+            md('<div class="sec">큰 글씨 설명 보여 주기</div>')
+            with st.container(key="pair_show"):
+                cols = st.columns(len(others))
+                for c, x in zip(cols, others):
+                    if c.button(f'{x["name"]}에게', key=f"show_{x['id']}", width="stretch"):
+                        st.dialog(f'{x["name"]}에게 보여 주는 설명')(show_dialog)(it, x)
         if len(it["map"]) > 1:
             md('<div class="sec">맛 지도</div><div class="card">' + taste_map(it["map"]) +
                '<div class="note">가까울수록 비슷한 맛이에요. 짠맛, 감칠맛, 기름진 정도를 가로에, 부드러운 정도를 세로에 놓았어요.</div></div>')
@@ -528,7 +530,6 @@ def dish():
     st.button("먹어 봤어요 · 짧은 설문", width="stretch", on_click=nav, args=('survey',))
 
 
-@st.dialog("크게 보여 주기")
 def show_dialog(it, x):
     m = x["match"]
     line = (f'{E(x["name"])}, 이건 <b>{E(m["food"])}</b>{josa(m["food"], "이랑", "랑")} {E(m["level"])}.' if m
