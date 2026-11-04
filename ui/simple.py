@@ -71,7 +71,7 @@ def leave():
 
     s = st.session_state
     s.simple, s.cookie_set = None, False
-    if s.get("scan_raw"):
+    if (s.get("scan") or {}).get("provider") == "foodguide" or s.get("scan_raw"):
         rejudge()
     s.view = "menu" if s.get("scan") else "people"
 

@@ -1,0 +1,2266 @@
+{
+  "provenance": {
+    "date": "2026-11-04",
+    "input": "core/data/paris_menu.jpg",
+    "people": "core.menu2.DEFAULT_PEOPLE",
+    "source": "Actual local Food Guide image job after separate favorite-name resolution",
+    "external_calls_succeeded": true,
+    "redaction": "Only fields used by UI retained; no credentials, job IDs or full catalog"
+  },
+  "report": {
+    "schema_version": "menu-guide-v1",
+    "dataset_sha256": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b",
+    "alias_sha256": "9d8fe92871ad6da05fabca55b0a5d0d120a58f0b6cb67bb98060c0ee560f8c54",
+    "scope": "korean",
+    "method": "감각·재료·텍스트·의미 벡터 비교 + 음식 형태·역할 적합도 보정",
+    "weights": {
+      "taste_intensity": 0.18,
+      "stimulation_intensity": 0.12,
+      "texture_intensity": 0.15,
+      "taste": 0.02,
+      "aroma": 0.04,
+      "texture": 0.03,
+      "main_ingredients": 0.25,
+      "seasonings": 0.08,
+      "cooking_methods": 0.05,
+      "structure": 0.08
+    },
+    "items": [
+      {
+        "input_name": "Soupe à l'oignon gratinée",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "양파 수프 그라탱",
+          "description": "",
+          "taste": [
+            "감칠맛",
+            "짠맛",
+            "단맛"
+          ],
+          "aroma": [
+            "고기향",
+            "치즈향"
+          ],
+          "texture": [
+            "부드러움",
+            "쫄깃함",
+            "바삭함"
+          ],
+          "main_ingredients": [
+            "소고기 육수",
+            "양파",
+            "치즈",
+            "빵"
+          ],
+          "seasonings": [
+            "소금",
+            "후추"
+          ],
+          "cooking_methods": [
+            "끓이기",
+            "그라탱"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [
+          {
+            "id": "KF0166",
+            "name": "설렁탕",
+            "family": "곰탕·고기국밥",
+            "score": 69.1,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통 (조리 상태 별도 비교): 소고기",
+              "소스·양념 공통: 소금, 후추",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 4↔4/5, 단단함 2↔2/5, 탄력·쫄깃함 3↔2/5"
+            ],
+            "differences": [
+              "단맛: 입력 메뉴 2/5, 설렁탕 0/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 빵, 소고기 육수, 양파"
+            ],
+            "notes": "고기를 오래 삶은 국물에 소금과 후추로 간해 먹는 대표형이다.",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0246",
+            "name": "불고기전골",
+            "family": "간장전골",
+            "score": 66.5,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통 (조리 상태 별도 비교): 소고기",
+              "가까운 강도: 단맛 2↔2/5, 짠맛 3↔3/5, 감칠맛 4↔4/5, 단단함 2↔1/5"
+            ],
+            "differences": [
+              "크리미함: 입력 메뉴 3/5, 불고기전골 0/5",
+              "탄력·쫄깃함: 입력 메뉴 3/5, 불고기전골 1/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 빵, 소고기 육수, 양파"
+            ],
+            "notes": "",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0267",
+            "name": "국수전골",
+            "family": "맑은전골",
+            "score": 65.7,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통 (조리 상태 별도 비교): 소고기",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 4↔3/5, 단단함 2↔1/5, 씹는 저항 3↔2/5"
+            ],
+            "differences": [
+              "크리미함: 입력 메뉴 3/5, 국수전골 0/5",
+              "기름짐: 입력 메뉴 3/5, 국수전골 1/5",
+              "탄력·쫄깃함: 입력 메뉴 3/5, 국수전골 1/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 빵, 소고기 육수, 양파"
+            ],
+            "notes": "",
+            "measurement_status": "not_measured"
+          }
+        ],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 59.0,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "조리법 공통: 끓이기"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 59.0,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "조리법 공통: 끓이기"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 26.7,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "주재료 공통: 양파",
+              "가까운 강도: 단맛 2↔2/5, 짠맛 3↔3/5, 감칠맛 4↔3/5, 단단함 2↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 45.4,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "주재료 공통: 양파",
+              "소스·양념 공통: 소금, 후추",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "양파 수프 그라탱 → 설렁탕 (69.1점)\n닮은 점: 주재료 공통 (조리 상태 별도 비교): 소고기; 소스·양념 공통: 소금, 후추; 가까운 강도: 짠맛 3↔2/5, 감칠맛 4↔4/5, 단단함 2↔2/5, 탄력·쫄깃함 3↔2/5\n차이점: 단맛: 입력 메뉴 2/5, 설렁탕 0/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 빵, 소고기 육수, 양파",
+        "menu_context": {
+          "original_name": "Soupe à l'oignon gratinée",
+          "korean_name": "양파 수프 그라탱",
+          "pronunciation": "수프 아 롱뇽 그라티네",
+          "description": "bouillon de bœuf, croûtons, comté fondu",
+          "price": "9 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": false
+      },
+      {
+        "input_name": "Escargots de Bourgogne (6)",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "부르고뉴식 달팽이구이",
+          "description": "",
+          "taste": [
+            "짠맛",
+            "감칠맛",
+            "마늘맛"
+          ],
+          "aroma": [
+            "마늘향",
+            "버터향"
+          ],
+          "texture": [
+            "쫄깃함",
+            "부드러움"
+          ],
+          "main_ingredients": [
+            "달팽이",
+            "버터",
+            "마늘",
+            "파슬리"
+          ],
+          "seasonings": [
+            "소금"
+          ],
+          "cooking_methods": [
+            "굽기"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [
+          {
+            "id": "KF0375",
+            "name": "도루묵구이",
+            "family": "소금구이",
+            "score": 65.7,
+            "coverage": 0.985,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "소스·양념 공통: 소금",
+              "조리법 공통: 굽기",
+              "가까운 강도: 짠맛 3↔3/5, 감칠맛 3↔3/5, 고소함 1↔2/5, 탄력·쫄깃함 3↔2/5"
+            ],
+            "differences": [
+              "씹는 저항: 입력 메뉴 4/5, 도루묵구이 1/5",
+              "크리미함: 입력 메뉴 3/5, 도루묵구이 0/5",
+              "단단함: 입력 메뉴 3/5, 도루묵구이 0/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 달팽이, 마늘, 버터"
+            ],
+            "notes": "소금으로 간해 구운 대표형이다. 쌈장과 초장은 선택 곁들임으로 제외한다.",
+            "measurement_status": "not_measured"
+          }
+        ],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 25.2,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 3↔3/5, 단단함 3↔2/5, 촉촉함 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 25.2,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 3↔3/5, 단단함 3↔2/5, 촉촉함 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 35.6,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "가까운 강도: 짠맛 3↔3/5, 감칠맛 3↔3/5, 단단함 3↔2/5, 탄력·쫄깃함 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 50.5,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔3/5, 감칠맛 3↔4/5, 고소함 1↔2/5, 알싸함 2↔1/5"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "부르고뉴식 달팽이구이 → 도루묵구이 (65.7점)\n닮은 점: 소스·양념 공통: 소금; 조리법 공통: 굽기; 가까운 강도: 짠맛 3↔3/5, 감칠맛 3↔3/5, 고소함 1↔2/5, 탄력·쫄깃함 3↔2/5\n차이점: 씹는 저항: 입력 메뉴 4/5, 도루묵구이 1/5; 크리미함: 입력 메뉴 3/5, 도루묵구이 0/5; 단단함: 입력 메뉴 3/5, 도루묵구이 0/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 달팽이, 마늘, 버터",
+        "menu_context": {
+          "original_name": "Escargots de Bourgogne (6)",
+          "korean_name": "부르고뉴 달팽이 (6)",
+          "pronunciation": "에스카르고 드 부르고뉴",
+          "description": "beurre persillé à l'ail",
+          "price": "12 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": false
+      },
+      {
+        "input_name": "Salade de chèvre chaud",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "따뜻한 염소치즈 샐러드",
+          "description": "",
+          "taste": [
+            "단맛",
+            "짠맛",
+            "감칠맛"
+          ],
+          "aroma": [
+            "염소치즈향",
+            "견과향"
+          ],
+          "texture": [
+            "부드러움",
+            "바삭함"
+          ],
+          "main_ingredients": [
+            "염소치즈",
+            "꿀",
+            "호두",
+            "상추"
+          ],
+          "seasonings": [
+            "소금"
+          ],
+          "cooking_methods": [
+            "굽기"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 23.6,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 2↔2/5, 감칠맛 2↔3/5, 단단함 2↔2/5, 탄력·쫄깃함 2↔1/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 23.6,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 2↔2/5, 감칠맛 2↔3/5, 단단함 2↔2/5, 탄력·쫄깃함 2↔1/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 22.9,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "가까운 강도: 단맛 3↔2/5, 짠맛 2↔3/5, 감칠맛 2↔3/5, 고소함 2↔1/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 24.6,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘감자튀김’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 2↔2/5, 감칠맛 2↔2/5, 고소함 2↔2/5, 단단함 2↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.",
+        "menu_context": {
+          "original_name": "Salade de chèvre chaud",
+          "korean_name": "따뜻한 염소 치즈 샐러드",
+          "pronunciation": "살라드 드 셰브르 쇼",
+          "description": "toasts de chèvre, miel, noix, salade verte",
+          "price": "11 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": true
+      },
+      {
+        "input_name": "Bœuf bourguignon",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "부르고뉴식 소고기 스튜",
+          "description": "",
+          "taste": [
+            "감칠맛",
+            "짠맛",
+            "신맛"
+          ],
+          "aroma": [
+            "고기향",
+            "버섯향",
+            "와인향"
+          ],
+          "texture": [
+            "부드러움",
+            "쫄깃함"
+          ],
+          "main_ingredients": [
+            "소고기",
+            "적포도주",
+            "베이컨",
+            "버섯",
+            "감자"
+          ],
+          "seasonings": [
+            "소금",
+            "후추"
+          ],
+          "cooking_methods": [
+            "조림"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [
+          {
+            "id": "KF0498",
+            "name": "돼지갈비찜",
+            "family": "갈비찜",
+            "score": 63.7,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 감자",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔4/5, 감칠맛 5↔4/5, 촉촉함 3↔3/5"
+            ],
+            "differences": [
+              "크리미함: 입력 메뉴 3/5, 돼지갈비찜 0/5",
+              "단단함: 입력 메뉴 4/5, 돼지갈비찜 1/5",
+              "탄력·쫄깃함: 입력 메뉴 4/5, 돼지갈비찜 1/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 버섯, 베이컨, 소고기"
+            ],
+            "notes": "",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0349",
+            "name": "소불고기",
+            "family": "소불고기",
+            "score": 62.9,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 소고기",
+              "소스·양념 공통: 후추",
+              "가까운 강도: 짠맛 3↔3/5, 감칠맛 5↔4/5, 씹는 저항 4↔3/5, 촉촉함 3↔3/5"
+            ],
+            "differences": [
+              "크리미함: 입력 메뉴 3/5, 소불고기 0/5",
+              "단단함: 입력 메뉴 4/5, 소불고기 2/5",
+              "탄력·쫄깃함: 입력 메뉴 4/5, 소불고기 2/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자, 버섯, 베이컨"
+            ],
+            "notes": "국물이 조금 남는 팬 조리형 소불고기다. 석쇠구이형과 구분한다.",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0505",
+            "name": "소고기수육",
+            "family": "백숙·수육",
+            "score": 60.5,
+            "coverage": 0.985,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통 (조리 상태 별도 비교): 소고기",
+              "소스·양념 공통: 소금, 후추",
+              "가까운 강도: 짠맛 3↔2/5, 촉촉함 3↔3/5, 기름짐 3↔2/5"
+            ],
+            "differences": [
+              "크리미함: 입력 메뉴 3/5, 소고기수육 0/5",
+              "단단함: 입력 메뉴 4/5, 소고기수육 1/5",
+              "탄력·쫄깃함: 입력 메뉴 4/5, 소고기수육 1/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자, 버섯, 베이컨"
+            ],
+            "notes": "소금으로 간해 먹는 삶은 고기 대표형이다.",
+            "measurement_status": "not_measured"
+          }
+        ],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 23.9,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 촉촉함 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 23.9,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 촉촉함 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 49.4,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "주재료 공통 (조리 상태 별도 비교): 돼지고기",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔3/5, 씹는 저항 4↔3/5, 촉촉함 3↔3/5"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 54.2,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "주재료 공통 (조리 상태 별도 비교): 돼지고기, 소고기",
+              "소스·양념 공통: 소금, 후추"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "부르고뉴식 소고기 스튜 → 돼지갈비찜 (63.7점)\n닮은 점: 주재료 공통: 감자; 가까운 강도: 단맛 1↔2/5, 짠맛 3↔4/5, 감칠맛 5↔4/5, 촉촉함 3↔3/5\n차이점: 크리미함: 입력 메뉴 3/5, 돼지갈비찜 0/5; 단단함: 입력 메뉴 4/5, 돼지갈비찜 1/5; 탄력·쫄깃함: 입력 메뉴 4/5, 돼지갈비찜 1/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 버섯, 베이컨, 소고기",
+        "menu_context": {
+          "original_name": "Bœuf bourguignon",
+          "korean_name": "부르기뇽 소고기 스튜",
+          "pronunciation": "뵈프 부르기뇽",
+          "description": "mijoté au vin rouge, lardons, champignons, purée maison",
+          "price": "22 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": false
+      },
+      {
+        "input_name": "Moules marinières frites",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "무슬 마리니에르 프리트",
+          "description": "",
+          "taste": [
+            "짭짤한",
+            "신맛",
+            "감칠맛"
+          ],
+          "aroma": [
+            "화이트와인",
+            "파슬리",
+            "에샬롯"
+          ],
+          "texture": [
+            "부드러운",
+            "바삭한"
+          ],
+          "main_ingredients": [
+            "홍합",
+            "감자"
+          ],
+          "seasonings": [
+            "화이트와인",
+            "파슬리",
+            "에샬롯"
+          ],
+          "cooking_methods": [
+            "삶기",
+            "튀기기"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [
+          {
+            "id": "KF0470",
+            "name": "홍합조림",
+            "family": "간장조림",
+            "score": 65.2,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 홍합",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔4/5, 감칠맛 3↔4/5, 단단함 2↔2/5"
+            ],
+            "differences": [
+              "크리미함: 입력 메뉴 2/5, 홍합조림 0/5",
+              "바삭함: 입력 메뉴 2/5, 홍합조림 0/5",
+              "아삭함: 입력 메뉴 2/5, 홍합조림 0/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자"
+            ],
+            "notes": "간장양념을 자작하게 졸인 대표형이다.",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0702",
+            "name": "홍합초무침",
+            "family": "생채·초무침",
+            "score": 62.5,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 홍합",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔3/5, 감칠맛 3↔2/5, 단단함 2↔2/5"
+            ],
+            "differences": [
+              "고추 매운자극: 입력 메뉴 0/5, 홍합초무침 2/5",
+              "크리미함: 입력 메뉴 2/5, 홍합초무침 0/5",
+              "바삭함: 입력 메뉴 2/5, 홍합초무침 0/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자"
+            ],
+            "notes": "고춧가루와 식초를 쓰는 대표 초무침형이다. 음식별 가열 전처리는 추가한다.",
+            "measurement_status": "not_measured"
+          }
+        ],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 43.0,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "주재료 공통: 홍합",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 3↔3/5, 단단함 2↔2/5, 씹는 저항 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 43.0,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "주재료 공통: 홍합",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 3↔3/5, 단단함 2↔2/5, 씹는 저항 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 34.0,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔3/5, 감칠맛 3↔3/5, 단단함 2↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 37.7,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘감자튀김’ 기준으로 비교했습니다.",
+              "주재료 공통: 감자",
+              "조리법 공통: 튀기기",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "무슬 마리니에르 프리트 → 홍합조림 (65.2점)\n닮은 점: 주재료 공통: 홍합; 가까운 강도: 단맛 1↔2/5, 짠맛 3↔4/5, 감칠맛 3↔4/5, 단단함 2↔2/5\n차이점: 크리미함: 입력 메뉴 2/5, 홍합조림 0/5; 바삭함: 입력 메뉴 2/5, 홍합조림 0/5; 아삭함: 입력 메뉴 2/5, 홍합조림 0/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자",
+        "menu_context": {
+          "original_name": "Moules marinières frites",
+          "korean_name": "홍합 마리니에르와 감자튀김",
+          "pronunciation": "물 마리니에르 프리트",
+          "description": "vin blanc, échalotes, persil",
+          "price": "19 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": false
+      },
+      {
+        "input_name": "Steak frites",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "스테이크 프리트",
+          "description": "",
+          "taste": [
+            "짭짤한",
+            "감칠맛"
+          ],
+          "aroma": [
+            "후추"
+          ],
+          "texture": [
+            "단단한",
+            "쫄깃한",
+            "바삭한"
+          ],
+          "main_ingredients": [
+            "소고기",
+            "감자"
+          ],
+          "seasonings": [
+            "후추"
+          ],
+          "cooking_methods": [
+            "그릴"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [
+          {
+            "id": "KF0350",
+            "name": "언양불고기",
+            "family": "간장양념구이",
+            "score": 68.4,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 소고기",
+              "소스·양념 공통: 후추",
+              "가까운 강도: 짠맛 4↔3/5, 감칠맛 4↔4/5, 탄력·쫄깃함 3↔2/5, 씹는 저항 4↔3/5"
+            ],
+            "differences": [
+              "아삭함: 입력 메뉴 3/5, 언양불고기 0/5",
+              "바삭함: 입력 메뉴 3/5, 언양불고기 1/5",
+              "단단함: 입력 메뉴 4/5, 언양불고기 2/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자"
+            ],
+            "notes": "얇게 썬 소고기를 양념하여 석쇠에 모아 구운 대표형이다. 다진 듯 잘게 썰어 성형하는 식당형도 존재한다.",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0349",
+            "name": "소불고기",
+            "family": "소불고기",
+            "score": 66.2,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 소고기",
+              "소스·양념 공통: 후추",
+              "가까운 강도: 짠맛 4↔3/5, 감칠맛 4↔4/5, 탄력·쫄깃함 3↔2/5, 씹는 저항 4↔3/5"
+            ],
+            "differences": [
+              "아삭함: 입력 메뉴 3/5, 소불고기 0/5",
+              "바삭함: 입력 메뉴 3/5, 소불고기 1/5",
+              "단단함: 입력 메뉴 4/5, 소불고기 2/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자"
+            ],
+            "notes": "국물이 조금 남는 팬 조리형 소불고기다. 석쇠구이형과 구분한다.",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0353",
+            "name": "소등심구이",
+            "family": "소금구이",
+            "score": 64.6,
+            "coverage": 0.985,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통 (조리 상태 별도 비교): 소고기",
+              "가까운 강도: 짠맛 4↔3/5, 감칠맛 4↔3/5, 탄력·쫄깃함 3↔2/5, 씹는 저항 4↔3/5"
+            ],
+            "differences": [
+              "아삭함: 입력 메뉴 3/5, 소등심구이 0/5",
+              "바삭함: 입력 메뉴 3/5, 소등심구이 1/5",
+              "단단함: 입력 메뉴 4/5, 소등심구이 2/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자, 소고기"
+            ],
+            "notes": "소금으로 간해 구운 대표형이다. 쌈장과 초장은 선택 곁들임으로 제외한다.",
+            "measurement_status": "not_measured"
+          }
+        ],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 22.5,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 감칠맛 4↔3/5, 촉촉함 2↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 22.5,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 감칠맛 4↔3/5, 촉촉함 2↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 53.3,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 4↔3/5, 감칠맛 4↔3/5, 탄력·쫄깃함 3↔2/5"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 58.3,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "주재료 공통 (조리 상태 별도 비교): 소고기",
+              "소스·양념 공통: 후추"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "스테이크 프리트 → 언양불고기 (68.4점)\n닮은 점: 주재료 공통: 소고기; 소스·양념 공통: 후추; 가까운 강도: 짠맛 4↔3/5, 감칠맛 4↔4/5, 탄력·쫄깃함 3↔2/5, 씹는 저항 4↔3/5\n차이점: 아삭함: 입력 메뉴 3/5, 언양불고기 0/5; 바삭함: 입력 메뉴 3/5, 언양불고기 1/5; 단단함: 입력 메뉴 4/5, 언양불고기 2/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자",
+        "menu_context": {
+          "original_name": "Steak frites",
+          "korean_name": "스테이크와 감자튀김",
+          "pronunciation": "스떽 프리트",
+          "description": "entrecôte grillée, sauce au poivre · cuisson au choix",
+          "price": "24 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": false
+      },
+      {
+        "input_name": "Poulet rôti, gratin dauphinois",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "로스트 치킨, 그라탱 도피누아",
+          "description": "",
+          "taste": [
+            "짭짤한",
+            "감칠맛"
+          ],
+          "aroma": [
+            "치킨 육즙"
+          ],
+          "texture": [
+            "부드러운",
+            "크리미한"
+          ],
+          "main_ingredients": [
+            "닭고기",
+            "감자",
+            "우유",
+            "치즈"
+          ],
+          "seasonings": [
+            "소금",
+            "후추"
+          ],
+          "cooking_methods": [
+            "로스트",
+            "그라탱"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [
+          {
+            "id": "KF0501",
+            "name": "닭볶음탕",
+            "family": "매운찜",
+            "score": 66.3,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 감자, 닭고기",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔3/5, 감칠맛 4↔4/5, 씹는 저항 3↔2/5"
+            ],
+            "differences": [
+              "크리미함: 입력 메뉴 4/5, 닭볶음탕 0/5",
+              "고추 매운자극: 입력 메뉴 0/5, 닭볶음탕 3/5",
+              "바삭함: 입력 메뉴 2/5, 닭볶음탕 0/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 우유, 치즈"
+            ],
+            "notes": "",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0500",
+            "name": "안동찜닭",
+            "family": "간장찜",
+            "score": 65.6,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 감자, 닭고기",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔4/5, 감칠맛 4↔4/5, 씹는 저항 3↔2/5"
+            ],
+            "differences": [
+              "크리미함: 입력 메뉴 4/5, 안동찜닭 0/5",
+              "바삭함: 입력 메뉴 2/5, 안동찜닭 0/5",
+              "아삭함: 입력 메뉴 2/5, 안동찜닭 0/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 우유, 치즈"
+            ],
+            "notes": "",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0599",
+            "name": "옛날통닭",
+            "family": "옛날통닭",
+            "score": 64.8,
+            "coverage": 0.985,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 닭고기",
+              "소스·양념 공통: 소금, 후추",
+              "가까운 강도: 짠맛 3↔2/5, 단단함 3↔2/5, 탄력·쫄깃함 3↔2/5, 씹는 저항 3↔3/5"
+            ],
+            "differences": [
+              "크리미함: 입력 메뉴 4/5, 옛날통닭 0/5",
+              "바삭함: 입력 메뉴 2/5, 옛날통닭 4/5",
+              "아삭함: 입력 메뉴 2/5, 옛날통닭 0/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자, 우유, 치즈"
+            ],
+            "notes": "작은 닭을 통째 또는 크게 펼쳐 얇은 튀김옷으로 튀기는 옛날통닭 대표형이다.",
+            "measurement_status": "not_measured"
+          }
+        ],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 23.5,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 4↔3/5, 단단함 3↔2/5, 씹는 저항 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 23.5,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 4↔3/5, 단단함 3↔2/5, 씹는 저항 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 55.4,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔3/5, 감칠맛 4↔3/5, 단단함 3↔2/5"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 58.9,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금, 후추",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔3/5, 감칠맛 4↔4/5, 걸쭉함 3↔3/5"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "로스트 치킨, 그라탱 도피누아 → 닭볶음탕 (66.3점)\n닮은 점: 주재료 공통: 감자, 닭고기; 가까운 강도: 단맛 1↔2/5, 짠맛 3↔3/5, 감칠맛 4↔4/5, 씹는 저항 3↔2/5\n차이점: 크리미함: 입력 메뉴 4/5, 닭볶음탕 0/5; 고추 매운자극: 입력 메뉴 0/5, 닭볶음탕 3/5; 바삭함: 입력 메뉴 2/5, 닭볶음탕 0/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 우유, 치즈",
+        "menu_context": {
+          "original_name": "Poulet rôti, gratin dauphinois",
+          "korean_name": "로스트 치킨, 도피누아 그라탱",
+          "pronunciation": "풀레 로티, 그라탱 도피누아",
+          "description": "demi-poulet fermier, jus de volaille",
+          "price": "19 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": false
+      },
+      {
+        "input_name": "Croque-monsieur, salade",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "크로크무슈, 샐러드",
+          "description": "",
+          "taste": [
+            "짭짤한",
+            "고소한"
+          ],
+          "aroma": [
+            "햄",
+            "치즈",
+            "베샤멜 소스"
+          ],
+          "texture": [
+            "부드러운",
+            "크리미한",
+            "바삭한"
+          ],
+          "main_ingredients": [
+            "햄",
+            "치즈",
+            "빵",
+            "우유"
+          ],
+          "seasonings": [
+            "소금",
+            "후추"
+          ],
+          "cooking_methods": [
+            "그릴",
+            "베이킹"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 22.6,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 3↔3/5, 단단함 3↔2/5, 탄력·쫄깃함 2↔1/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 22.6,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 3↔3/5, 단단함 3↔2/5, 탄력·쫄깃함 2↔1/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 22.7,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "가까운 강도: 단맛 2↔2/5, 짠맛 3↔3/5, 감칠맛 3↔3/5, 단단함 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 38.4,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "주재료 공통 (조리 상태 별도 비교): 밀반죽",
+              "소스·양념 공통: 소금, 후추",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.",
+        "menu_context": {
+          "original_name": "Croque-monsieur, salade",
+          "korean_name": "크로크무슈와 샐러드",
+          "pronunciation": "크로크-몽씨외, 살라드",
+          "description": "jambon, béchamel, emmental gratiné",
+          "price": "12 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": true
+      },
+      {
+        "input_name": "Steak haché frites + boule de glace",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "스테이크 하쉐 프리트 + 아이스크림 볼",
+          "description": "",
+          "taste": [
+            "고소함",
+            "짠맛"
+          ],
+          "aroma": [
+            "고기향"
+          ],
+          "texture": [
+            "부드러움",
+            "바삭함",
+            "차가움"
+          ],
+          "main_ingredients": [
+            "소고기",
+            "감자",
+            "우유"
+          ],
+          "seasonings": [
+            "소금",
+            "후추"
+          ],
+          "cooking_methods": [
+            "굽기",
+            "튀김"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [
+          {
+            "id": "KF0353",
+            "name": "소등심구이",
+            "family": "소금구이",
+            "score": 67.9,
+            "coverage": 0.985,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통 (조리 상태 별도 비교): 소고기",
+              "소스·양념 공통: 소금",
+              "조리법 공통: 굽기",
+              "가까운 강도: 짠맛 3↔3/5, 감칠맛 4↔3/5, 단단함 3↔2/5, 탄력·쫄깃함 3↔2/5"
+            ],
+            "differences": [
+              "아삭함: 입력 메뉴 3/5, 소등심구이 0/5",
+              "크리미함: 입력 메뉴 2/5, 소등심구이 0/5",
+              "바삭함: 입력 메뉴 3/5, 소등심구이 1/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자, 소고기, 우유"
+            ],
+            "notes": "소금으로 간해 구운 대표형이다. 쌈장과 초장은 선택 곁들임으로 제외한다.",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0360",
+            "name": "너비아니",
+            "family": "간장양념구이",
+            "score": 66.5,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 소고기",
+              "소스·양념 공통: 후추",
+              "조리법 공통: 굽기",
+              "가까운 강도: 짠맛 3↔3/5, 감칠맛 4↔4/5, 단단함 3↔2/5, 탄력·쫄깃함 3↔2/5"
+            ],
+            "differences": [
+              "아삭함: 입력 메뉴 3/5, 너비아니 0/5",
+              "크리미함: 입력 메뉴 2/5, 너비아니 0/5",
+              "바삭함: 입력 메뉴 3/5, 너비아니 1/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자, 우유"
+            ],
+            "notes": "넓적하게 썬 소고기에 칼집을 넣고 간장 양념에 재워 굽는 대표형이다.",
+            "measurement_status": "not_measured"
+          },
+          {
+            "id": "KF0349",
+            "name": "소불고기",
+            "family": "소불고기",
+            "score": 64.7,
+            "coverage": 1.0,
+            "culinary_compatibility": 1.0,
+            "similarities": [
+              "주재료 공통: 소고기",
+              "소스·양념 공통: 후추",
+              "가까운 강도: 짠맛 3↔3/5, 감칠맛 4↔4/5, 단단함 3↔2/5, 탄력·쫄깃함 3↔2/5"
+            ],
+            "differences": [
+              "아삭함: 입력 메뉴 3/5, 소불고기 0/5",
+              "크리미함: 입력 메뉴 2/5, 소불고기 0/5",
+              "바삭함: 입력 메뉴 3/5, 소불고기 1/5",
+              "입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자, 우유"
+            ],
+            "notes": "국물이 조금 남는 팬 조리형 소불고기다. 석쇠구이형과 구분한다.",
+            "measurement_status": "not_measured"
+          }
+        ],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 24.5,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 4↔3/5, 단단함 3↔2/5, 촉촉함 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 24.5,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 소금",
+              "가까운 강도: 짠맛 3↔2/5, 감칠맛 4↔3/5, 단단함 3↔2/5, 촉촉함 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 38.4,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "가까운 강도: 단맛 1↔2/5, 짠맛 3↔3/5, 감칠맛 4↔3/5, 단단함 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 60.0,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "주재료 공통 (조리 상태 별도 비교): 소고기",
+              "소스·양념 공통: 소금, 후추"
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "스테이크 하쉐 프리트 + 아이스크림 볼 → 소등심구이 (67.9점)\n닮은 점: 주재료 공통 (조리 상태 별도 비교): 소고기; 소스·양념 공통: 소금; 조리법 공통: 굽기; 가까운 강도: 짠맛 3↔3/5, 감칠맛 4↔3/5, 단단함 3↔2/5, 탄력·쫄깃함 3↔2/5\n차이점: 아삭함: 입력 메뉴 3/5, 소등심구이 0/5; 크리미함: 입력 메뉴 2/5, 소등심구이 0/5; 바삭함: 입력 메뉴 3/5, 소등심구이 1/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자, 소고기, 우유",
+        "menu_context": {
+          "original_name": "Steak haché frites + boule de glace",
+          "korean_name": "다진 스테이크와 감자튀김 + 아이스크림 한 스쿱",
+          "pronunciation": "스떽 아쉐 프리트 플뤼 볼 드 글라스",
+          "description": "jusqu'à 10 ans",
+          "price": "11 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": false
+      },
+      {
+        "input_name": "Crème brûlée",
+        "name_resolution": "generated_alias",
+        "status": "ok",
+        "profile": {
+          "name": "크렘 브륄레",
+          "description": "",
+          "taste": [
+            "달콤함",
+            "바닐라"
+          ],
+          "aroma": [
+            "바닐라"
+          ],
+          "texture": [
+            "부드러움",
+            "크리미함",
+            "겉은 바삭함"
+          ],
+          "main_ingredients": [
+            "우유",
+            "달걀",
+            "설탕",
+            "바닐라"
+          ],
+          "seasonings": [
+            "설탕"
+          ],
+          "cooking_methods": [
+            "굽기"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 19.7,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 짠맛 2↔2/5, 감칠맛 3↔3/5, 단단함 1↔2/5, 씹는 저항 1↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 19.7,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 짠맛 2↔2/5, 감칠맛 3↔3/5, 단단함 1↔2/5, 씹는 저항 1↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 20.9,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 설탕",
+              "가까운 강도: 단맛 3↔2/5, 짠맛 2↔3/5, 감칠맛 3↔3/5, 단단함 1↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 21.6,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "주재료 공통: 달걀",
+              "가까운 강도: 단맛 3↔2/5, 짠맛 2↔3/5, 감칠맛 3↔4/5, 걸쭉함 4↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.",
+        "menu_context": {
+          "original_name": "Crème brûlée",
+          "korean_name": "크렘브륄레",
+          "pronunciation": "크렘 브뤼레",
+          "description": "à la vanille de Madagascar",
+          "price": "8 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": true
+      },
+      {
+        "input_name": "Mousse au chocolat",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "무스 오 쇼콜라",
+          "description": "",
+          "taste": [
+            "달콤함",
+            "쓴맛"
+          ],
+          "aroma": [
+            "초콜릿"
+          ],
+          "texture": [
+            "부드러움",
+            "크리미함",
+            "가벼움"
+          ],
+          "main_ingredients": [
+            "다크 초콜릿",
+            "달걀",
+            "설탕",
+            "크림"
+          ],
+          "seasonings": [
+            "설탕"
+          ],
+          "cooking_methods": [
+            "섞기",
+            "냉장"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 20.1,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 짠맛 1↔2/5, 감칠맛 4↔3/5, 단단함 2↔2/5, 탄력·쫄깃함 2↔1/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 20.1,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 짠맛 1↔2/5, 감칠맛 4↔3/5, 단단함 2↔2/5, 탄력·쫄깃함 2↔1/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 21.3,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 설탕",
+              "가까운 강도: 단맛 2↔2/5, 감칠맛 4↔3/5, 단단함 2↔2/5, 탄력·쫄깃함 2↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 22.0,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "주재료 공통: 달걀",
+              "가까운 강도: 단맛 2↔2/5, 감칠맛 4↔4/5, 단단함 2↔1/5, 탄력·쫄깃함 2↔1/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.",
+        "menu_context": {
+          "original_name": "Mousse au chocolat",
+          "korean_name": "초콜릿 무스",
+          "pronunciation": "무스 오 쇼콜라",
+          "description": "chocolat noir 70 %",
+          "price": "8 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": true
+      },
+      {
+        "input_name": "Tarte Tatin",
+        "name_resolution": "generated_alias",
+        "status": "ok",
+        "profile": {
+          "name": "타르트 타탱",
+          "description": "",
+          "taste": [
+            "달콤함",
+            "버터"
+          ],
+          "aroma": [
+            "버터",
+            "사과"
+          ],
+          "texture": [
+            "바삭함",
+            "부드러움"
+          ],
+          "main_ingredients": [
+            "사과",
+            "밀가루",
+            "버터",
+            "설탕"
+          ],
+          "seasonings": [
+            "설탕"
+          ],
+          "cooking_methods": [
+            "굽기",
+            "캐러멜라이즈"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 19.9,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 짠맛 2↔2/5, 감칠맛 3↔3/5, 단단함 3↔2/5, 씹는 저항 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 19.9,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 짠맛 2↔2/5, 감칠맛 3↔3/5, 단단함 3↔2/5, 씹는 저항 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 21.2,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "소스·양념 공통: 설탕",
+              "가까운 강도: 단맛 3↔2/5, 짠맛 2↔3/5, 감칠맛 3↔3/5, 단단함 3↔2/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 21.5,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "주재료 공통 (조리 상태 별도 비교): 밀반죽",
+              "가까운 강도: 단맛 3↔2/5, 짠맛 2↔3/5, 감칠맛 3↔4/5, 걸쭉함 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.",
+        "menu_context": {
+          "original_name": "Tarte Tatin",
+          "korean_name": "타르트타탱",
+          "pronunciation": "타르트 타탱",
+          "description": "crème fraîche",
+          "price": "9 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": true
+      },
+      {
+        "input_name": "Carafe d'eau",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "생수",
+          "description": "",
+          "taste": [],
+          "aroma": [],
+          "texture": [
+            "맑음"
+          ],
+          "main_ingredients": [
+            "물"
+          ],
+          "seasonings": [],
+          "cooking_methods": [],
+          "source": "ai_estimate"
+        },
+        "matches": [],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 9.7,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "확인된 공통 특징이 적습니다.",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 9.7,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "확인된 공통 특징이 적습니다.",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 8.7,
+            "eligible": false,
+            "reasons": [
+              "피하고 싶은 재료의 포함 여부를 확인할 정보가 부족합니다.",
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "확인된 공통 특징이 적습니다.",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 8.9,
+            "eligible": false,
+            "reasons": [
+              "피하고 싶은 재료의 포함 여부를 확인할 정보가 부족합니다.",
+              "좋아하는 음식 ‘감자튀김’ 기준으로 비교했습니다.",
+              "확인된 공통 특징이 적습니다.",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.",
+        "menu_context": {
+          "original_name": "Carafe d'eau",
+          "korean_name": "물 카라페",
+          "pronunciation": "카라프 도",
+          "description": "",
+          "price": "gratuit",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": true
+      },
+      {
+        "input_name": "Verre de vin rouge",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "레드 와인",
+          "description": "",
+          "taste": [
+            "떫은맛",
+            "신맛",
+            "감칠맛"
+          ],
+          "aroma": [
+            "과일향",
+            "발효향"
+          ],
+          "texture": [
+            "부드러움"
+          ],
+          "main_ingredients": [
+            "포도"
+          ],
+          "seasonings": [],
+          "cooking_methods": [
+            "발효"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 9.8,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 짠맛 1↔2/5, 감칠맛 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 9.8,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "가까운 강도: 짠맛 1↔2/5, 감칠맛 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 9.0,
+            "eligible": false,
+            "reasons": [
+              "피하고 싶은 재료의 포함 여부를 확인할 정보가 부족합니다.",
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "가까운 강도: 감칠맛 3↔3/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 8.9,
+            "eligible": false,
+            "reasons": [
+              "피하고 싶은 재료의 포함 여부를 확인할 정보가 부족합니다.",
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "가까운 강도: 감칠맛 3↔4/5",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.",
+        "menu_context": {
+          "original_name": "Verre de vin rouge",
+          "korean_name": "레드 와인 한 잔",
+          "pronunciation": "베흐 드 뷔 앙 루즈",
+          "description": "",
+          "price": "6 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": true
+      },
+      {
+        "input_name": "Jus de pomme",
+        "name_resolution": "unresolved",
+        "status": "ok",
+        "profile": {
+          "name": "사과 주스",
+          "description": "",
+          "taste": [
+            "단맛",
+            "신맛"
+          ],
+          "aroma": [
+            "과일향"
+          ],
+          "texture": [
+            "부드러움"
+          ],
+          "main_ingredients": [
+            "사과"
+          ],
+          "seasonings": [],
+          "cooking_methods": [
+            "착즙"
+          ],
+          "source": "ai_estimate"
+        },
+        "matches": [],
+        "preferences": [
+          {
+            "name": "me",
+            "score": 9.3,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "확인된 공통 특징이 적습니다.",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "mom",
+            "score": 9.3,
+            "eligible": true,
+            "reasons": [
+              "좋아하는 음식 ‘홍합국’ 기준으로 비교했습니다.",
+              "확인된 공통 특징이 적습니다.",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "dad",
+            "score": 8.9,
+            "eligible": false,
+            "reasons": [
+              "피하고 싶은 재료의 포함 여부를 확인할 정보가 부족합니다.",
+              "좋아하는 음식 ‘제육볶음’ 기준으로 비교했습니다.",
+              "확인된 공통 특징이 적습니다.",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          },
+          {
+            "name": "jiwoo",
+            "score": 8.8,
+            "eligible": false,
+            "reasons": [
+              "피하고 싶은 재료의 포함 여부를 확인할 정보가 부족합니다.",
+              "좋아하는 음식 ‘함박스테이크’ 기준으로 비교했습니다.",
+              "확인된 공통 특징이 적습니다.",
+              "재료·음식 형태 차이를 취향 점수에 반영했습니다."
+            ],
+            "ingredient_check": "부분 재료 목록 기준이며 알레르기 안전 판정이 아닙니다."
+          }
+        ],
+        "text": "형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.",
+        "menu_context": {
+          "original_name": "Jus de pomme",
+          "korean_name": "사과 주스",
+          "pronunciation": "쥐 드 폼",
+          "description": "",
+          "price": "4 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        "semantic_used": true,
+        "weak_match": true
+      }
+    ],
+    "group": {
+      "menu_names": [
+        "Soupe à l'oignon gratinée",
+        "Poulet rôti, gratin dauphinois",
+        "Steak haché frites + boule de glace"
+      ],
+      "member_coverage": [
+        {
+          "name": "me",
+          "menu_name": "Soupe à l'oignon gratinée",
+          "score": 59.0
+        },
+        {
+          "name": "mom",
+          "menu_name": "Soupe à l'oignon gratinée",
+          "score": 59.0
+        },
+        {
+          "name": "dad",
+          "menu_name": "Poulet rôti, gratin dauphinois",
+          "score": 55.4
+        },
+        {
+          "name": "jiwoo",
+          "menu_name": "Steak haché frites + boule de glace",
+          "score": 60.0
+        }
+      ],
+      "uncovered_members": [],
+      "text": "입력된 메뉴 중 Soupe à l'oignon gratinée + Poulet rôti, gratin dauphinois + Steak haché frites + boule de glace 조합입니다. 각자 조건에 맞는 메뉴를 고르는 방식이며 모두가 모든 접시를 먹을 수 있다는 뜻은 아닙니다.",
+      "limitations": "가격·인분·품절 정보는 반영하지 않습니다. 취향 점수는 실측 만족도나 확률이 아닙니다."
+    },
+    "warnings": [
+      "강도와 설명은 대표 조리형의 편집 추정값입니다. 점수는 맛의 일치 확률이나 선호 확률이 아닙니다.",
+      "일부 메뉴는 AI가 작성한 다국어 별칭으로 연결했습니다. 실제 메뉴와 맞는지 확인해 주세요.",
+      "메뉴 중 일부 텍스트가 흐릿하여 완전한 판독이 어려웠음",
+      "메뉴 인식 결과는 분석 전에 원본과 대조하여 확인·수정해 주세요."
+    ],
+    "inference_provider": "openai",
+    "extraction": {
+      "items": [
+        {
+          "original_name": "Soupe à l'oignon gratinée",
+          "korean_name": "양파 수프 그라탱",
+          "pronunciation": "수프 아 롱뇽 그라티네",
+          "description": "bouillon de bœuf, croûtons, comté fondu",
+          "price": "9 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Escargots de Bourgogne (6)",
+          "korean_name": "부르고뉴 달팽이 (6)",
+          "pronunciation": "에스카르고 드 부르고뉴",
+          "description": "beurre persillé à l'ail",
+          "price": "12 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Salade de chèvre chaud",
+          "korean_name": "따뜻한 염소 치즈 샐러드",
+          "pronunciation": "살라드 드 셰브르 쇼",
+          "description": "toasts de chèvre, miel, noix, salade verte",
+          "price": "11 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Bœuf bourguignon",
+          "korean_name": "부르기뇽 소고기 스튜",
+          "pronunciation": "뵈프 부르기뇽",
+          "description": "mijoté au vin rouge, lardons, champignons, purée maison",
+          "price": "22 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Moules marinières frites",
+          "korean_name": "홍합 마리니에르와 감자튀김",
+          "pronunciation": "물 마리니에르 프리트",
+          "description": "vin blanc, échalotes, persil",
+          "price": "19 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Steak frites",
+          "korean_name": "스테이크와 감자튀김",
+          "pronunciation": "스떽 프리트",
+          "description": "entrecôte grillée, sauce au poivre · cuisson au choix",
+          "price": "24 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Poulet rôti, gratin dauphinois",
+          "korean_name": "로스트 치킨, 도피누아 그라탱",
+          "pronunciation": "풀레 로티, 그라탱 도피누아",
+          "description": "demi-poulet fermier, jus de volaille",
+          "price": "19 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Croque-monsieur, salade",
+          "korean_name": "크로크무슈와 샐러드",
+          "pronunciation": "크로크-몽씨외, 살라드",
+          "description": "jambon, béchamel, emmental gratiné",
+          "price": "12 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Steak haché frites + boule de glace",
+          "korean_name": "다진 스테이크와 감자튀김 + 아이스크림 한 스쿱",
+          "pronunciation": "스떽 아쉐 프리트 플뤼 볼 드 글라스",
+          "description": "jusqu'à 10 ans",
+          "price": "11 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Crème brûlée",
+          "korean_name": "크렘브륄레",
+          "pronunciation": "크렘 브뤼레",
+          "description": "à la vanille de Madagascar",
+          "price": "8 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Mousse au chocolat",
+          "korean_name": "초콜릿 무스",
+          "pronunciation": "무스 오 쇼콜라",
+          "description": "chocolat noir 70 %",
+          "price": "8 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Tarte Tatin",
+          "korean_name": "타르트타탱",
+          "pronunciation": "타르트 타탱",
+          "description": "crème fraîche",
+          "price": "9 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Carafe d'eau",
+          "korean_name": "물 카라페",
+          "pronunciation": "카라프 도",
+          "description": "",
+          "price": "gratuit",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Verre de vin rouge",
+          "korean_name": "레드 와인 한 잔",
+          "pronunciation": "베흐 드 뷔 앙 루즈",
+          "description": "",
+          "price": "6 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        },
+        {
+          "original_name": "Jus de pomme",
+          "korean_name": "사과 주스",
+          "pronunciation": "쥐 드 폼",
+          "description": "",
+          "price": "4 €",
+          "confidence": 0.95,
+          "photo_bbox": null
+        }
+      ],
+      "warnings": [
+        "메뉴 중 일부 텍스트가 흐릿하여 완전한 판독이 어려웠음",
+        "메뉴 인식 결과는 분석 전에 원본과 대조하여 확인·수정해 주세요."
+      ],
+      "language": "fr"
+    },
+    "timings_ms": {
+      "profiles": 8754.0,
+      "embeddings": 402.0,
+      "comparison": 1644.0,
+      "analysis": 10867.0,
+      "ocr": 7681.0,
+      "ocr_cache_hit": 0.0,
+      "total": 18557.0
+    },
+    "result_text": "양파 수프 그라탱 → 설렁탕 (69.1점)\n닮은 점: 주재료 공통 (조리 상태 별도 비교): 소고기; 소스·양념 공통: 소금, 후추; 가까운 강도: 짠맛 3↔2/5, 감칠맛 4↔4/5, 단단함 2↔2/5, 탄력·쫄깃함 3↔2/5\n차이점: 단맛: 입력 메뉴 2/5, 설렁탕 0/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 빵, 소고기 육수, 양파\n\n부르고뉴식 달팽이구이 → 도루묵구이 (65.7점)\n닮은 점: 소스·양념 공통: 소금; 조리법 공통: 굽기; 가까운 강도: 짠맛 3↔3/5, 감칠맛 3↔3/5, 고소함 1↔2/5, 탄력·쫄깃함 3↔2/5\n차이점: 씹는 저항: 입력 메뉴 4/5, 도루묵구이 1/5; 크리미함: 입력 메뉴 3/5, 도루묵구이 0/5; 단단함: 입력 메뉴 3/5, 도루묵구이 0/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 달팽이, 마늘, 버터\n\n형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.\n\n부르고뉴식 소고기 스튜 → 돼지갈비찜 (63.7점)\n닮은 점: 주재료 공통: 감자; 가까운 강도: 단맛 1↔2/5, 짠맛 3↔4/5, 감칠맛 5↔4/5, 촉촉함 3↔3/5\n차이점: 크리미함: 입력 메뉴 3/5, 돼지갈비찜 0/5; 단단함: 입력 메뉴 4/5, 돼지갈비찜 1/5; 탄력·쫄깃함: 입력 메뉴 4/5, 돼지갈비찜 1/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 버섯, 베이컨, 소고기\n\n무슬 마리니에르 프리트 → 홍합조림 (65.2점)\n닮은 점: 주재료 공통: 홍합; 가까운 강도: 단맛 1↔2/5, 짠맛 3↔4/5, 감칠맛 3↔4/5, 단단함 2↔2/5\n차이점: 크리미함: 입력 메뉴 2/5, 홍합조림 0/5; 바삭함: 입력 메뉴 2/5, 홍합조림 0/5; 아삭함: 입력 메뉴 2/5, 홍합조림 0/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자\n\n스테이크 프리트 → 언양불고기 (68.4점)\n닮은 점: 주재료 공통: 소고기; 소스·양념 공통: 후추; 가까운 강도: 짠맛 4↔3/5, 감칠맛 4↔4/5, 탄력·쫄깃함 3↔2/5, 씹는 저항 4↔3/5\n차이점: 아삭함: 입력 메뉴 3/5, 언양불고기 0/5; 바삭함: 입력 메뉴 3/5, 언양불고기 1/5; 단단함: 입력 메뉴 4/5, 언양불고기 2/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자\n\n로스트 치킨, 그라탱 도피누아 → 닭볶음탕 (66.3점)\n닮은 점: 주재료 공통: 감자, 닭고기; 가까운 강도: 단맛 1↔2/5, 짠맛 3↔3/5, 감칠맛 4↔4/5, 씹는 저항 3↔2/5\n차이점: 크리미함: 입력 메뉴 4/5, 닭볶음탕 0/5; 고추 매운자극: 입력 메뉴 0/5, 닭볶음탕 3/5; 바삭함: 입력 메뉴 2/5, 닭볶음탕 0/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 우유, 치즈\n\n형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.\n\n스테이크 하쉐 프리트 + 아이스크림 볼 → 소등심구이 (67.9점)\n닮은 점: 주재료 공통 (조리 상태 별도 비교): 소고기; 소스·양념 공통: 소금; 조리법 공통: 굽기; 가까운 강도: 짠맛 3↔3/5, 감칠맛 4↔3/5, 단단함 3↔2/5, 탄력·쫄깃함 3↔2/5\n차이점: 아삭함: 입력 메뉴 3/5, 소등심구이 0/5; 크리미함: 입력 메뉴 2/5, 소등심구이 0/5; 바삭함: 입력 메뉴 3/5, 소등심구이 1/5; 입력 메뉴의 주재료 중 비교 음식에 기록되지 않은 특징: 감자, 소고기, 우유\n\n형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.\n\n형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.\n\n형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.\n\n형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.\n\n형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다.\n\n형태·주재료·조리법까지 함께 고려했을 때 뚜렷하게 닮은 음식이 없습니다."
+  },
+  "reference_summary": [
+    {
+      "id": "me",
+      "name": "나",
+      "total": 4,
+      "resolved": 1,
+      "unresolved": [
+        {
+          "name": "쌀국수",
+          "status": "unresolved",
+          "candidates": []
+        },
+        {
+          "name": "토마토 파스타",
+          "status": "unresolved",
+          "candidates": []
+        },
+        {
+          "name": "비프 스튜",
+          "status": "unresolved",
+          "candidates": []
+        }
+      ],
+      "resolved_foods": [
+        {
+          "favorite": "홍합탕",
+          "id": "KF0115",
+          "name": "홍합국"
+        }
+      ],
+      "not_applied": []
+    },
+    {
+      "id": "mom",
+      "name": "엄마",
+      "total": 3,
+      "resolved": 1,
+      "unresolved": [
+        {
+          "name": "갈비찜",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "id": "KF0496",
+              "name": "소갈비찜"
+            },
+            {
+              "id": "KF0497",
+              "name": "매운소갈비찜"
+            },
+            {
+              "id": "KF0498",
+              "name": "돼지갈비찜"
+            },
+            {
+              "id": "KF0499",
+              "name": "매운돼지갈비찜"
+            }
+          ]
+        },
+        {
+          "name": "생선구이",
+          "status": "unresolved",
+          "candidates": []
+        }
+      ],
+      "resolved_foods": [
+        {
+          "favorite": "홍합탕",
+          "id": "KF0115",
+          "name": "홍합국"
+        }
+      ],
+      "not_applied": [
+        "짠 음식"
+      ]
+    },
+    {
+      "id": "dad",
+      "name": "아빠",
+      "total": 2,
+      "resolved": 1,
+      "unresolved": [
+        {
+          "name": "스테이크",
+          "status": "unresolved",
+          "candidates": []
+        }
+      ],
+      "resolved_foods": [
+        {
+          "favorite": "제육볶음",
+          "id": "KF0391",
+          "name": "제육볶음"
+        }
+      ],
+      "not_applied": []
+    },
+    {
+      "id": "jiwoo",
+      "name": "아이",
+      "total": 4,
+      "resolved": 2,
+      "unresolved": [
+        {
+          "name": "치즈 토스트",
+          "status": "unresolved",
+          "candidates": []
+        },
+        {
+          "name": "푸딩",
+          "status": "unresolved",
+          "candidates": []
+        }
+      ],
+      "resolved_foods": [
+        {
+          "favorite": "함박스테이크",
+          "id": "KF1713",
+          "name": "함박스테이크"
+        },
+        {
+          "favorite": "감자튀김",
+          "id": "KF0587",
+          "name": "감자튀김"
+        }
+      ],
+      "not_applied": []
+    }
+  ],
+  "reference_foods": {
+    "쌀국수": {
+      "id": "",
+      "name": "",
+      "candidates": [],
+      "status": "unresolved",
+      "resolution": "unresolved",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "토마토 파스타": {
+      "id": "",
+      "name": "",
+      "candidates": [],
+      "status": "unresolved",
+      "resolution": "unresolved",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "비프 스튜": {
+      "id": "",
+      "name": "",
+      "candidates": [],
+      "status": "unresolved",
+      "resolution": "unresolved",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "홍합탕": {
+      "id": "KF0115",
+      "name": "홍합국",
+      "candidates": [],
+      "status": "resolved",
+      "resolution": "dataset_alias",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "갈비찜": {
+      "id": "",
+      "name": "",
+      "candidates": [
+        {
+          "id": "KF0496",
+          "name": "소갈비찜"
+        },
+        {
+          "id": "KF0497",
+          "name": "매운소갈비찜"
+        },
+        {
+          "id": "KF0498",
+          "name": "돼지갈비찜"
+        },
+        {
+          "id": "KF0499",
+          "name": "매운돼지갈비찜"
+        }
+      ],
+      "status": "ambiguous",
+      "resolution": "generic",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "생선구이": {
+      "id": "",
+      "name": "",
+      "candidates": [],
+      "status": "unresolved",
+      "resolution": "unresolved",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "스테이크": {
+      "id": "",
+      "name": "",
+      "candidates": [],
+      "status": "unresolved",
+      "resolution": "unresolved",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "제육볶음": {
+      "id": "KF0391",
+      "name": "제육볶음",
+      "candidates": [],
+      "status": "resolved",
+      "resolution": "canonical",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "치즈 토스트": {
+      "id": "",
+      "name": "",
+      "candidates": [],
+      "status": "unresolved",
+      "resolution": "unresolved",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "함박스테이크": {
+      "id": "KF1713",
+      "name": "함박스테이크",
+      "candidates": [],
+      "status": "resolved",
+      "resolution": "canonical",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "감자튀김": {
+      "id": "KF0587",
+      "name": "감자튀김",
+      "candidates": [],
+      "status": "resolved",
+      "resolution": "canonical",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    },
+    "푸딩": {
+      "id": "",
+      "name": "",
+      "candidates": [],
+      "status": "unresolved",
+      "resolution": "unresolved",
+      "dataset_sha": "035faba65d78f4da120338ce45ad07ca1d0643312f4aee8e1e4c25869a89e37b"
+    }
+  },
+  "metadata": {
+    "restaurant": ""
+  }
+}

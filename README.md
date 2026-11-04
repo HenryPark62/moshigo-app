@@ -1,67 +1,71 @@
 # 모시고 · 가족 메뉴판 도우미
 
-처음 보는 해외 메뉴판을 찍으면 우리말로 옮기고, 같이 먹는 사람마다 **각자 아는 음식에 빗대어** 무슨 맛인지 알려 주는 모바일 웹앱.
+해외 메뉴판 사진을 우리말로 읽고, 닮은 한식과 가족별 입맛 비교 결과를 보여 주는 Streamlit 모바일 웹앱입니다.
 SVC Seoul AI 해커톤 지정 과제 03, 팀 NEXUS.
 
-## 하는 일
+## 현재 분석 흐름
 
-| 화면 | 내용 |
+```text
+사진 → Food Guide 이미지 작업 → 진행률·결과 조회 → 메뉴·개인 비교·가족 조합 → 현지어 주문 카드
+웹 메뉴 → 출처 확인된 메뉴 목록 → Food Guide 텍스트 작업 → 같은 결과 화면
+```
+
+기본값은 `MOSHIGO_ANALYSIS_PROVIDER=foodguide`입니다. 사진 인식·음식 특징·유사도·개인 취향 비교는 Food Guide API가 담당합니다. 모시고 서버는 `X-API-Key`를 보관하고 작업을 제출·조회합니다. 브라우저에 키나 작업 조회 권한을 전달하지 않습니다. 기존 Claude·CLOVA 사진 분석을 자동 대체 경로로 호출하지 않습니다.
+
+| 화면 | 현재 동작 |
 |---|---|
-| 시작 | 혼자 / 여럿이, 자유여행 / 패키지 자유 식사 |
-| 같이 먹는 사람 | 사람마다 즐겨 먹는 음식(나라 상관없이), 좋아하는 맛, 피하는 맛, 못 먹는 것, 알레르기, 아이 입맛. 기기 코드로 저장 |
-| 메뉴판 찍기 | 사진 → CLOVA OCR로 글씨 추출 → LLM이 번역, 설명, 맛 수치, 사람별 판정. 메뉴판이 아닌 사진은 다시 확인해 달라고 알림 |
-| 주변 식당 | 지금 위치(브라우저 허용) 주변의 실제 식당을 지도에. 요리 종류로 대표 메뉴를 붙여 사람별로 먹을 메뉴와 닮은꼴. 고르면 그 식당 메뉴판 찍기로 |
-| 메뉴판 읽기 | 번역만 / 원문과 함께(요리 용어 풀이) / 누가 먹을까(모두 편히, 몇 명만, 모두 피하기) |
-| 무슨 맛인지 | 맛 설명, 아는 맛(닮은꼴 아주/꽤/조금), 같은 점과 다른 점, 맛 지도, 후기(이 식당 먼저), 현지어 부탁 문장 읽어 주기 |
-| 메뉴 조합 | 모두 만족 / 현지 맛 도전 / 빨리 나와요. 가장 덜 맞는 사람 기준(maximin), 접시 바꾸기, 고른 이유 |
-| 주문 카드 | 알레르기와 못 먹는 것을 맨 위에, 현지어 주문 문장, 소리 내어 읽기 |
-| 자유 식사 시간 | 지금 위치에서 모이는 시간 안에 (가기 + 기다림 + 식사 + 돌아오기 + 여유) 다녀올 식당. 가장 느린 사람 걸음 기준 |
-| 먹어 본 뒤 설문 | 실제 주문, 맛이 그려졌는지, 예상보다 강한 맛, 다시 추천. 쌓이면 메뉴 설명에 미리 알려 줌 |
+| 사람·입맛 편집 | 즐겨 먹는 음식·제한·알레르기 저장. API 기준 음식의 연결 수를 표시하고 모호한 대표형은 직접 선택 |
+| 사진 | JPG·PNG·WebP, 15 MiB 이하. 이미지 API는 최대 20개 메뉴. 단계별 진행률과 작업 이어 보기 |
+| 메뉴·상세 | 번역·원문·가격, 등록된 한식과의 유사도, 별도의 개인 입맛 점수·제한 확인 |
+| 가족 조합 | API가 돌려준 최대 3개 메뉴의 한 가지 조합. 사람별 연결과 미포함 구성원 표시 |
+| 주문 | 원문 메뉴·수량을 직접 선택. 알레르기·못 먹는 재료를 먼저 전달하는 현지어 카드와 브라우저 음성 |
+| 간단 모드 | 공유 링크로 선택된 한 사람 기준의 사진·결과·주문. 그룹 참여 여부와 독립 |
+| 후기 | 실제 주문·맛·재추천 의향 저장. API 비교 점수나 그룹 추천을 변경하지 않음 |
+| 주변·자유 식사 | 기존 장소 검색·대표 음식·시간 계산 유지. 사진 분석 결과와 별도 경로 |
 
-알레르기와 못 먹는 재료는 LLM 판정과 상관없이 코드에서 늘 '피하기'로 만든다. 닮은꼴과 조합은 코드로 계산한다 (`core/world.py`, `core/menu2.py`).
+`matches`는 등록된 한식과의 비교이고 `preferences`는 개인이 선택한 음식 기준입니다. 두 결과를 섞지 않습니다. 점수는 0~100의 비교 수치이며 확률이 아닙니다. `null`은 0점이 아니라 비교 기준/정보 부족입니다. `eligible`은 입력한 제한 조건의 검사 결과이며 알레르기 안전 보장이 아닙니다.
 
-## 구성
+API가 제공하지 않는 기존 8축 맛 지도, 예상 조리시간, 직원 질문, 아이 주문 변형, 세 종류의 조합을 새 결과에 임의 생성하지 않습니다. 원문 설명과 한국어 특징을 구분하며, 원문·가격은 주문 카드에 보존합니다.
 
-- Python 3.12+, Streamlit (화면), Anthropic Claude API (설명 생성), 네이버 CLOVA OCR (글씨 추출), SQLite (입맛, 설문, 사용량)
-- 지도: OpenStreetMap (folium). 주변 식당: 카카오 로컬(한국, 키 선택), Geoapify(해외, 키 선택), 없으면 OpenStreetMap Overpass 공개 서버
-- 로그인 없음. 입맛은 6자리 기기 코드로 SQLite에 저장하고 브라우저 쿠키가 코드를 기억한다. 다른 기기에서는 코드로 불러온다 (`?me=코드`로 열어도 된다)
-- 위치는 주변 식당을 찾는 데만 쓰고 저장하지 않는다
-
-```
-streamlit_app.py   화면 이동, 위 머리, 아래 탭바
-ui/common.py       스타일(기존 모시고 디자인), 작은 HTML 조각
-ui/screens.py      화면들
-core/ocr.py        CLOVA OCR General(V2) 호출, 줄 묶기
-core/menu2.py      LLM 구조화 출력(번역, 설명, 판정), 규칙 판정, 닮은꼴, 조합
-core/world.py      세계 음식 43종 맛 표와 닮은꼴 계산
-core/order.py      주문 카드 문장 (프랑스어, 영어)
-core/freemeal.py   자유 식사 시간 계산, 사람별 먹을 메뉴
-core/nearby.py     주변 식당 (카카오, Geoapify, Overpass), 요리 종류 → 대표 메뉴
-scripts/patch_index.py  링크 미리보기용 제목, 설명, 그림 (배포 이미지 만들 때 실행)
-docs/              화면설계서(모바일), 서비스 설계안 v2, 서비스 플로우, API 명세서
-core/reviews.py    후기, 설문, 설문을 설명에 반영
-core/store.py      입맛 저장, 하루 사용량 한도
-```
-
-## 배포 (Render 무료)
-
-저장소 맨 위의 `render.yaml`로 무료 웹 서비스를 만든다 (Docker, 싱가포르). `ANTHROPIC_API_KEY`(필수), `CLOVA_OCR_URL`, `CLOVA_OCR_SECRET`, `KAKAO_REST_KEY`, `GEOAPIFY_KEY`(선택)는 Render 화면에서 넣는다.
-15분 동안 접속이 없으면 잠들고 다음 접속 때 1분쯤 걸려 깨어난다. 다시 시작하면 SQLite 파일은 지워진다.
-
-## 실행
+## 실행·설정
 
 ```bash
-python3.13 -m venv .venv && .venv/bin/pip install -r requirements.txt
-cp .streamlit/secrets.example.toml .streamlit/secrets.toml   # 키 넣기
+python3.13 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+cp .streamlit/secrets.example.toml .streamlit/secrets.toml
+# FOODGUIDE_API_URL, FOODGUIDE_API_KEY 설정
 .venv/bin/streamlit run streamlit_app.py
-.venv/bin/python -m pytest -q tests
 ```
 
-OCR 키가 없고 Claude 키만 있으면 사진을 Claude가 직접 읽는다.
+- 필수: `FOODGUIDE_API_URL`, `FOODGUIDE_API_KEY`. Food Guide 호출키이며 OpenAI 키와 다릅니다.
+- `FOODGUIDE_MAX_WAIT_SECONDS`: 한 번 조회하는 최대 시간, 기본 600초. 시간 초과 후 같은 작업을 이어 조회할 수 있습니다.
+- URL은 HTTPS origin만 허용합니다. 로컬 개발의 `http://127.0.0.1:8000`은 허용합니다. 리다이렉트는 따라가지 않습니다.
+- `ANTHROPIC_API_KEY`: 선택 기능인 웹 메뉴 검색에만 사용합니다. 찾은 메뉴는 Food Guide 텍스트 API로 넘기며 Claude 설명 단계를 다시 실행하지 않습니다.
+- `KAKAO_REST_KEY`, `GEOAPIFY_KEY`: 기존 주변 장소 검색의 선택 설정입니다.
+- 명시적 롤백: `MOSHIGO_ANALYSIS_PROVIDER=legacy`. 이 경우 기존 Claude/CLOVA 설정이 필요합니다.
 
-## 시연용이라 바꿔야 하는 것
+Render는 `render.yaml`의 서버 전용 환경변수에 연결 주소와 키를 설정해야 합니다. 이 PR 자체가 운영 비밀값을 설정하거나 배포를 확인하는 것은 아닙니다. 외부 Render 서비스에서 개발 PC의 loopback 주소에는 접근할 수 없으므로 접근 가능한 HTTPS API 주소가 필요합니다. SQLite 영속 디스크는 현재 배포 설정에 없습니다.
 
-- `core/world.py` 맛 수치와 `core/order.py` 현지어 문장은 초안 (팀 검토, 원어민 검토 필요)
-- 주변 식당의 기다림과 식사 시간은 가게 종류별 어림값, 걷는 길은 직선 거리 × 1.3 (OpenRouteService로 바꿀 것)
-- 화면에는 예시 데이터를 보여 주지 않는다. `core/data/demo_paris.json`, `paris_places.json`, `menu2.DEFAULT_PEOPLE`은 테스트용이고, 주소에 `?dev=1`을 붙이면 예시 메뉴판 버튼이 나온다(개발 확인용)
-- Streamlit Community Cloud의 파일은 다시 시작하면 지워질 수 있다 (SQLite). 오래 보관하려면 외부 DB로 옮긴다
+## 모듈
+
+| 경로 | 역할 |
+|---|---|
+| `core/foodguide_client.py` | 이미지·텍스트 HTTP 계약, 작업 재개, 오류·응답 검증 |
+| `core/foodguide_references.py` | 선택 음식만 조회해 카탈로그 ID 연결, 모호한 후보·미지원 항목 표시 |
+| `core/foodguide_flow.py` | 사진/웹/재비교 흐름, API 응답을 화면 계약으로 변환, 세션 소유 경계 |
+| `ui/foodguide.py` | API 결과 전용 화면 |
+| `streamlit_app.py`, `ui/screens.py`, `ui/simple.py` | 라우팅, 공통 화면, 사람 편집, 공유 모드 |
+| `core/order.py`, `core/reviews.py`, `core/store.py` | 현지어 카드, 후기·프로필 SQLite 저장 |
+| `core/nearby.py`, `freemeal.py`, `plan.py`, `burden.py` | 기존 장소·자유 식사 계획 |
+| `core/menu2.py`, `ocr.py`, `world.py` | 명시적 legacy 분석 및 기존 장소 추천에서 재사용 |
+
+## 검증과 화면 비교
+
+```bash
+.venv/bin/pip install pytest
+.venv/bin/python -m pytest tests -q
+```
+
+[연동 계약·제한·복구 방법](docs/foodguide-integration.md), [변경 전 → 변경 후 스크린샷](docs/changes/foodguide/README.md)을 참고하세요. 화면 캡처는 같은 공개 예시 사진·프로필로 실제 Streamlit을 렌더링합니다. 변경 전은 저장소의 예시 JSON, 변경 후는 실제 Food Guide 호출 응답을 고정한 fixture를 사용합니다. 처리 중·장애 상태만 제어된 모의 응답입니다.
+
+원본 음식 데이터셋은 이 저장소에 복사하지 않습니다. 사용자가 고른 음식명만 API로 조회하며, 고유 데이터셋 ID만 자동 연결합니다. 모호한 음식은 사용자가 대표형을 고르기 전까지 개인 비교 기준에서 제외하고 연결 수를 표시합니다.

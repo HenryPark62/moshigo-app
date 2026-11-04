@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "source_fixture": "core/data/demo_paris.json",
+  "people_fixture": "core.menu2.DEFAULT_PEOPLE",
+  "default_case": "menu-translated",
+  "notes": [
+    "Same public menu image and example profiles for before and after.",
+    "Before results use the repository demo JSON. After results use a saved real Food Guide response; see fixture provenance.",
+    "Processing and failure use controlled transport/provider responses through actual production UI, not live outage evidence.",
+    "Screenshots render real Streamlit views. Use a separate process per source root."
+  ],
+  "cases": [
+    {
+      "id": "people",
+      "view": "people",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon"
+    },
+    {
+      "id": "edit-adult",
+      "view": "edit",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon"
+    },
+    {
+      "id": "edit-child",
+      "view": "edit",
+      "simple": null,
+      "profile": "jiwoo",
+      "dish": "Bœuf bourguignon"
+    },
+    {
+      "id": "scan",
+      "view": "scan",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon"
+    },
+    {
+      "id": "menu-translated",
+      "view": "menu",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "menu_mode": "번역만"
+    },
+    {
+      "id": "menu-original",
+      "view": "menu",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "menu_mode": "원문과 함께"
+    },
+    {
+      "id": "menu-people",
+      "view": "menu",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "menu_mode": "누가 먹을까"
+    },
+    {
+      "id": "dish",
+      "view": "dish",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon"
+    },
+    {
+      "id": "dish-details",
+      "view": "dish",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "details": true
+    },
+    {
+      "id": "dish-allergy",
+      "view": "dish",
+      "simple": null,
+      "profile": "dad",
+      "dish": "Moules marinières frites",
+      "details": true
+    },
+    {
+      "id": "combo-all",
+      "view": "combo",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "combo": "all"
+    },
+    {
+      "id": "combo-local",
+      "view": "combo",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "combo": "local"
+    },
+    {
+      "id": "combo-fast",
+      "view": "combo",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "combo": "fast"
+    },
+    {
+      "id": "order",
+      "view": "order",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon"
+    },
+    {
+      "id": "order-large",
+      "view": "order",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "large": true
+    },
+    {
+      "id": "survey",
+      "view": "survey",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon"
+    },
+    {
+      "id": "simple-scan",
+      "view": "scan",
+      "simple": "mom",
+      "profile": "mom",
+      "dish": "Bœuf bourguignon",
+      "selected": false
+    },
+    {
+      "id": "simple-menu",
+      "view": "menu",
+      "simple": "mom",
+      "profile": "mom",
+      "dish": "Bœuf bourguignon",
+      "selected": false
+    },
+    {
+      "id": "simple-dish",
+      "view": "sdish",
+      "simple": "mom",
+      "profile": "mom",
+      "dish": "Bœuf bourguignon",
+      "selected": false
+    },
+    {
+      "id": "simple-order-empty",
+      "view": "order",
+      "simple": "mom",
+      "profile": "mom",
+      "dish": "Bœuf bourguignon",
+      "selected": false
+    },
+    {
+      "id": "simple-order",
+      "view": "order",
+      "simple": "mom",
+      "profile": "mom",
+      "dish": "Bœuf bourguignon",
+      "selected": true
+    },
+    {
+      "id": "simple-dish-avoid",
+      "view": "sdish",
+      "simple": "dad",
+      "profile": "dad",
+      "dish": "Moules marinières frites"
+    },
+    {
+      "id": "edit-parent",
+      "view": "edit",
+      "simple": null,
+      "profile": "mom",
+      "dish": "Bœuf bourguignon"
+    },
+    {
+      "id": "menu-web",
+      "view": "menu",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "web": true
+    },
+    {
+      "id": "processing",
+      "view": "scan",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "action": "processing"
+    },
+    {
+      "id": "provider-error",
+      "view": "scan",
+      "simple": null,
+      "profile": "me",
+      "dish": "Bœuf bourguignon",
+      "action": "provider-error"
+    }
+  ],
+  "pending_cases": [],
+  "api_fixture": "tests/visual/fixtures/foodguide-paris.json"
+}

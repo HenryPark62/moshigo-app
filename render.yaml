@@ -8,8 +8,16 @@ services:
     autoDeploy: true
     healthCheckPath: /_stcore/health
     envVars:
+      - key: MOSHIGO_ANALYSIS_PROVIDER
+        value: foodguide
+      - key: FOODGUIDE_API_URL
+        sync: false
+      - key: FOODGUIDE_API_KEY
+        sync: false
+      - key: FOODGUIDE_MAX_WAIT_SECONDS
+        value: "600"
       - key: ANTHROPIC_API_KEY
-        sync: false        # 값은 Render 화면에서 직접 넣는다 (저장소에 올리지 않음)
+        sync: false        # 웹 메뉴 검색에만 필요. 값은 Render 화면에서 직접 넣는다.
       - key: CLOVA_OCR_URL
         sync: false
       - key: CLOVA_OCR_SECRET

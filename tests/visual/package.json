@@ -1,0 +1,8 @@
+{
+  "name": "moshigo-visual-checks",
+  "private": true,
+  "description": "Real Streamlit before/after captures for Food Guide integration",
+  "devDependencies": {
+    "playwright": "1.57.0"
+  }
+}
