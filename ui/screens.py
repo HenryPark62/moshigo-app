@@ -341,7 +341,7 @@ def llm_down(e):
     return any(w in t for w in ("usage limit", "credit", "overloaded", "rate_limit", "ratelimit", "apiconnection", "authentication", "permission"))
 
 
-WEB_MISS = "이 식당 메뉴를 인터넷에서 찾지 못했어요. 메뉴판을 찍어 주세요."
+WEB_MISS = "메뉴를 불러오지 못했어요. 메뉴판 사진을 찍어 주세요."
 
 
 def run_web():
@@ -357,11 +357,8 @@ def run_web():
         s.place = None
         rejudge()
         go("menu", menu_mode_w="번역만", combo_w=None)
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    if not os.environ.get("ANTHROPIC_API_KEY") or not store.take_scan():
         s.scan_warn = WEB_MISS
-        return
-    if not store.take_scan():
-        s.scan_warn = "오늘 메뉴 읽기 횟수를 다 썼어요. 내일 다시 해 주세요."
         return
     # 식당 목록 아래쪽에서 눌러도 로딩이 보이게: 지난 화면(흐리게 남는 목록)을 숨기고 맨 위로 올린다
     md('<style>[data-stale="true"]{display:none!important}</style>')
@@ -384,7 +381,7 @@ def run_web():
         raw, down = None, llm_down(e)
     box.empty()
     if not raw:
-        s.scan_warn = LLM_DOWN if down else WEB_MISS
+        s.scan_warn = WEB_MISS  # API가 막혔든 못 찾았든 같은 안내 (사진 찍기로)
         return
     s.scan_raw, s.scan_img, s.scan_note, s.scan_source = raw, None, raw.get("note"), "web"
     if (s.get("hurry") or {}).get("id") != place.get("id"):

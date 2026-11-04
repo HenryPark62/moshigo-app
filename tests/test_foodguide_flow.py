@@ -200,6 +200,9 @@ def test_failed_web_lookup_does_not_resume_an_older_photo(fake_service, monkeypa
 
 def test_native_mode_is_default_with_explicit_legacy_rollback(monkeypatch):
     monkeypatch.delenv("MOSHIGO_ANALYSIS_PROVIDER", raising=False)
+    monkeypatch.delenv("FOODGUIDE_API_URL", raising=False)
+    assert not flow.enabled()  # 서버 주소가 없으면 이전 경로 (연결 오류로 모든 분석이 막히지 않게)
+    monkeypatch.setenv("FOODGUIDE_API_URL", "https://foodguide.test")
     assert flow.enabled()
     monkeypatch.setenv("MOSHIGO_ANALYSIS_PROVIDER", "legacy")
     assert not flow.enabled()

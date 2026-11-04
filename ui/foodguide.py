@@ -34,7 +34,11 @@ def _limit():
     return True
 
 
-def _run(action):
+WEB_FAIL = "메뉴를 불러오지 못했어요. 메뉴판 사진을 찍어 주세요."
+
+
+def _run(action, web=False):
+    """web=True(메뉴 불러오기)면 실패 이유와 상관없이 같은 안내만 남기고 찍기 화면으로 둔다."""
     if not _limit():
         return False
     with st.status("메뉴를 분석하고 있어요", expanded=True) as status:
@@ -46,6 +50,12 @@ def _run(action):
         try:
             action(update)
         except FoodGuideError as exc:
+            if web:  # 이어 보기/다시 요청 버튼 없이 사진 찍기로 안내
+                for k in ("foodguide_pending", "foodguide_error", "_fg_ui_error"):
+                    st.session_state.pop(k, None)
+                status.update(label="메뉴를 불러오지 못했어요", state="error")
+                st.session_state.fg_web_fail = True
+                return False
             st.session_state._fg_ui_error = {"code": exc.code, "message": exc.message, "retry_after": exc.retry_after}
             status.update(label="분석 상태를 확인해 주세요", state="error")
             st.warning(exc.message)
@@ -98,8 +108,10 @@ def scan():
     _title("메뉴판 찍기", "JPG·PNG·WebP 사진 한 장, 최대 15MB · 메뉴는 최대 20개까지 읽어요.")
     if s.pop("web_go", False) and s.get("place"):
         place = dict(s.place)
-        if _run(lambda progress: flow.run_web(place, active(), s, on_progress=progress)):
+        if _run(lambda progress: flow.run_web(place, active(), s, on_progress=progress), web=True):
             go("menu")
+    if s.pop("fg_web_fail", False):
+        st.warning(WEB_FAIL)
     _pending()
     ok = _limit()
     previous = s.get("scan_img")

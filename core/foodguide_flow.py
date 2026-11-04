@@ -15,7 +15,10 @@ CONTEXT_FIELDS = ("original_name", "korean_name", "pronunciation", "description"
 
 
 def enabled():
-    """기존 경로는 명시적 legacy 설정에서만 사용한다."""
+    """기존 경로는 명시적 legacy 설정이거나, Food Guide 서버 주소가 아직 설정되지 않았을 때 사용한다.
+    (주소 없이 Food Guide로 보내면 모든 분석이 '서버 연결 설정을 확인해 주세요'로 막힌다)"""
+    if not os.environ.get("FOODGUIDE_API_URL", "").strip():
+        return False
     return os.environ.get("MOSHIGO_ANALYSIS_PROVIDER", "foodguide").strip().lower() != "legacy"
 
 

@@ -19,6 +19,7 @@ def isolated_capture(monkeypatch, tmp_path):
     monkeypatch.setenv("MOSHIGO_SNAPSHOT", "1")
     monkeypatch.setenv("MOSHIGO_CAPTURE_ROOT", str(ROOT))
     monkeypatch.setenv("MOSHIGO_ANALYSIS_PROVIDER", "foodguide")
+    monkeypatch.setenv("FOODGUIDE_API_URL", "https://foodguide.test")
     monkeypatch.setenv("MOSHIGO_DB", str(tmp_path / "capture.sqlite"))
     for module in (store, reviews, webmenu):
         monkeypatch.setattr(module, "DB", tmp_path / "capture.sqlite")
