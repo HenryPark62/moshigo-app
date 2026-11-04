@@ -7,7 +7,7 @@ from streamlit.testing.v1 import AppTest
 from streamlit.testing.v1.element_tree import Widget
 
 from core import foodguide_flow, menu2, ocr, reviews, store, webmenu
-from ui import screens
+from ui import screens, foodguide
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -116,7 +116,7 @@ def test_simple_target_remains_active_when_group_profile_is_inactive():
     rerun(at)
     assert at.session_state["simple"] == "mom"
     assert not any(widget.label == "현재 입맛으로 다시 비교" for widget in at.button)
-    assert "엄마" in text(at) and "제한 조건" in text(at)
+    assert "엄마" in text(at) and "추천 점수" in text(at)
     # 화면이 그룹 프로필 자체를 변경하지 않아야 한다.
     assert next(p for p in at.session_state["people"] if p["id"] == "mom")["active"] is False
 
@@ -174,7 +174,7 @@ def test_loading_other_code_clears_previous_analysis_even_for_identical_people()
         assert key not in state
 
 
-@pytest.mark.parametrize("reference_count, expected", [(0, "연결된 비교 기준 없음"), (1, "비교 정보 부족")])
+@pytest.mark.parametrize("reference_count, expected", [(0, "점수 없음"), (1, "점수 없음")])
 def test_null_personal_score_is_not_displayed_as_zero(reference_count, expected):
     at = capture("simple-menu")
     scan = deepcopy(at.session_state["scan"])
@@ -186,3 +186,54 @@ def test_null_personal_score_is_not_displayed_as_zero(reference_count, expected)
     rerun(at)
     assert expected in text(at)
     assert "0점" not in text(at)
+
+
+def test_simple_menu_only_exposes_requested_fields_and_opens_detail():
+    at = capture("menu-translated")
+    first = at.session_state["scan"]["items"][0]
+    content = text(at)
+    assert first["name_ko"] in content and first["price"] in content
+    if first["reading"]:
+        assert first["reading"] in content
+    assert "추천 점수" in content
+    for unwanted in ("주재료:", "조리법:", "찍은 메뉴판 보기", "비교 기준 확인", "편집 추정값", "안전 판정"):
+        assert unwanted not in content
+    assert not at.button_group
+    at.button(key=f'fg_open_{first["id"]}').click()
+    rerun(at)
+    assert at.session_state["dish_id"] == first["id"]
+    assert any(expander.label == "분석 정보" for expander in at.expander)
+
+
+def test_recommendation_uses_selected_person_not_global_match():
+    at = capture("menu-translated")
+    scan = deepcopy(at.session_state["scan"])
+    first = scan["items"][0]
+    for row in first["preferences"]:
+        row.update(score=12.2 if row["id"] == "me" else 87.2, eligible=True)
+    first["matches"] = [{"name": "다른 한식", "score": 99.9}]
+    at.session_state["scan"] = scan
+    rerun(at)
+    assert at.selectbox(key="fg_menu_person").value == "me"
+    assert at.button(key=f'fg_open_{first["id"]}').label.endswith("12점")
+    at.selectbox(key="fg_menu_person").select("mom")
+    rerun(at)
+    assert at.button(key=f'fg_open_{first["id"]}').label.endswith("87점")
+    at.button(key=f'fg_open_{first["id"]}').click()
+    rerun(at)
+    button(at, "메뉴판으로").click()
+    rerun(at)
+    assert at.selectbox(key="fg_menu_person").value == "mom"
+    assert at.button(key=f'fg_open_{first["id"]}').label.endswith("87점")
+
+
+@pytest.mark.parametrize("score,eligible,status,fresh,expected", [
+    (0, True, "ok", True, ("0", "점")),
+    (98, False, "ok", True, ("—", "제한 확인")),
+    (None, True, "ok", True, ("—", "점수 없음")),
+    (98, True, "unknown", True, ("—", "확인 필요")),
+    (98, True, "ok", False, ("—", "확인 필요")),
+])
+def test_recommendation_never_fakes_missing_or_restricted_scores(score, eligible, status, fresh, expected):
+    item = {"status": status, "preferences": [{"id": "me", "score": score, "eligible": eligible}], "matches": [{"score": 100}]}
+    assert foodguide._menu_score(item, "me", fresh) == expected

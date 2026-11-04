@@ -1,4 +1,5 @@
 """Food Guide 원본 분석을 보여 주는 화면. 기존 추정 필드를 만들지 않는다."""
+import math
 from urllib.parse import urlsplit
 
 import streamlit as st
@@ -220,12 +221,12 @@ def _edit_reference(person_id):
     nav("edit", edit_id=person_id)
 
 
-def _reference_overview():
+def _reference_overview(use_expander=True):
     summary = st.session_state.get("foodguide_summary") or st.session_state.scan.get("reference_summary") or []
     if isinstance(summary, dict):
         summary = summary.get("reference_summary") or []
     rows = {row.get("id"): row for row in summary}
-    with st.expander("비교 기준 확인"):
+    with st.expander("비교 기준 확인") if use_expander else st.container():
         st.caption(COMPARISON_SCOPE)
         for person in active():
             row = rows.get(person["id"])
@@ -237,55 +238,96 @@ def _reference_overview():
             st.button(label, key=f'fg_edit_reference_{person["id"]}', on_click=_edit_reference, args=(person["id"],), width="stretch")
 
 
+MENU_TILE_CSS = """<style>
+[class*="st-key-fg_menu_tile_"]{position:relative;background:var(--surface);border:1px solid var(--hair);border-radius:20px;padding:16px;gap:0!important}
+[class*="st-key-fg_menu_tile_"]:hover{border-color:var(--accent)}
+[class*="st-key-fg_menu_tile_"] [data-testid="stElementContainer"]:has(.stButton){position:absolute!important;inset:0;z-index:2;margin:0!important}
+[class*="st-key-fg_menu_tile_"] .stButton,[class*="st-key-fg_menu_tile_"] .stButton>button{width:100%!important;height:100%!important}
+[class*="st-key-fg_menu_tile_"] .stButton>button{min-height:100%!important;background:transparent!important;border:0!important;border-radius:20px!important;box-shadow:none!important;color:transparent!important}
+[class*="st-key-fg_menu_tile_"] .stButton>button p{opacity:0!important}
+[class*="st-key-fg_menu_tile_"] .stButton>button:focus-visible{outline:3px solid var(--accent)!important;outline-offset:3px!important}
+.fg_menu_tile_content{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:14px;align-items:center;min-height:100px}
+.fg_menu_tile_name{font-size:22px;font-weight:750;line-height:1.35;overflow-wrap:anywhere}
+.fg_menu_tile_price{font-size:16px;font-weight:650;margin-top:7px;line-height:1.4}
+.fg_menu_tile_reading{font-size:13px;line-height:1.5;color:var(--muted);margin-top:7px;overflow-wrap:anywhere}
+.fg_menu_tile_reading span{font-size:11px;margin-right:5px}
+.fg_menu_tile_score{text-align:right;color:var(--accent-text);font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.1}
+.fg_menu_tile_score_label{display:block;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0;margin-bottom:5px}
+.fg_menu_tile_score strong{font-size:52px;font-weight:800;letter-spacing:-2px}
+.fg_menu_tile_score small{font-size:13px;margin-left:3px}
+.fg_menu_tile_score.fg_menu_tile_unscored{color:var(--muted)}
+.fg_menu_tile_score.fg_menu_tile_unscored small{display:block;white-space:normal;font-size:12px;margin-top:5px;margin-left:0;line-height:1.4}
+@media(max-width:380px){.fg_menu_tile_content{grid-template-columns:minmax(0,1fr) 82px;gap:10px}.fg_menu_tile_name{font-size:20px}.fg_menu_tile_score strong{font-size:48px}}
+</style>"""
+
+
+def _menu_score(item, person_id, fresh):
+    """선택한 사람의 유효한 개인 점수만 표시한다. 알 수 없는 값은 0으로 바꾸지 않는다."""
+    if not fresh or item.get("status") != "ok":
+        return "—", "확인 필요"
+    preference = next((row for row in item.get("preferences") or [] if row.get("id") == person_id), {})
+    if preference.get("eligible") is False:
+        return "—", "제한 확인"
+    score = preference.get("score")
+    if score is None:
+        return "—", "점수 없음"
+    if preference.get("eligible") is not True:
+        return "—", "확인 필요"
+    if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or not 0 <= score <= 100:
+        return "—", "점수 없음"
+    return str(round(score)), "점"
+
+
+def _analysis_information(fresh):
+    s = st.session_state
+    report = s.scan
+    with st.expander("분석 정보"):
+        source = report.get("source") or {}
+        if source.get("kind") == "web":
+            url = source.get("url") or ""
+            try:
+                parsed = urlsplit(url)
+                valid = parsed.scheme.lower() in {"http", "https"} and bool(parsed.hostname) and not parsed.username and not parsed.password
+            except (TypeError, ValueError):
+                valid = False
+            if valid:
+                label = str(source.get("title") or source.get("site") or "원문 메뉴 페이지")
+                md(f'<div class="note">인터넷에서 찾은 메뉴예요. <a href="{E(url, quote=True)}" target="_blank" rel="noopener noreferrer">{E(label)}</a></div>')
+        elif s.get("scan_img"):
+            st.image(s.scan_img, width="stretch")
+        for warning in report.get("warnings") or []:
+            st.caption(str(warning))
+        if fresh:
+            _reference_overview(use_expander=False)
+
+
 def menu():
     s = st.session_state
     report = s.scan
     _title(report.get("restaurant") or "메뉴판", f'메뉴 {len(report["items"])}개')
-    source = report.get("source") or {}
-    if source.get("kind") == "web":
-        url = source.get("url") or ""
-        try:
-            parsed = urlsplit(url)
-            valid = parsed.scheme.lower() in {"http", "https"} and bool(parsed.hostname) and not parsed.username and not parsed.password
-        except (TypeError, ValueError):
-            valid = False
-        if valid:
-            label = str(source.get("title") or source.get("site") or "원문 메뉴 페이지")
-            md(f'<div class="note">인터넷에서 찾은 메뉴예요. <a href="{E(url, quote=True)}" target="_blank" rel="noopener noreferrer">{E(label)}</a></div>')
-    elif s.get("scan_img"):
-        with st.expander("찍은 메뉴판 보기"):
-            st.image(s.scan_img, width="stretch")
     fresh = _fresh()
-    for warning in report.get("warnings") or []:
-        st.caption(str(warning))
-    if not s.get("simple"):
-        mode = st.segmented_control("보기", ["번역만", "원문과 함께", "입맛 비교"], default="번역만", key="fg_menu_mode") or "번역만"
-    else:
-        mode = "입맛 비교"
-    st.caption("재료와 알레르기 여부는 직원에게 확인해 주세요. 입맛 점수는 안전 판정이 아니에요.")
-    if fresh:
-        _reference_overview()
+    people = active()
+    ids = [person["id"] for person in people]
+    names = {person["id"]: person["name"] for person in people}
+    selected = ids[0] if ids else None
+    if len(ids) > 1 and not s.get("simple"):
+        if s.get("fg_menu_person") not in ids:
+            remembered = s.get("fg_menu_person_saved")
+            s.fg_menu_person = remembered if remembered in ids else "me" if "me" in ids else ids[0]
+        selected = st.selectbox("추천 점수 기준", ids, format_func=lambda pid: f'{names[pid]} 기준', key="fg_menu_person", label_visibility="collapsed")
+        s.fg_menu_person_saved = selected
+    md(MENU_TILE_CSS)
     for item in report["items"]:
-        with st.container(border=True):
-            md(f'<div class="name">{E(item["name_ko"])}</div>')
-            if mode == "원문과 함께" or s.get("simple"):
-                st.caption(item["name_orig"])
-                if item.get("reading"):
-                    st.caption(item["reading"])
-            if item.get("price"):
-                st.write(item["price"])
-            if item.get("desc_ko"):
-                st.write(item["desc_ko"])
-            _status(item)
-            if mode == "입맛 비교" and fresh:
-                _preferences(item, compact=True)
-            st.button("무슨 맛인지 보기 ›", key=f'fg_open_{item["id"]}', width="stretch", on_click=nav,
+        score, note = _menu_score(item, selected, fresh)
+        unscored = " fg_menu_tile_unscored" if score == "—" else ""
+        reading = str(item.get("reading") or "")
+        pronunciation = (f'<div class="fg_menu_tile_reading"><span>읽는 법</span>{E(reading)}</div>' if reading else "")
+        with st.container(key=f'fg_menu_tile_{item["id"]}'):
+            md(f'<div class="fg_menu_tile_content"><div><div class="fg_menu_tile_name">{E(item["name_ko"])}</div>'
+               f'<div class="fg_menu_tile_price">{E(item.get("price") or "가격 미표기")}</div>{pronunciation}</div>'
+               f'<div class="fg_menu_tile_score{unscored}"><span class="fg_menu_tile_score_label">추천 점수</span><strong>{E(score)}</strong><small>{E(note)}</small></div></div>')
+            st.button(f'{item["name_ko"]} 상세 보기 · {score}{note}', key=f'fg_open_{item["id"]}', width="stretch", on_click=nav,
                       args=("sdish" if s.get("simple") else "dish",), kwargs={"dish_id": item["id"]})
-    if fresh and not s.get("simple"):
-        st.button("함께 고를 메뉴 보기", on_click=nav, args=("combo",), width="stretch")
-    if s.get("simple"):
-        from .simple import escape_button
-        escape_button()
 
 
 def dish():
@@ -322,6 +364,7 @@ def dish():
     if fresh:
         _select(item, "fg_dish_add")
     st.button("먹어 봤어요", on_click=nav, args=("survey",), width="stretch")
+    _analysis_information(fresh)
     saved = reviews.reviews(item["name_orig"], s.scan.get("restaurant", ""))
     for review in (saved.get("here") or []) + (saved.get("other") or []):
         st.write(str(review.get("text", "")))
