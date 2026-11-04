@@ -53,6 +53,16 @@ if case_id not in cases:
     st.stop()
 case = cases[case_id]
 native = (SOURCE_ROOT / "core/foodguide_flow.py").exists()
+if native:
+    from concurrent.futures import Future
+    from core import dish_images, menu_prices
+    def no_photo_lookup(query):
+        result = Future()
+        result.set_result(None)
+        return result
+    dish_images._schedule = no_photo_lookup
+    menu_prices._rate = lambda currency: {"date": "2026-11-04", "base": currency, "quote": "KRW", "rate": 1501.84} if currency == "EUR" else None
+
 bundle = json.loads((HARNESS_ROOT / "tests/visual/fixtures/foodguide-paris.json").read_text("utf-8")) if native else None
 
 if case.get("action") in {"processing", "provider-error"}:

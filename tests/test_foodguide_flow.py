@@ -132,6 +132,18 @@ def test_refresh_reuses_extracted_text_without_photo_bbox_or_second_ocr(fake_ser
     assert not flow.stale(changed, session)
 
 
+def test_refresh_preserves_ai_currency_evidence_without_repeating_ocr(fake_service):
+    session = {}
+    flow.run_image(b"image", "image/jpeg", PEOPLE, session)
+    currency = {"currency_code": "", "currency_source": "inferred", "currency_evidence": "유로(EUR)로 추정"}
+    session["scan_report"]["extraction"].update(currency)
+    session["scan"] = flow.build_scan(session["scan_report"], PEOPLE)
+    for _ in range(2):
+        scan = flow.refresh(PEOPLE, session)
+        assert scan["currency"] == currency
+    assert [c[0] for c in fake_service] == ["image", "text", "text"]
+
+
 def test_failure_remains_resumable_and_never_falls_back_to_demo(fake_service, monkeypatch):
     def fail(*args, **kwargs):
         raise FoodGuideError("wait_timeout", "아직 처리 중", job_id="a" * 32)
@@ -250,3 +262,102 @@ def test_inflight_result_cannot_repopulate_different_code_session(fake_service, 
         flow.run_image(b"ownerA-photo", "image/jpeg", PEOPLE, session)
     assert error.value.code == "session_changed"
     assert session == {"code": "ownerB"}
+
+
+def test_reread_clears_completed_photo_job_and_gate_but_keeps_reference_work(monkeypatch):
+    reference_job = {"job_id": "r" * 32, "result": {"reference": True}}
+    reference_cache = {"foods": {"갈비찜": {"id": "known-food"}}}
+    session = {"scan_img": b"saved-jpeg", "foodguide_gate": "previous-charge",
+               "foodguide_pending": {"kind": "image", "image": b"saved-jpeg", "mime": "image/jpeg"},
+               "foodguide_jobs": {"analysis-image": {"job_id": "i" * 32, "result": report()},
+                                  "reference-foods": reference_job,
+                                  "analysis-text": {"result": {"previous-text": True}}},
+               "foodguide_reference_cache": reference_cache}
+    progress = lambda value: None
+    observed = []
+    def submit(data, mime, people, state, on_progress=None):
+        observed.append((data, mime, people, on_progress))
+        assert state is session
+        assert "analysis-image" not in state["foodguide_jobs"]
+        assert "foodguide_gate" not in state
+        assert state["foodguide_jobs"]["reference-foods"] is reference_job
+        assert state["foodguide_jobs"]["analysis-text"]["result"] == {"previous-text": True}
+        assert state["foodguide_reference_cache"] is reference_cache
+        return {"new": "photo-result"}
+    monkeypatch.setattr(flow, "run_image", submit)
+    assert flow.reread_image(PEOPLE, session, progress) == {"new": "photo-result"}
+    assert observed == [(b"saved-jpeg", "image/jpeg", PEOPLE, progress)]
+
+
+def test_reread_pending_unfinished_job_resumes_without_error_or_gate_reset(monkeypatch):
+    session = {"scan_img": b"saved-jpeg", "foodguide_gate": "same-charge",
+               "foodguide_pending": {"kind": "image", "image": b"saved-jpeg", "mime": "image/jpeg"},
+               "foodguide_jobs": {"analysis-image": {"job_id": "i" * 32}}}
+    before = deepcopy(session)
+    def resume(people, state, on_progress=None):
+        assert state == before
+        return "same-job"
+    monkeypatch.setattr(flow, "resume", resume)
+    monkeypatch.setattr(flow, "run_image", lambda *a, **kw: pytest.fail("unfinished job resubmitted"))
+    assert flow.reread_image(PEOPLE, session) == "same-job"
+
+
+def test_reread_saved_input_without_cached_job_resets_gate_for_new_request(monkeypatch):
+    session = {"scan_img": b"saved-jpeg", "foodguide_gate": "previous-charge",
+               "foodguide_pending": {"kind": "image", "image": b"saved-jpeg", "mime": "image/jpeg"},
+               "foodguide_jobs": {"reference-foods": {"result": {"reference": True}}}}
+    def submit(data, mime, people, state, on_progress=None):
+        assert "foodguide_gate" not in state
+        assert state["foodguide_jobs"] == {"reference-foods": {"result": {"reference": True}}}
+        return "new-photo-request"
+    monkeypatch.setattr(flow, "run_image", submit)
+    monkeypatch.setattr(flow, "resume", lambda *a, **kw: pytest.fail("completed saved input resumed"))
+    assert flow.reread_image(PEOPLE, session) == "new-photo-request"
+
+
+@pytest.mark.parametrize("kind", ["image", "text", "web_lookup"])
+def test_reread_existing_pending_delegates_resume_without_reset(monkeypatch, kind):
+    session = {"scan_img": b"older-photo", "foodguide_pending": {"kind": kind, "image": b"newer-photo"},
+               "foodguide_error": {"code": "wait_timeout"}, "foodguide_gate": "keep-charge",
+               "foodguide_jobs": {"analysis-image": {"job_id": "n" * 32, "result": report()},
+                                  "reference-foods": {"job_id": "r" * 32}}}
+    before = deepcopy(session)
+    calls = []
+    progress = lambda value: None
+    def resume(people, state, on_progress=None):
+        calls.append((people, on_progress))
+        assert state is session and state == before
+        return "resumed-pending"
+    monkeypatch.setattr(flow, "resume", resume)
+    monkeypatch.setattr(flow, "run_image", lambda *a, **kw: pytest.fail("pending photo was resubmitted"))
+    assert flow.reread_image(PEOPLE, session, progress) == "resumed-pending"
+    assert calls == [(PEOPLE, progress)] and session == before
+
+
+@pytest.mark.parametrize("photo, expected", [
+    (b"\x89PNG\r\n\x1a\nfixture", "image/png"),
+    (b"RIFF\x10\x00\x00\x00WEBPfixture", "image/webp"),
+    (b"\xff\xd8\xfffixture", "image/jpeg"),
+    (b"RIFF\x10\x00\x00\x00WAVEfixture", "image/jpeg"),
+])
+def test_reread_uses_saved_image_signature_for_mime(monkeypatch, photo, expected):
+    calls = []
+    def submit(data, mime, people, state, on_progress=None):
+        calls.append((data, mime))
+        return "submitted"
+    monkeypatch.setattr(flow, "run_image", submit)
+    assert flow.reread_image(PEOPLE, {"scan_img": photo}) == "submitted"
+    assert calls == [(photo, expected)]
+
+
+@pytest.mark.parametrize("photo", [None, b"", "not-image-bytes"])
+def test_reread_without_saved_photo_fails_before_touching_jobs(monkeypatch, photo):
+    session = {"scan_img": photo, "foodguide_gate": "keep-charge",
+               "foodguide_jobs": {"analysis-image": {"result": report()}}}
+    before = deepcopy(session)
+    monkeypatch.setattr(flow, "run_image", lambda *a, **kw: pytest.fail("missing photo submitted"))
+    with pytest.raises(FoodGuideError) as error:
+        flow.reread_image(PEOPLE, session)
+    assert error.value.code == "invalid_image"
+    assert "사진이 없어요" in error.value.message
+    assert session == before

@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 
 import streamlit as st
 
-from core import foodguide_flow as flow, order, reviews
+from core import foodguide_flow as flow, order, reviews, dish_images, menu_prices
 from core.foodguide_client import FoodGuideError
 from .common import E, go, md, nav
 
@@ -102,6 +102,11 @@ def scan():
             go("menu")
     _pending()
     ok = _limit()
+    previous = s.get("scan_img")
+    if previous and not s.get("foodguide_error"):
+        if st.button("이전 사진으로 다시 읽기", width="stretch", disabled=not ok):
+            if _run(lambda progress: flow.reread_image(active(), s, on_progress=progress)):
+                go("menu")
     upload = st.file_uploader("메뉴판 사진", type=["jpg", "jpeg", "png", "webp"], key="fg_photo", label_visibility="collapsed")
     if upload is not None:
         data = upload.getvalue()
@@ -239,25 +244,35 @@ def _reference_overview(use_expander=True):
 
 
 MENU_TILE_CSS = """<style>
-[class*="st-key-fg_menu_tile_"]{position:relative;background:var(--surface);border:1px solid var(--hair);border-radius:20px;padding:16px;gap:0!important}
+[class*="st-key-fg_menu_tile_"]{position:relative;background:var(--surface);border:2px solid var(--hair);border-radius:20px;padding:14px;gap:0!important}
 [class*="st-key-fg_menu_tile_"]:hover{border-color:var(--accent)}
+[class*="st-key-fg_menu_tile_"]:has(.fg_recommend_badge){border:4px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(120deg,#ee728d,#efbc50,#78c685,#62bde4,#9b88df,#ee728d) border-box;background-size:100% 100%,300% 300%;animation:fg_rainbow 4s ease infinite;box-shadow:0 3px 16px #9b88df18;padding-top:31px}
+@keyframes fg_rainbow{0%,100%{background-position:0 0,0% 50%}50%{background-position:0 0,100% 50%}}
+@media(prefers-reduced-motion:reduce){[class*="st-key-fg_menu_tile_"]:has(.fg_recommend_badge){animation:none}}
+.fg_recommend_badge{position:absolute;top:-23px;left:0;font-size:10px;line-height:1.4;font-weight:750;color:#694696;background:#f4eefb;border-radius:20px;padding:2px 9px;letter-spacing:.03em;z-index:1}
 [class*="st-key-fg_menu_tile_"] [data-testid="stElementContainer"]:has(.stButton){position:absolute!important;inset:0;z-index:2;margin:0!important}
 [class*="st-key-fg_menu_tile_"] .stButton,[class*="st-key-fg_menu_tile_"] .stButton>button{width:100%!important;height:100%!important}
 [class*="st-key-fg_menu_tile_"] .stButton>button{min-height:100%!important;background:transparent!important;border:0!important;border-radius:20px!important;box-shadow:none!important;color:transparent!important}
 [class*="st-key-fg_menu_tile_"] .stButton>button p{opacity:0!important}
 [class*="st-key-fg_menu_tile_"] .stButton>button:focus-visible{outline:3px solid var(--accent)!important;outline-offset:3px!important}
-.fg_menu_tile_content{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:14px;align-items:center;min-height:100px}
-.fg_menu_tile_name{font-size:22px;font-weight:750;line-height:1.35;overflow-wrap:anywhere}
-.fg_menu_tile_price{font-size:16px;font-weight:650;margin-top:7px;line-height:1.4}
-.fg_menu_tile_reading{font-size:13px;line-height:1.5;color:var(--muted);margin-top:7px;overflow-wrap:anywhere}
-.fg_menu_tile_reading span{font-size:11px;margin-right:5px}
+.fg_menu_tile_content{position:relative;display:grid;grid-template-columns:82px minmax(0,1fr) 74px;gap:8px 12px;align-items:center;min-height:116px}
+.fg_menu_tile_photo{position:relative;align-self:stretch;min-height:96px;max-height:144px;border-radius:12px;overflow:hidden;background:#eeeadf}
+.fg_menu_tile_photo img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}
+.fg_menu_tile_photo span{position:absolute;bottom:0;left:0;right:0;background:#fffE;color:#5e6a63;text-align:center;font-size:9px;line-height:1.35;padding:3px 1px}
+.fg_menu_tile_name{font-size:19px;font-weight:750;line-height:1.4;overflow-wrap:anywhere}
+.fg_menu_tile_price{font-size:14px;font-weight:650;margin-top:7px;line-height:1.4}
+.fg_menu_tile_krw{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:2px}
+.fg_menu_tile_reading{font-size:12px;line-height:1.5;color:var(--muted);margin-top:7px;overflow-wrap:anywhere}
+.fg_menu_tile_reading span{font-size:10px;margin-right:4px}
 .fg_menu_tile_score{text-align:right;color:var(--accent-text);font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.1}
-.fg_menu_tile_score_label{display:block;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0;margin-bottom:5px}
-.fg_menu_tile_score strong{font-size:52px;font-weight:800;letter-spacing:-2px}
-.fg_menu_tile_score small{font-size:13px;margin-left:3px}
+.fg_menu_tile_score_label{display:block;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:0;margin-bottom:5px}
+.fg_menu_tile_score strong{font-size:48px;font-weight:800;letter-spacing:-2px}
+.fg_menu_tile_score small{font-size:12px;margin-left:2px}
 .fg_menu_tile_score.fg_menu_tile_unscored{color:var(--muted)}
-.fg_menu_tile_score.fg_menu_tile_unscored small{display:block;white-space:normal;font-size:12px;margin-top:5px;margin-left:0;line-height:1.4}
-@media(max-width:380px){.fg_menu_tile_content{grid-template-columns:minmax(0,1fr) 82px;gap:10px}.fg_menu_tile_name{font-size:20px}.fg_menu_tile_score strong{font-size:48px}}
+.fg_menu_tile_score.fg_menu_tile_unscored small{display:block;white-space:normal;font-size:11px;margin-top:5px;margin-left:0;line-height:1.4}
+.fg_menu_tile_people{grid-column:2 / -1;text-align:right;display:flex;justify-content:flex-end;gap:3px 8px;flex-wrap:wrap;font-size:10px;line-height:1.6;color:var(--muted)}
+.fg_menu_tile_people .fg_restricted{color:var(--warn)}
+@media(max-width:380px){.fg_menu_tile_content{grid-template-columns:64px minmax(0,1fr) 60px;gap:8px}.fg_menu_tile_name{font-size:17px}.fg_menu_tile_score strong{font-size:40px}.fg_menu_tile_price{font-size:13px}.fg_menu_tile_photo span{font-size:8px}}
 </style>"""
 
 
@@ -301,33 +316,87 @@ def _analysis_information(fresh):
             _reference_overview(use_expander=False)
 
 
+def _menu_rank(item, people, fresh):
+    """구성원 전원의 유효한 원점수 평균. 누락·제한된 사람을 분모에서 빼지 않는다."""
+    if not people or any(_menu_score(item, person["id"], fresh)[1] != "점" for person in people):
+        return -1
+    scores = {row["id"]: row["score"] for row in item["preferences"]}
+    return sum(scores[person["id"]] for person in people) / len(people)
+
+
+def _group_score(item, people, fresh):
+    rank = _menu_rank(item, people, fresh)
+    if rank >= 0:
+        return str(round(rank)), "점"
+    reasons = {_menu_score(item, person["id"], fresh)[1] for person in people}
+    return "—", next((reason for reason in ("확인 필요", "제한 확인", "점수 없음") if reason in reasons), "점수 없음")
+
+
 def menu():
     s = st.session_state
     report = s.scan
-    _title(report.get("restaurant") or "메뉴판", f'메뉴 {len(report["items"])}개')
-    fresh = _fresh()
     people = active()
-    ids = [person["id"] for person in people]
-    names = {person["id"]: person["name"] for person in people}
-    selected = ids[0] if ids else None
-    if len(ids) > 1 and not s.get("simple"):
-        if s.get("fg_menu_person") not in ids:
-            remembered = s.get("fg_menu_person_saved")
-            s.fg_menu_person = remembered if remembered in ids else "me" if "me" in ids else ids[0]
-        selected = st.selectbox("추천 점수 기준", ids, format_func=lambda pid: f'{names[pid]} 기준', key="fg_menu_person", label_visibility="collapsed")
-        s.fg_menu_person_saved = selected
+    basis = f'구성원 {len(people)}명 평균' if len(people) > 1 else f'{people[0]["name"]} 기준' if people else ""
+    _title(report.get("restaurant") or "메뉴판", f'메뉴 {len(report["items"])}개' + (f' · {basis}' if basis else ""))
+    fresh = _fresh()
+    # 점수가 같은 메뉴는 원래 순서로 유지한다. 원본 분석 배열은 바꾸지 않는다.
+    items = sorted(report["items"], key=lambda item: -_menu_rank(item, people, fresh))
+    recommended = {item["id"] for item in items if _menu_rank(item, people, fresh) >= 0}
+    recommended = {item["id"] for item in items[:2] if item["id"] in recommended}
+    extraction = report.get("currency") or (report.get("report") or {}).get("extraction") or {}
+    currency = menu_prices.currency_code(extraction)
+    inferred = extraction.get("currency_source") == "inferred"
+    photos = dish_images.menu_images(items, report=report.get("report"), image_bytes=s.get("scan_img"))
+    prices = {item["id"]: menu_prices.price_info(item.get("price"), currency) for item in items}
     md(MENU_TILE_CSS)
-    for item in report["items"]:
-        score, note = _menu_score(item, selected, fresh)
+    for item in items:
+        score, note = _group_score(item, people, fresh)
         unscored = " fg_menu_tile_unscored" if score == "—" else ""
         reading = str(item.get("reading") or "")
         pronunciation = (f'<div class="fg_menu_tile_reading"><span>읽는 법</span>{E(reading)}</div>' if reading else "")
+        photo = photos[item["id"]]
+        image = (f'<div class="fg_menu_tile_photo"><img src="{E(photo["src"], quote=True)}" alt="{E(item["name_ko"], quote=True)} · {E(photo["label"], quote=True)}" loading="lazy">'
+                 f'<span>{E(photo["label"])}</span></div>')
+        price = prices[item["id"]]
+        krw = f'<span class="fg_menu_tile_krw">{E(price["krw"])}' + (' · 추정 통화' if inferred and price['krw'] else '') + '</span>' if price["krw"] else ""
+        individual = []
+        for person in people:
+            value, reason = _menu_score(item, person["id"], fresh)
+            detail = value if reason == "점" else "제한 확인" if reason == "제한 확인" else "—"
+            if reason == "제한 확인":
+                raw = next((row.get("score") for row in item.get("preferences", []) if row.get("id") == person["id"]), None)
+                if type(raw) in (int, float) and math.isfinite(raw) and 0 <= raw <= 100:
+                    detail = f"{round(raw)} · 제한"
+            cls = ' class="fg_restricted"' if reason == "제한 확인" else ""
+            individual.append(f'<span{cls}>{E(person["name"])}: {E(detail)}</span>')
+        badge = '<span class="fg_recommend_badge">추천</span>' if item["id"] in recommended else ""
         with st.container(key=f'fg_menu_tile_{item["id"]}'):
-            md(f'<div class="fg_menu_tile_content"><div><div class="fg_menu_tile_name">{E(item["name_ko"])}</div>'
-               f'<div class="fg_menu_tile_price">{E(item.get("price") or "가격 미표기")}</div>{pronunciation}</div>'
-               f'<div class="fg_menu_tile_score{unscored}"><span class="fg_menu_tile_score_label">추천 점수</span><strong>{E(score)}</strong><small>{E(note)}</small></div></div>')
+            md(f'<div class="fg_menu_tile_content">{badge}{image}<div><div class="fg_menu_tile_name">{E(item["name_ko"])}</div>'
+               f'<div class="fg_menu_tile_price">{E(price["display"] or "가격 미표기")}{krw}</div>{pronunciation}</div>'
+               f'<div class="fg_menu_tile_score{unscored}"><span class="fg_menu_tile_score_label">{"평균 추천 점수" if len(people) > 1 else "추천 점수"}</span><strong>{E(score)}</strong><small>{E(note)}</small></div>'
+               f'<div class="fg_menu_tile_people">{"".join(individual)}</div></div>')
             st.button(f'{item["name_ko"]} 상세 보기 · {score}{note}', key=f'fg_open_{item["id"]}', width="stretch", on_click=nav,
                       args=("sdish" if s.get("simple") else "dish",), kwargs={"dish_id": item["id"]})
+    with st.expander("가격·사진 정보"):
+        if currency:
+            st.caption(f'메뉴 통화: {currency}' + (' · AI 추정' if inferred else ' · 메뉴판에서 확인'))
+            if extraction.get("currency_evidence"):
+                st.caption(str(extraction["currency_evidence"]))
+        dates = sorted({price["date"] for price in prices.values() if price["date"]})
+        if dates:
+            st.caption(f'환율 기준일: {", ".join(dates)} · Frankfurter 기준 환율. 원화는 참고 금액이며 결제 환율·수수료에 따라 달라요.')
+        if any(price["status"] == "currency_required" for price in prices.values()):
+            st.caption("일부 가격의 통화를 확인하지 못해 원화 환산을 생략했어요.")
+        if any(price["status"] == "unavailable" for price in prices.values()):
+            st.caption("환율을 가져오지 못해 일부 원화 금액을 표시하지 못했어요.")
+        st.caption("대표 사진과 종류 참고 그림은 실제 매장 음식과 다를 수 있어요.")
+        seen = set()
+        for photo in photos.values():
+            if photo.get("source_url") and photo["source_url"] not in seen:
+                seen.add(photo["source_url"])
+                md(f'<div class="small"><a href="{E(photo["source_url"], quote=True)}" target="_blank" rel="noopener noreferrer">{E(photo["title"])}</a> · {E(photo["author"])} · '
+                   f'<a href="{E(photo["license_url"], quote=True)}" target="_blank" rel="noopener noreferrer">{E(photo["license"])}</a> · 화면에 맞춰 잘림</div>')
+    st.button("메뉴판 다시 읽기", type="tertiary", on_click=nav, args=("scan",))
 
 
 def dish():

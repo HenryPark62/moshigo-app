@@ -86,6 +86,7 @@ def build_scan(report, people, reference_summary=None, metadata=None):
                  "member_coverage": coverage, "uncovered_members": [p["name"] for p in people if p["id"] not in covered],
                  "text": _string(raw_group.get("text")), "limitations": _string(raw_group.get("limitations"))}
     extraction = report.get("extraction") or {}
+    currency = {key: extraction.get(key, "") for key in ("currency_code", "currency_source", "currency_evidence")} if extraction.get("currency_source") in {"printed", "inferred"} else deepcopy(metadata.get("currency") or {})
     code = _string(extraction.get("language")) or _string(metadata.get("language_code"))
     warnings = _strings(report.get("warnings")) + _strings(metadata.get("warnings"))
     for ref in summary:
@@ -93,6 +94,7 @@ def build_scan(report, people, reference_summary=None, metadata=None):
             warnings.append(f"{ref['name']}: {', '.join(ref['not_applied'])} 항목은 이번 비교 조건에 반영되지 않았어요. 음식 설명과 재료를 확인해 주세요.")
     return {"provider": "foodguide", "report": deepcopy(report), "items": items,
             "restaurant": _string(metadata.get("restaurant")) or "메뉴판", "language_code": code,
+            "currency": currency,
             "menu_language": LANGUAGES.get(code.replace("_", "-").split("-")[0].lower(), code or "외국어"),
             "people": [{"id": p["id"], "name": p["name"]} for p in people], "group": group,
             "warnings": list(dict.fromkeys(warnings)), "reference_summary": summary,
@@ -212,6 +214,27 @@ def run_image(data, mime, people, session, on_progress=None):
     return _execute(pending, people, session, on_progress)
 
 
+def reread_image(people, session, on_progress=None):
+    """사용자가 다시 읽기를 누르면 완료된 사진 작업만 새로 요청한다."""
+    jobs = session.get("foodguide_jobs") or {}
+    entry = jobs.get("analysis-image") or {}
+    if session.get("foodguide_pending") and (session.get("foodguide_error") or entry.get("job_id") and "result" not in entry):
+        return resume(people, session, on_progress=on_progress)
+    data = session.get("scan_img")
+    if isinstance(data, bytes) and data.startswith(b"\x89PNG\r\n\x1a\n"):
+        mime = "image/png"
+    elif isinstance(data, bytes) and data.startswith(b"RIFF") and data[8:12] == b"WEBP":
+        mime = "image/webp"
+    else:
+        mime = "image/jpeg"
+    if not isinstance(data, bytes) or not data:
+        raise FoodGuideError("invalid_image", "다시 읽을 사진이 없어요. 메뉴판 사진을 올려 주세요.")
+    if "result" in entry:
+        jobs.pop("analysis-image", None)
+    session.pop("foodguide_gate", None)
+    return run_image(data, mime, people, session, on_progress=on_progress)
+
+
 def _web_input(found, place):
     head = found["head"]
     menus, context, warnings = [], {}, []
@@ -276,4 +299,5 @@ def refresh(people, session, on_progress=None):
                for i in report["items"]}
     metadata = deepcopy(session.get("foodguide_metadata") or {})
     metadata["language_code"] = (report.get("extraction") or {}).get("language") or metadata.get("language_code", "")
+    metadata["currency"] = deepcopy((session.get("scan") or {}).get("currency") or metadata.get("currency") or {})
     return _execute({"kind": "text", "menus": menus, "context": context, "metadata": metadata}, people, session, on_progress)

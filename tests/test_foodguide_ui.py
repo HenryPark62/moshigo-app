@@ -6,7 +6,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 from streamlit.testing.v1.element_tree import Widget
 
-from core import foodguide_flow, menu2, ocr, reviews, store, webmenu
+from core import foodguide_flow, menu2, ocr, reviews, store, webmenu, dish_images, menu_prices
 from ui import screens, foodguide
 
 
@@ -25,7 +25,7 @@ def isolated_capture(monkeypatch, tmp_path):
 
     # 하네스가 직접 바꾸는 함수도 테스트 종료 시 원래 객체로 복구한다.
     for module, name in ((ocr, "read"), (menu2, "read_menu"), (menu2, "read_menu_text"),
-                         (webmenu, "read_web"), (screens, "geo_block")):
+                         (webmenu, "read_web"), (screens, "geo_block"), (dish_images, "_schedule"), (menu_prices, "_rate")):
         monkeypatch.setattr(module, name, getattr(module, name))
     calls = []
 
@@ -205,26 +205,127 @@ def test_simple_menu_only_exposes_requested_fields_and_opens_detail():
     assert any(expander.label == "분석 정보" for expander in at.expander)
 
 
-def test_recommendation_uses_selected_person_not_global_match():
+def test_recommendation_averages_every_active_person_and_keeps_individual_rows():
     at = capture("menu-translated")
     scan = deepcopy(at.session_state["scan"])
     first = scan["items"][0]
+    assert len(first["preferences"]) == 4
+    for item in scan["items"]:
+        item["status"] = "ok"
+        for row in item["preferences"]:
+            row.update(score=0, eligible=True)
     for row in first["preferences"]:
-        row.update(score=12.2 if row["id"] == "me" else 87.2, eligible=True)
+        row["score"] = 12.2 if row["id"] == "me" else 87.2
+    for row in scan["items"][1]["preferences"]:
+        row["score"] = 90 if row["id"] == "me" else 50
     first["matches"] = [{"name": "다른 한식", "score": 99.9}]
+    before = deepcopy(scan)
     at.session_state["scan"] = scan
     rerun(at)
-    assert at.selectbox(key="fg_menu_person").value == "me"
-    assert at.button(key=f'fg_open_{first["id"]}').label.endswith("12점")
-    at.selectbox(key="fg_menu_person").select("mom")
-    rerun(at)
-    assert at.button(key=f'fg_open_{first["id"]}').label.endswith("87점")
+    assert not at.selectbox
+    assert at.button(key=f'fg_open_{first["id"]}').label.endswith("68점")
+    assert "나: 12" in text(at) and "엄마: 87" in text(at)
+    cards = [element.value for element in at.markdown if 'class="fg_menu_tile_content"' in element.value]
+    # 나의 점수는 12.2 < 90이지만 가족 평균은 68.45 > 60이므로 순위가 뒤집힌다.
+    assert first["name_ko"] in cards[0]
+    assert scan["items"][1]["name_ko"] in cards[1]
+    assert at.session_state["scan"] == before
     at.button(key=f'fg_open_{first["id"]}').click()
     rerun(at)
     button(at, "메뉴판으로").click()
     rerun(at)
-    assert at.selectbox(key="fg_menu_person").value == "mom"
-    assert at.button(key=f'fg_open_{first["id"]}').label.endswith("87점")
+    assert not at.selectbox
+    assert at.button(key=f'fg_open_{first["id"]}').label.endswith("68점")
+
+
+def test_top_two_use_raw_group_means_stable_ties_and_exclude_any_restriction():
+    at = capture("menu-translated")
+    scan = deepcopy(at.session_state["scan"])
+    for item in scan["items"]:
+        item["status"] = "ok"
+        for row in item["preferences"]:
+            row.update(score=None, eligible=True)
+    for index, value in enumerate([44.1, 44.4, 99.9, 44.3, 44.4]):
+        for row in scan["items"][index]["preferences"]:
+            row.update(score=value, eligible=True)
+    next(p for p in scan["items"][2]["preferences"] if p["id"] == "mom")["eligible"] = False
+    before = deepcopy(scan)
+    at.session_state["scan"] = scan
+    rerun(at)
+    cards = [element.value for element in at.markdown if 'class="fg_menu_tile_content"' in element.value]
+    for position, source_index in enumerate([1, 4, 3, 0]):
+        assert scan["items"][source_index]["name_ko"] in cards[position]
+    assert sum('class="fg_recommend_badge"' in card for card in cards) == 2
+    restricted = next(card for card in cards if scan["items"][2]["name_ko"] in card)
+    assert 'class="fg_recommend_badge"' not in restricted
+    assert at.button(key=f'fg_open_{scan["items"][2]["id"]}').label.endswith("—제한 확인")
+    assert at.session_state["scan"] == before
+    at.session_state["foodguide_stale"] = True
+    rerun(at)
+    assert 'class="fg_recommend_badge"' not in text(at)
+
+
+GROUP_PEOPLE = [{"id": "me", "name": "나"}, {"id": "mom", "name": "엄마"},
+                {"id": "dad", "name": "아빠"}, {"id": "kid", "name": "아이"}]
+
+
+def test_group_mean_uses_ids_all_people_and_ignores_nonparticipants():
+    item = {"status": "ok", "preferences": [
+        {"id": "kid", "score": 0, "eligible": True},
+        {"id": "inactive", "score": 100, "eligible": True},
+        {"id": "dad", "score": 40, "eligible": True},
+        {"id": "me", "score": 100, "eligible": True},
+        {"id": "mom", "score": 20, "eligible": True}], "matches": [{"score": 99}]}
+    before = deepcopy(item)
+    assert foodguide._group_score(item, GROUP_PEOPLE, True) == ("40", "점")
+    assert foodguide._menu_rank(item, GROUP_PEOPLE, True) == 40
+    assert foodguide._group_score(item, [GROUP_PEOPLE[-1]], True) == ("0", "점")
+    assert foodguide._menu_rank(item, [GROUP_PEOPLE[-1]], True) == 0
+    assert item == before
+
+
+@pytest.mark.parametrize("problem", ["missing", "null", "restricted", "eligibility_unknown", "nan", "infinity", "boolean", "too_high", "negative", "status_unknown", "stale"])
+def test_incomplete_group_never_drops_member_to_inflate_recommendation(problem):
+    item = {"status": "ok", "preferences": [{"id": p["id"], "score": 99, "eligible": True} for p in GROUP_PEOPLE]}
+    target = item["preferences"][-1]
+    if problem == "missing":
+        item["preferences"].pop()
+    elif problem == "restricted":
+        target["eligible"] = False
+    elif problem == "eligibility_unknown":
+        target["eligible"] = None
+    elif problem == "status_unknown":
+        item["status"] = "unknown"
+    elif problem != "stale":
+        target["score"] = {"null": None, "nan": float("nan"), "infinity": float("inf"),
+                           "boolean": True, "too_high": 101, "negative": -1}[problem]
+    fresh = problem != "stale"
+    score, note = foodguide._group_score(item, GROUP_PEOPLE, fresh)
+    assert score == "—" and note
+    assert foodguide._menu_rank(item, GROUP_PEOPLE, fresh) == -1
+
+
+def test_group_rank_keeps_fractional_mean_instead_of_rounded_headline():
+    first = {"status": "ok", "preferences": [{"id": "me", "score": 44, "eligible": True}, {"id": "mom", "score": 44.2, "eligible": True}]}
+    second = deepcopy(first)
+    second["preferences"][1]["score"] = 44.8
+    people = GROUP_PEOPLE[:2]
+    assert foodguide._group_score(first, people, True) == foodguide._group_score(second, people, True) == ("44", "점")
+    assert foodguide._menu_rank(first, people, True) == pytest.approx(44.1)
+    assert foodguide._menu_rank(second, people, True) == pytest.approx(44.4)
+
+
+@pytest.mark.parametrize("detected_code", ["EUR", ""])
+def test_detected_currency_is_used_for_bare_prices_and_inference_is_labeled(detected_code):
+    at = capture("menu-translated")
+    scan = deepcopy(at.session_state["scan"])
+    scan["report"]["extraction"].update(currency_code=detected_code, currency_source="inferred", currency_evidence="메뉴판의 지역 음식과 가격 형식에서 유로(EUR)로 추정")
+    scan["items"][0]["price"] = "14,90"
+    at.session_state["scan"] = scan
+    rerun(at)
+    assert "14,90 EUR" in text(at)
+    assert "약 22,377원" in text(at)
+    assert "추정 통화" in text(at)
 
 
 @pytest.mark.parametrize("score,eligible,status,fresh,expected", [
