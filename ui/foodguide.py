@@ -7,6 +7,7 @@ import streamlit as st
 from core import foodguide_flow as flow, order, reviews, dish_images, menu_prices, generated_menu_images, foodguide_images
 from core.foodguide_client import FoodGuideError
 from .common import E, go, md, nav
+from . import fg_extras as fgx
 
 
 COMPARISON_SCOPE = ("즐겨 먹는 음식으로 입맛을 비교하고, 알레르기·못 먹는 재료·매운 음식과 질긴 음식 제한을 함께 확인해요. "
@@ -331,20 +332,61 @@ def _analysis_information(fresh):
             _reference_overview(use_expander=False)
 
 
+def _menu_people(item, people, fresh):
+    """평균에 넣을 원점수와 메뉴를 막는 이유를 나눈다.
+    비교 기준이 없는 사람(연결된 좋아하는 음식 0개, 점수 null)만 분모에서 뺀다. 0점으로 바꾸지 않는다.
+    제한(eligible False)·제한 미확인·잘못된 점수는 빼지 않고 메뉴 전체를 막는다."""
+    scores, blocked = [], []
+    for person in people:
+        reason = _menu_score(item, person["id"], fresh)[1]
+        row = next((r for r in item.get("preferences") or [] if r.get("id") == person["id"]), {})
+        if (reason in ("점", "점수 없음") and row.get("eligible") is True
+                and (row.get("score") is None or row.get("reference_count") == 0)):
+            continue
+        if reason == "점":
+            scores.append(row["score"])
+        else:
+            blocked.append(reason)
+    return scores, blocked
+
+
 def _menu_rank(item, people, fresh):
-    """구성원 전원의 유효한 원점수 평균. 누락·제한된 사람을 분모에서 빼지 않는다."""
-    if not people or any(_menu_score(item, person["id"], fresh)[1] != "점" for person in people):
+    """비교 기준이 있는 사람의 유효한 원점수 평균. 한 명이라도 제한·확인 필요면 -1."""
+    scores, blocked = _menu_people(item, people, fresh)
+    if blocked or not scores:
         return -1
-    scores = {row["id"]: row["score"] for row in item["preferences"]}
-    return sum(scores[person["id"]] for person in people) / len(people)
+    return sum(scores) / len(scores)
 
 
 def _group_score(item, people, fresh):
     rank = _menu_rank(item, people, fresh)
     if rank >= 0:
         return str(round(rank)), "점"
-    reasons = {_menu_score(item, person["id"], fresh)[1] for person in people}
-    return "—", next((reason for reason in ("확인 필요", "제한 확인", "점수 없음") if reason in reasons), "점수 없음")
+    blocked = _menu_people(item, people, fresh)[1]
+    return "—", next((reason for reason in ("확인 필요", "제한 확인", "점수 없음") if reason in blocked), "점수 없음")
+
+
+def _no_basis(items, people, fresh):
+    """어느 메뉴에서도 평균에 들어가지 못하고 비교 기준이 없어 빠진 사람."""
+    missing = []
+    for person in people:
+        parts = [_menu_people(item, [person], fresh) for item in items]
+        if not any(scores for scores, _ in parts) and any(not scores and not blocked for scores, blocked in parts):
+            missing.append(person)
+    return missing
+
+
+def _basis_note(missing, people, tail=""):
+    if not missing:
+        return
+    from .common import josa
+    names = ", ".join(person["name"] for person in missing)
+    tail = tail or ("추천 점수를 못 냈어요" if len(missing) == len(people) else "평균에서 뺐어요")
+    md(f'<div class="note">{E(names)}{josa(missing[-1]["name"], "은", "는")} 좋아하는 음식이 비교 기준에 없어서 {tail}. '
+       '좋아하는 음식을 골라 주세요.</div>')
+    for person in missing:
+        st.button(f'{person["name"]} 좋아하는 음식 고르기', key=f'fg_basis_edit_{person["id"]}', type="tertiary",
+                  on_click=_edit_reference, args=(person["id"],))
 
 
 def _is_meal(item):
@@ -359,6 +401,9 @@ def _is_meal(item):
 def _menu_card(item, people, fresh, photo, price, recommended):
     score, note = _group_score(item, people, fresh)
     unscored = " fg_menu_tile_unscored" if score == "—" else ""
+    counted = len(_menu_people(item, people, fresh)[0])
+    label = (("평균 추천 점수" if counted == len(people) or score == "—" else f"{counted}명 평균 점수")
+             if len(people) > 1 else "추천 점수")
     reading = str(item.get("reading") or "")
     pronunciation = (f'<div class="fg_menu_tile_reading"><span>읽는 법</span>{E(reading)}</div>' if reading else "")
     image_tag = (f'<img src="{E(photo["src"], quote=True)}" alt="{E(item["name_ko"], quote=True)} · {E(photo["label"], quote=True)}" loading="lazy">'
@@ -378,8 +423,8 @@ def _menu_card(item, people, fresh, photo, price, recommended):
     badge = '<span class="fg_recommend_badge">추천</span>' if recommended else ""
     with st.container(key=f'fg_menu_tile_{item["id"]}'):
         md(f'<div class="fg_menu_tile_content">{badge}{image}<div><div class="fg_menu_tile_name">{E(item["name_ko"])}</div>'
-           f'<div class="fg_menu_tile_price">{E(price["display"] or "가격 미표기")}{krw}</div>{pronunciation}</div>'
-           f'<div class="fg_menu_tile_score{unscored}"><span class="fg_menu_tile_score_label">{"평균 추천 점수" if len(people) > 1 else "추천 점수"}</span><strong>{E(score)}</strong><small>{E(note)}</small></div>'
+           f'<div class="fg_menu_tile_price">{E(price["display"] or "가격 미표기")}{krw}</div>{pronunciation}{fgx.card_badges(item)}</div>'
+           f'<div class="fg_menu_tile_score{unscored}"><span class="fg_menu_tile_score_label">{label}</span><strong>{E(score)}</strong><small>{E(note)}</small></div>'
            f'<div class="fg_menu_tile_people">{"".join(individual)}</div></div>')
         if st.button(f'{item["name_ko"]} 상세 보기 · {score}{note}', key=f'fg_open_{item["id"]}', width="stretch"):
             go("sdish" if st.session_state.get("simple") else "dish", dish_id=item["id"])
@@ -418,13 +463,18 @@ def menu():
     s = st.session_state
     report = s.scan
     people = active()
-    basis = f'구성원 {len(people)}명 평균' if len(people) > 1 else f'{people[0]["name"]} 기준' if people else ""
+    missing = _no_basis(report["items"], people, True)
+    counted = len(people) - len(missing)
+    basis = ((f'구성원 {counted}명 평균' if counted else f'구성원 {len(people)}명') if len(people) > 1
+             else f'{people[0]["name"]} 기준' if people else "")
     _title(report.get("restaurant") or "메뉴판", f'메뉴 {len(report["items"])}개' + (f' · {basis}' if basis else ""))
     from .screens import hurry_banner, hurry_left
     left = hurry_left()
     if left is not None:  # 자유식에서 고른 식당이면 모이는 시간까지 남은 식사 시간
         hurry_banner(left)
     fresh = _fresh()
+    if fresh:
+        _basis_note(missing, people)
     # 점수가 같은 메뉴는 원래 순서로 유지한다. 원본 분석 배열은 바꾸지 않는다.
     ranks = {item["id"]: _menu_rank(item, people, fresh) for item in report["items"]}
     meal_ids = {item["id"] for item in report["items"] if _is_meal(item) and ranks[item["id"]] >= 0}
@@ -444,6 +494,7 @@ def menu():
                                     report=report.get("report"), image_bytes=s.get("scan_img"))
     prices = {item["id"]: menu_prices.price_info(item.get("price"), currency) for item in items}
     md(MENU_TILE_CSS)
+    fgx.menu_top(report, people, fresh)  # 아는 맛과 닮은 메뉴, 설명 보강 시작
     if top_items:
         st.fragment(run_every="2s" if polling else None)(_top_menu_cards)(top_items, people, prices, generated, report, polling, recommended)
     for item in items:
@@ -488,6 +539,7 @@ def dish():
     if item.get("description_original"):
         with st.expander("메뉴판 원문 설명"):
             st.write(item["description_original"])
+    fgx.dish_guide(item, active(), fresh)  # 맛 뱃지, 메뉴 가이드 줄, 이런 분께 맞아요
     _matches(item)
     profile = item.get("profile") or {}
     with st.expander("맛과 재료 자세히 보기"):
@@ -501,6 +553,7 @@ def dish():
     if fresh:
         md('<div class="sec">입맛 비교</div>')
         _preferences(item)
+    fgx.dish_help(item, active(), fresh)  # 아이 접시, 직원이 물어볼 말, 직원에게 부탁하기
     st.caption("재료와 알레르기 여부는 직원에게 확인해 주세요. 입맛 점수는 안전 판정이 아니에요.")
     if fresh:
         _select(item, "fg_dish_add")
@@ -517,14 +570,17 @@ def combo():
         return
     scan = st.session_state.scan
     group = scan.get("group") or {}
+    missing = _no_basis(scan["items"], active(), True)
+    _basis_note(missing, active(), "입맛 비교에서 뺐어요")
     if group.get("text"):
         st.write(str(group["text"]))
     for coverage in group.get("member_coverage") or []:
         st.write(f'{coverage["name"]}: {coverage["menu_name"]} · 비교 점수 {coverage["score"]}점')
     if group.get("limitations"):
         st.caption(str(group["limitations"]))
-    if group.get("uncovered_members"):
-        st.info("추천으로 입맛을 충분히 맞추지 못한 사람: " + ", ".join(str(name) for name in group["uncovered_members"]))
+    uncovered = [name for name in group.get("uncovered_members") or [] if name not in {person["name"] for person in missing}]
+    if uncovered:
+        st.info("추천으로 입맛을 충분히 맞추지 못한 사람: " + ", ".join(str(name) for name in uncovered))
     ids = group.get("menu_ids") or []
     items = [item for item in scan["items"] if item["id"] in ids]
     if not items:
@@ -535,6 +591,7 @@ def combo():
             st.caption(item["name_orig"])
             _preferences(item, compact=True)
             _select(item, f'fg_group_{item["id"]}')
+    fgx.combo_kid(scan, active())  # 아이가 안 먹으면 대신
     if items and st.button("이 메뉴들을 주문에 담기", type="primary", width="stretch"):
         quantities = st.session_state.setdefault("foodguide_picks", {})
         for item in items:
@@ -562,6 +619,7 @@ def order_view():
     if not lines:
         st.info("주문할 메뉴의 수량을 1개 이상으로 골라 주세요.")
         return
+    fgx.order_presets(s.scan, active(), quantities)  # 아이 몫 메뉴의 부탁, 자유식이면 빨리·계산서
     requests = st.pills("부탁할 것 더하기", order.REQUEST_KEYS, selection_mode="multi", key="fg_order_requests") or []
     card = order.card(s.scan, active(), lines, requests)
     large = st.toggle("글씨 크게", value=bool(s.get("simple")), key="fg_order_large")
@@ -576,6 +634,7 @@ def order_view():
     if card.get("note"):
         st.info(card["note"])
     speak_block([(order.speakable(card["text"], card["lang"]), "직원에게 들려주세요", "카드 읽어 주기")], card["voice"], 70)
+    fgx.order_asks(s.scan, active(), quantities)  # 담은 메뉴에 직원이 되물을 말 (설명 보강이 된 경우)
 
 
 def survey():

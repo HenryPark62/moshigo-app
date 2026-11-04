@@ -44,6 +44,9 @@ ocr.read = blocked_provider
 menu2.read_menu = blocked_provider
 menu2.read_menu_text = blocked_provider
 webmenu.read_web = blocked_provider
+if (SOURCE_ROOT / "core/fg_extras.py").exists():  # Food Guide 화면의 Claude 설명 보강도 부르지 않는다 (실패한 경우 화면으로 그린다)
+    from core import fg_extras
+    fg_extras._describe = blocked_provider
 
 manifest = json.loads((HARNESS_ROOT / "tests/visual/manifest.json").read_text("utf-8"))
 cases = {case["id"]: case for case in manifest["cases"]}

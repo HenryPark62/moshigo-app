@@ -287,7 +287,8 @@ def test_group_mean_uses_ids_all_people_and_ignores_nonparticipants():
     assert item == before
 
 
-@pytest.mark.parametrize("problem", ["missing", "null", "restricted", "eligibility_unknown", "nan", "infinity", "boolean", "too_high", "negative", "status_unknown", "stale"])
+# 점수 null(비교 기준 없음)은 평균에서 빼고 이름을 알린다. tests/test_fg_average.py 참고.
+@pytest.mark.parametrize("problem", ["missing", "restricted", "eligibility_unknown", "nan", "infinity", "boolean", "too_high", "negative", "status_unknown", "stale"])
 def test_incomplete_group_never_drops_member_to_inflate_recommendation(problem):
     item = {"status": "ok", "preferences": [{"id": p["id"], "score": 99, "eligible": True} for p in GROUP_PEOPLE]}
     target = item["preferences"][-1]

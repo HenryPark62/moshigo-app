@@ -270,6 +270,7 @@ class _Describer:
         from concurrent.futures import ThreadPoolExecutor
 
         self.people, self.say, self.lang = people, say, ""
+        self.strict = False  # True면 실패한 묶음을 이름만 남기지 않고 바로 예외로 알린다 (Food Guide 보강용)
         self.system = SYSTEM.format(people="\n".join("- " + describe(p) for p in people))
         self.schema = _schema([p["name"] for p in people])
         self.pool = ThreadPoolExecutor(PARALLEL)
@@ -307,6 +308,8 @@ class _Describer:
                 return _stream(self.system, ask, self.schema, 8000, DESC_MODEL).get("items") or []
             except Exception as e:  # 그래도 안 되면 이 묶음은 이름만 남긴다
                 err = e
+                if self.strict:
+                    raise
         print(f"[menu2] 묶음 실패: {err!r}")
         return [_bare(g) for g in group]
 
@@ -328,13 +331,15 @@ class _Describer:
         return out
 
 
-def describe_list(head, people, progress=None):
+def describe_list(head, people, progress=None, strict=False):
     """2단계만: 이미 뽑은 메뉴 목록(LIST_SCHEMA 모양: restaurant, menu_language, language_code, lines)에
-    번역, 설명, 사람별 판정을 붙인다. 인터넷에서 불러온 메뉴(webmenu)가 쓴다."""
+    번역, 설명, 사람별 판정을 붙인다. 인터넷에서 불러온 메뉴(webmenu)가 쓴다.
+    strict=True면 다시 시도하거나 이름만 남기지 않고 첫 실패를 그대로 올린다 (core.fg_extras)."""
     say = progress or (lambda *_: None)
     if head.get("is_menu", True) and head.get("lines"):
         say(f"메뉴 {min(len(head['lines']), MAX_ITEMS)}개를 찾았어요. 무슨 맛인지 적는 중이에요")
     with _Describer(people, say) as d:
+        d.strict = strict
         return d.finish(head)
 
 
