@@ -5,7 +5,7 @@ import os
 import streamlit as st
 import streamlit.components.v1 as components
 
-from core import burden, demo, freemeal, menu2, nearby, ocr, order, plan, reviews, store, webmenu, world
+from core import burden, demo, favorites, freemeal, menu2, nearby, ocr, order, plan, reviews, store, webmenu
 from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, avatar, badges, chips, ghost_avatar, go, josa, level, loader, marks, md, momo, nav
 
 RELATIONS = ["나", "부모님", "아이", "배우자", "친구", "가족"]
@@ -191,14 +191,12 @@ def edit():
     rel = st.pills("관계", RELATIONS, default=p["relation"] if p["relation"] in RELATIONS else None, key=f"rel_{k}")
     age = st.pills("나이대", AGES, default=p.get("age") if p.get("age") in AGES else None, key=f"age_{k}")
     md('<div class="sec">즐겨 먹는 음식</div>')
+    gone = favorites.unsupported(p["favorites"])
+    if gone:  # 예전에 고른 음식 중 Food Guide가 비교하지 못하는 것: 저장하면 빠진다
+        st.caption(f"{', '.join(gone)}{josa(gone[-1], '은', '는')} 비교할 수 없는 음식이라 목록에서 뺐어요. 비슷한 음식을 골라 주세요.")
     fav = []
-    countries = []
-    for v in world.WORLD.values():
-        if v[0] not in countries:
-            countries.append(v[0])
-    for c in countries:
-        opts = [f for f, v in world.WORLD.items() if v[0] == c]
-        fav += st.pills(c, opts, selection_mode="multi", default=[f for f in p["favorites"] if f in opts], key=f"fav_{k}_{c}") or []
+    for group, opts in favorites.GROUPS:
+        fav += st.pills(group, opts, selection_mode="multi", default=[f for f in p["favorites"] if f in opts], key=f"fav_{k}_{group}") or []
     from core import foodguide_flow
     from .foodguide import COMPARISON_SCOPE, reference_choices
     if foodguide_flow.enabled():
@@ -226,7 +224,7 @@ def edit():
         nick = name.strip()
         new = dict(p, name=nick, relation=rel or NICK_REL.get(nick, "가족"), age=age or "", favorites=fav, likes=likes or [], avoid=avoid or [],
                    cannot=cannot or [], allergies=allergies or [], child=child,
-                   foodguide_refs={f: v for f, v in foodguide_refs.items() if f in fav},
+                   foodguide_refs=favorites.refs_with_defaults(fav, foodguide_refs, before=p["favorites"]),
                    sex={"엄마": "female", "어머니": "female", "아빠": "male", "아버지": "male"}.get(nick, p.get("sex")), active=True)
         if new["relation"] == "아이" and not new["child"]:
             new["child"] = {"new_food": "망설여요", "pick_out": [], "good": []}
@@ -371,14 +369,12 @@ def run_web():
 
     show("이 식당 메뉴를 찾는 중이에요")
     try:
-        n_err = len(nearby.ERRORS)
         raw = webmenu.read_web(place, active(), show)
-        down = any(llm_down(Exception(x)) for x in nearby.ERRORS[n_err:])  # 찾기 중 API 오류는 webmenu가 기록만 하고 None을 준다
     except Exception as e:
         if type(e).__name__ in ("StopException", "RerunException"):
             raise
         print(f"[web] 실패: {e!r}")
-        raw, down = None, llm_down(e)
+        raw = None
     box.empty()
     if not raw:
         s.scan_warn = WEB_MISS  # API가 막혔든 못 찾았든 같은 안내 (사진 찍기로)

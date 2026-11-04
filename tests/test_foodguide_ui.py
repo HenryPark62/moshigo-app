@@ -94,7 +94,7 @@ def test_native_pages_render_real_fixture(case):
 
 def test_editing_favorites_invalidates_menu_group_and_order():
     at = capture("edit-adult")
-    at.button_group(key="fav_me_한국").select("갈비찜")
+    at.button_group(key="fav_me_고기·구이·치킨").select("갈비찜")
     rerun(at)
     button(at, "저장하기").click()
     rerun(at)
