@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 
 import streamlit as st
 
-from core import foodguide_flow as flow, order, reviews, dish_images, menu_prices
+from core import foodguide_flow as flow, order, reviews, dish_images, menu_prices, generated_menu_images
 from core.foodguide_client import FoodGuideError
 from .common import E, go, md, nav
 
@@ -346,7 +346,11 @@ def menu():
     extraction = report.get("currency") or (report.get("report") or {}).get("extraction") or {}
     currency = menu_prices.currency_code(extraction)
     inferred = extraction.get("currency_source") == "inferred"
-    photos = dish_images.menu_images(items, report=report.get("report"), image_bytes=s.get("scan_img"))
+    generated = {item["id"]: photo for item in items if item["id"] in recommended
+                 if (photo := generated_menu_images.get_generated_image(item))}
+    photos = dish_images.menu_images([item for item in items if item["id"] not in generated],
+                                    report=report.get("report"), image_bytes=s.get("scan_img"))
+    photos.update(generated)
     prices = {item["id"]: menu_prices.price_info(item.get("price"), currency) for item in items}
     md(MENU_TILE_CSS)
     for item in items:
@@ -358,7 +362,7 @@ def menu():
         image = (f'<div class="fg_menu_tile_photo"><img src="{E(photo["src"], quote=True)}" alt="{E(item["name_ko"], quote=True)} · {E(photo["label"], quote=True)}" loading="lazy">'
                  f'<span>{E(photo["label"])}</span></div>')
         price = prices[item["id"]]
-        krw = f'<span class="fg_menu_tile_krw">{E(price["krw"])}' + (' · 추정 통화' if inferred and price['krw'] else '') + '</span>' if price["krw"] else ""
+        krw = f'<span class="fg_menu_tile_krw">{E(price["krw"])}</span>' if price["krw"] else ""
         individual = []
         for person in people:
             value, reason = _menu_score(item, person["id"], fresh)
@@ -389,7 +393,7 @@ def menu():
             st.caption("일부 가격의 통화를 확인하지 못해 원화 환산을 생략했어요.")
         if any(price["status"] == "unavailable" for price in prices.values()):
             st.caption("환율을 가져오지 못해 일부 원화 금액을 표시하지 못했어요.")
-        st.caption("대표 사진과 종류 참고 그림은 실제 매장 음식과 다를 수 있어요.")
+        st.caption("AI 생성 이미지·대표 사진·종류 참고 그림은 실제 매장 음식과 다를 수 있어요.")
         seen = set()
         for photo in photos.values():
             if photo.get("source_url") and photo["source_url"] not in seen:

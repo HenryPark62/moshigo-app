@@ -325,7 +325,8 @@ def test_detected_currency_is_used_for_bare_prices_and_inference_is_labeled(dete
     rerun(at)
     assert "14,90 EUR" in text(at)
     assert "약 22,377원" in text(at)
-    assert "추정 통화" in text(at)
+    assert "추정 통화" not in text(at)
+    assert "AI 추정" in text(at)
 
 
 @pytest.mark.parametrize("score,eligible,status,fresh,expected", [
@@ -338,3 +339,52 @@ def test_detected_currency_is_used_for_bare_prices_and_inference_is_labeled(dete
 def test_recommendation_never_fakes_missing_or_restricted_scores(score, eligible, status, fresh, expected):
     item = {"status": status, "preferences": [{"id": "me", "score": score, "eligible": eligible}], "matches": [{"score": 100}]}
     assert foodguide._menu_score(item, "me", fresh) == expected
+
+
+@pytest.mark.parametrize("eligible", [True, False])
+def test_generated_asset_lookup_only_overrides_two_recommended_cards(monkeypatch, eligible):
+    import httpx
+    from core import generated_menu_images
+
+    at = capture("menu-translated")
+    scan = deepcopy(at.session_state["scan"])
+    for index, item in enumerate(scan["items"]):
+        item["status"] = "ok"
+        score = {1: 95, 3: 90}.get(index, 10)
+        for row in item["preferences"]:
+            row.update(score=score, eligible=eligible)
+    expected_ids = {scan["items"][1]["id"], scan["items"][3]["id"]} if eligible else set()
+    asset_calls, network_calls = [], []
+
+    def photo(item_id, kind):
+        return {"src": f"https://assets.example.test/{kind}-{item_id}.png",
+                "label": "생성 자산 확인" if kind == "generated" else "기존 대체 이미지",
+                "title": kind, "author": "", "license": "", "source_url": "", "license_url": ""}
+
+    def lookup(item):
+        asset_calls.append(item["id"])
+        return photo(item["id"], "generated")
+
+    def forbidden_request(*args, **kwargs):
+        network_calls.append(True)
+        raise AssertionError("Rendering stored generated assets must not generate or request images")
+
+    monkeypatch.setattr(generated_menu_images, "get_generated_image", lookup)
+    monkeypatch.setattr(dish_images, "menu_images", lambda items, **kwargs: {item["id"]: photo(item["id"], "fallback") for item in items})
+    monkeypatch.setattr(httpx, "get", forbidden_request)
+    monkeypatch.setattr(httpx.Client, "send", forbidden_request)
+    at.session_state["scan"] = scan
+    rerun(at)
+    assert len(asset_calls) == len(expected_ids)
+    assert set(asset_calls) == expected_ids
+    assert not network_calls
+    cards = [element.value for element in at.markdown if 'class="fg_menu_tile_content"' in element.value]
+    assert len(cards) == len(scan["items"])
+    assert sum("생성 자산 확인" in card for card in cards) == len(expected_ids)
+    for item in scan["items"]:
+        card = next(card for card in cards if item["name_ko"] in card)
+        kind = "generated" if item["id"] in expected_ids else "fallback"
+        expected = photo(item["id"], kind)
+        assert expected["src"] in card and expected["label"] in card
+        if kind == "fallback":
+            assert "생성 자산 확인" not in card
