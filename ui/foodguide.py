@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 
 import streamlit as st
 
-from core import foodguide_flow as flow, order, reviews, dish_images, menu_prices, generated_menu_images
+from core import foodguide_flow as flow, order, reviews, dish_images, menu_prices, generated_menu_images, foodguide_images
 from core.foodguide_client import FoodGuideError
 from .common import E, go, md, nav
 
@@ -258,6 +258,9 @@ MENU_TILE_CSS = """<style>
 .fg_menu_tile_content{position:relative;display:grid;grid-template-columns:82px minmax(0,1fr) 74px;gap:8px 12px;align-items:center;min-height:116px}
 .fg_menu_tile_photo{position:relative;align-self:stretch;min-height:96px;max-height:144px;border-radius:12px;overflow:hidden;background:#eeeadf}
 .fg_menu_tile_photo img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}
+.fg_image_wait{position:absolute;left:calc(50% - 12px);top:calc(50% - 18px);width:24px;height:24px;border:2px solid #d2dcd0;border-top-color:var(--accent);border-radius:50%;animation:fg_image_spin 1s linear infinite}
+@keyframes fg_image_spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.fg_image_wait{animation:none}}
 .fg_menu_tile_photo span{position:absolute;bottom:0;left:0;right:0;background:#fffE;color:#5e6a63;text-align:center;font-size:9px;line-height:1.35;padding:3px 1px}
 .fg_menu_tile_name{font-size:19px;font-weight:750;line-height:1.4;overflow-wrap:anywhere}
 .fg_menu_tile_price{font-size:14px;font-weight:650;margin-top:7px;line-height:1.4}
@@ -341,6 +344,64 @@ def _is_meal(item):
             and any(role in {"주식", "주요리"} for role in roles if isinstance(role, str)))
 
 
+def _menu_card(item, people, fresh, photo, price, recommended):
+    score, note = _group_score(item, people, fresh)
+    unscored = " fg_menu_tile_unscored" if score == "—" else ""
+    reading = str(item.get("reading") or "")
+    pronunciation = (f'<div class="fg_menu_tile_reading"><span>읽는 법</span>{E(reading)}</div>' if reading else "")
+    image_tag = (f'<img src="{E(photo["src"], quote=True)}" alt="{E(item["name_ko"], quote=True)} · {E(photo["label"], quote=True)}" loading="lazy">'
+                 if photo.get("src") else '<i class="fg_image_wait" aria-hidden="true"></i>' if photo.get("pending") else "")
+    image = f'<div class="fg_menu_tile_photo">{image_tag}<span>{E(photo["label"])}</span></div>'
+    krw = f'<span class="fg_menu_tile_krw">{E(price["krw"])}</span>' if price["krw"] else ""
+    individual = []
+    for person in people:
+        value, reason = _menu_score(item, person["id"], fresh)
+        detail = value if reason == "점" else "제한 확인" if reason == "제한 확인" else "—"
+        if reason == "제한 확인":
+            raw = next((row.get("score") for row in item.get("preferences", []) if row.get("id") == person["id"]), None)
+            if type(raw) in (int, float) and math.isfinite(raw) and 0 <= raw <= 100:
+                detail = f"{round(raw)} · 제한"
+        cls = ' class="fg_restricted"' if reason == "제한 확인" else ""
+        individual.append(f'<span{cls}>{E(person["name"])}: {E(detail)}</span>')
+    badge = '<span class="fg_recommend_badge">추천</span>' if recommended else ""
+    with st.container(key=f'fg_menu_tile_{item["id"]}'):
+        md(f'<div class="fg_menu_tile_content">{badge}{image}<div><div class="fg_menu_tile_name">{E(item["name_ko"])}</div>'
+           f'<div class="fg_menu_tile_price">{E(price["display"] or "가격 미표기")}{krw}</div>{pronunciation}</div>'
+           f'<div class="fg_menu_tile_score{unscored}"><span class="fg_menu_tile_score_label">{"평균 추천 점수" if len(people) > 1 else "추천 점수"}</span><strong>{E(score)}</strong><small>{E(note)}</small></div>'
+           f'<div class="fg_menu_tile_people">{"".join(individual)}</div></div>')
+        if st.button(f'{item["name_ko"]} 상세 보기 · {score}{note}', key=f'fg_open_{item["id"]}', width="stretch"):
+            go("sdish" if st.session_state.get("simple") else "dish", dish_id=item["id"])
+
+
+def _top_menu_cards(items, people, prices, static_photos, report, polling, recommended):
+    s = st.session_state
+    # 다른 화면·메뉴판으로 바뀐 뒤 늦게 도착한 결과를 이전 카드에 그리지 않는다.
+    if s.get("view") != "menu" or s.get("scan") is not report or flow.stale(active(), s):
+        st.rerun()
+    missing = [item for item in items if item["id"] not in static_photos]
+    statuses = foodguide_images.ensure_images(missing, s) if missing else {}
+    if s.get("view") != "menu" or s.get("scan") is not report:
+        st.rerun()
+    for item in items:
+        state = statuses.get(item["id"], {})
+        photo = static_photos.get(item["id"]) or state.get("photo")
+        if not photo:
+            pending = state.get("status") == "pending"
+            photo = {"src": "", "label": "AI 이미지 생성 중" if pending else "AI 이미지 생성 실패", "pending": pending}
+        _menu_card(item, people, True, photo, prices[item["id"]], item["id"] in recommended)
+    failed = [item for item in missing if statuses[item["id"]]["status"] == "failed"]
+    if failed:
+        st.caption("일부 이미지를 만들지 못했어요. 메뉴와 점수는 그대로 확인할 수 있어요.")
+        if st.button("이미지 다시 생성", key="fg_retry_images", type="tertiary"):
+            foodguide_images.retry_images(failed, s)
+            st.rerun()
+    elif any(state["status"] == "pending" for state in statuses.values()):
+        st.caption("추천 음식 이미지를 만들고 있어요. 완료되면 자동으로 보여드릴게요.")
+    if polling and not any(state["status"] == "pending" for state in statuses.values()):
+        # 완료 후에는 자동 폴링·그림 재전송을 멈춘다.
+        st.rerun()
+
+
 def menu():
     s = st.session_state
     report = s.scan
@@ -356,41 +417,22 @@ def menu():
     extraction = report.get("currency") or (report.get("report") or {}).get("extraction") or {}
     currency = menu_prices.currency_code(extraction)
     inferred = extraction.get("currency_source") == "inferred"
-    generated = {item["id"]: photo for item in items if item["id"] in recommended
+    top_items = items[:2] if fresh else []
+    image_ids = {item["id"] for item in top_items}
+    generated = {item["id"]: photo for item in top_items
                  if (photo := generated_menu_images.get_generated_image(item))}
-    photos = dish_images.menu_images([item for item in items if item["id"] not in generated],
+    missing = [item for item in top_items if item["id"] not in generated]
+    statuses = foodguide_images.ensure_images(missing, s) if missing else {}
+    polling = any(state["status"] == "pending" for state in statuses.values())
+    photos = dish_images.menu_images([item for item in items if item["id"] not in image_ids],
                                     report=report.get("report"), image_bytes=s.get("scan_img"))
-    photos.update(generated)
     prices = {item["id"]: menu_prices.price_info(item.get("price"), currency) for item in items}
     md(MENU_TILE_CSS)
+    if top_items:
+        st.fragment(run_every="2s" if polling else None)(_top_menu_cards)(top_items, people, prices, generated, report, polling, recommended)
     for item in items:
-        score, note = _group_score(item, people, fresh)
-        unscored = " fg_menu_tile_unscored" if score == "—" else ""
-        reading = str(item.get("reading") or "")
-        pronunciation = (f'<div class="fg_menu_tile_reading"><span>읽는 법</span>{E(reading)}</div>' if reading else "")
-        photo = photos[item["id"]]
-        image = (f'<div class="fg_menu_tile_photo"><img src="{E(photo["src"], quote=True)}" alt="{E(item["name_ko"], quote=True)} · {E(photo["label"], quote=True)}" loading="lazy">'
-                 f'<span>{E(photo["label"])}</span></div>')
-        price = prices[item["id"]]
-        krw = f'<span class="fg_menu_tile_krw">{E(price["krw"])}</span>' if price["krw"] else ""
-        individual = []
-        for person in people:
-            value, reason = _menu_score(item, person["id"], fresh)
-            detail = value if reason == "점" else "제한 확인" if reason == "제한 확인" else "—"
-            if reason == "제한 확인":
-                raw = next((row.get("score") for row in item.get("preferences", []) if row.get("id") == person["id"]), None)
-                if type(raw) in (int, float) and math.isfinite(raw) and 0 <= raw <= 100:
-                    detail = f"{round(raw)} · 제한"
-            cls = ' class="fg_restricted"' if reason == "제한 확인" else ""
-            individual.append(f'<span{cls}>{E(person["name"])}: {E(detail)}</span>')
-        badge = '<span class="fg_recommend_badge">추천</span>' if item["id"] in recommended else ""
-        with st.container(key=f'fg_menu_tile_{item["id"]}'):
-            md(f'<div class="fg_menu_tile_content">{badge}{image}<div><div class="fg_menu_tile_name">{E(item["name_ko"])}</div>'
-               f'<div class="fg_menu_tile_price">{E(price["display"] or "가격 미표기")}{krw}</div>{pronunciation}</div>'
-               f'<div class="fg_menu_tile_score{unscored}"><span class="fg_menu_tile_score_label">{"평균 추천 점수" if len(people) > 1 else "추천 점수"}</span><strong>{E(score)}</strong><small>{E(note)}</small></div>'
-               f'<div class="fg_menu_tile_people">{"".join(individual)}</div></div>')
-            st.button(f'{item["name_ko"]} 상세 보기 · {score}{note}', key=f'fg_open_{item["id"]}', width="stretch", on_click=nav,
-                      args=("sdish" if s.get("simple") else "dish",), kwargs={"dish_id": item["id"]})
+        if item["id"] not in image_ids:
+            _menu_card(item, people, fresh, photos[item["id"]], prices[item["id"]], item["id"] in recommended)
     with st.expander("가격·사진 정보"):
         if currency:
             st.caption(f'메뉴 통화: {currency}' + (' · AI 추정' if inferred else ' · 메뉴판에서 확인'))

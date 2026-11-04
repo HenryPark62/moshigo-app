@@ -6,7 +6,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 from streamlit.testing.v1.element_tree import Widget
 
-from core import foodguide_flow, menu2, ocr, reviews, store, webmenu, dish_images, menu_prices
+from core import foodguide_flow, menu2, ocr, reviews, store, webmenu, dish_images, menu_prices, foodguide_images
 from ui import screens, foodguide
 
 
@@ -25,7 +25,7 @@ def isolated_capture(monkeypatch, tmp_path):
 
     # 하네스가 직접 바꾸는 함수도 테스트 종료 시 원래 객체로 복구한다.
     for module, name in ((ocr, "read"), (menu2, "read_menu"), (menu2, "read_menu_text"),
-                         (webmenu, "read_web"), (screens, "geo_block"), (dish_images, "_schedule"), (menu_prices, "_rate")):
+                         (webmenu, "read_web"), (screens, "geo_block"), (dish_images, "_schedule"), (menu_prices, "_rate"), (foodguide_images, "ensure_images"), (foodguide_images, "retry_images")):
         monkeypatch.setattr(module, name, getattr(module, name))
     calls = []
 
@@ -344,7 +344,7 @@ def test_recommendation_never_fakes_missing_or_restricted_scores(score, eligible
 
 
 @pytest.mark.parametrize("eligible", [True, False])
-def test_generated_asset_lookup_only_overrides_two_recommended_cards(monkeypatch, eligible):
+def test_generated_asset_lookup_only_overrides_two_top_cards(monkeypatch, eligible):
     import httpx
     from core import generated_menu_images
 
@@ -356,7 +356,7 @@ def test_generated_asset_lookup_only_overrides_two_recommended_cards(monkeypatch
         score = {1: 95, 3: 90}.get(index, 10)
         for row in item["preferences"]:
             row.update(score=score, eligible=eligible)
-    expected_ids = {scan["items"][1]["id"], scan["items"][3]["id"]} if eligible else set()
+    expected_ids = {scan["items"][1]["id"], scan["items"][3]["id"]} if eligible else {item["id"] for item in scan["items"][:2]}
     asset_calls, network_calls = [], []
 
     def photo(item_id, kind):
@@ -384,6 +384,13 @@ def test_generated_asset_lookup_only_overrides_two_recommended_cards(monkeypatch
     cards = [element.value for element in at.markdown if 'class="fg_menu_tile_content"' in element.value]
     assert len(cards) == len(scan["items"])
     assert sum("생성 자산 확인" in card for card in cards) == len(expected_ids)
+    assert all("생성 자산 확인" in card for card in cards[:2])
+    assert all("생성 자산 확인" not in card for card in cards[2:])
+    if not eligible:
+        # 점수 없는 동률은 원문 순서다. AI 이미지가 추천 자격을 만들지는 않는다.
+        assert all(scan["items"][index]["name_ko"] in cards[index] for index in range(2))
+        assert all('class="fg_recommend_badge"' not in card for card in cards)
+        assert all(at.button(key=f'fg_open_{item["id"]}').label.endswith("—제한 확인") for item in scan["items"][:2])
     for item in scan["items"]:
         card = next(card for card in cards if item["name_ko"] in card)
         kind = "generated" if item["id"] in expected_ids else "fallback"
@@ -447,3 +454,121 @@ def test_meals_precede_high_scoring_condiments_and_badges_match_available_meals(
         assert foodguide._group_score(item, people, True) == (str(score), "점")
         assert at.button(key=f'fg_open_{item["id"]}').label.endswith(f"{score}점")
     assert at.session_state["scan"] == before
+
+
+def _automatic_image_scene(at):
+    scan = deepcopy(at.session_state["scan"])
+    for index, item in enumerate(scan["items"]):
+        item["status"] = "ok"
+        item["profile"] = dict(item.get("profile") or {}, status="known", meal_roles=["주요리"], unknown_fields=[])
+        for row in item["preferences"]:
+            row.update(score={1: 95, 3: 90}.get(index, 10), eligible=True)
+    at.session_state["scan"] = scan
+    return scan, [scan["items"][1], scan["items"][3]]
+
+
+def _automatic_photo(item_id, kind="remote"):
+    return {"src": f"https://assets.example.test/{kind}-{item_id}.png", "label": "AI 생성 이미지" if kind != "fallback" else "기존 참고 그림",
+            "title": kind, "author": "", "license": "", "source_url": "", "license_url": ""}
+
+
+def _menu_cards(at):
+    return [element.value for element in at.markdown if 'class="fg_menu_tile_content"' in element.value]
+
+
+@pytest.mark.parametrize("has_static", [False, True])
+def test_automatic_top_images_pending_then_complete_keep_order_and_means(monkeypatch, has_static):
+    import httpx
+    from core import generated_menu_images
+
+    at = capture("menu-translated")
+    scan, top = _automatic_image_scene(at)
+    static_id = top[0]["id"] if has_static else None
+    missing = [item["id"] for item in top if item["id"] != static_id]
+    calls, phase = [], {"value": "pending"}
+
+    def ensure(items, session):
+        calls.append([item["id"] for item in items])
+        return {item["id"]: {"status": phase["value"], "photo": _automatic_photo(item["id"]) if phase["value"] == "completed" else None,
+                              "message": ""} for item in items}
+
+    monkeypatch.setattr(generated_menu_images, "get_generated_image", lambda item: _automatic_photo(item["id"], "static") if item["id"] == static_id else None)
+    monkeypatch.setattr(foodguide_images, "ensure_images", ensure)
+    monkeypatch.setattr(dish_images, "menu_images", lambda items, **kwargs: {item["id"]: _automatic_photo(item["id"], "fallback") for item in items})
+    monkeypatch.setattr(httpx.Client, "send", lambda *a, **kw: pytest.fail("UI image test made a real HTTP request"))
+    rerun(at)
+    cards = _menu_cards(at)
+    assert calls and all(ids == missing for ids in calls)
+    for index, item in enumerate(top):
+        assert item["name_ko"] in cards[index]
+        assert at.button(key=f'fg_open_{item["id"]}').label.endswith(f'{95 if index == 0 else 90}점')
+        if item["id"] in missing:
+            assert "AI 이미지 생성 중" in cards[index]
+            assert "fg_image_wait" in cards[index]
+            assert "<img " not in cards[index] and "data:image/svg" not in cards[index]
+            assert "AI 생성 이미지" not in cards[index]
+    assert all("fallback-" in card for card in cards[2:])
+    order_before = [widget.key for widget in at.button if widget.key and widget.key.startswith("fg_open_")]
+    phase["value"] = "completed"
+    rerun(at)
+    assert [widget.key for widget in at.button if widget.key and widget.key.startswith("fg_open_")] == order_before
+    for index, item in enumerate(top):
+        card = _menu_cards(at)[index]
+        kind = "static" if item["id"] == static_id else "remote"
+        assert _automatic_photo(item["id"], kind)["src"] in card
+        assert "AI 생성 이미지" in card and "AI 이미지 생성 중" not in card
+        assert at.button(key=f'fg_open_{item["id"]}').label.endswith(f'{95 if index == 0 else 90}점')
+    assert at.session_state["scan"] == scan
+
+    # 취향을 바꾸면 이전 추천 이미지 조회를 멈추고 다시 비교하도록 안내한다.
+    calls.clear()
+    people = deepcopy(at.session_state["people"])
+    next(person for person in people if person["id"] == "me")["favorites"].append("갈비찜")
+    at.session_state["people"] = people
+    rerun(at)
+    assert calls == []
+    assert any(widget.label == "현재 입맛으로 다시 비교" for widget in at.button)
+    assert all("remote-" not in card and "static-" not in card for card in _menu_cards(at))
+
+
+def test_automatic_image_retry_button_only_retries_failed_partner(monkeypatch):
+    import httpx
+    from core import generated_menu_images
+
+    at = capture("menu-translated")
+    scan, top = _automatic_image_scene(at)
+    completed_id, failed_id = [item["id"] for item in top]
+    retries, phase = [], {"failed": "failed"}
+
+    def ensure(items, session):
+        output = {}
+        for item in items:
+            status = "completed" if item["id"] == completed_id else phase["failed"]
+            output[item["id"]] = {"status": status, "photo": _automatic_photo(item["id"]) if status == "completed" else None, "message": ""}
+        return output
+
+    def retry(items, session):
+        retries.append([item["id"] for item in items])
+        phase["failed"] = "pending"
+        return ensure(items, session)
+
+    monkeypatch.setattr(generated_menu_images, "get_generated_image", lambda item: None)
+    monkeypatch.setattr(foodguide_images, "ensure_images", ensure)
+    monkeypatch.setattr(foodguide_images, "retry_images", retry)
+    monkeypatch.setattr(dish_images, "menu_images", lambda items, **kwargs: {item["id"]: _automatic_photo(item["id"], "fallback") for item in items})
+    monkeypatch.setattr(httpx.Client, "send", lambda *a, **kw: pytest.fail("UI image test made a real HTTP request"))
+    rerun(at)
+    assert "AI 이미지 생성 실패" in _menu_cards(at)[1]
+    completed_src = _automatic_photo(completed_id)["src"]
+    assert completed_src in _menu_cards(at)[0]
+    at.button(key="fg_retry_images").click()
+    rerun(at)
+    assert retries == [[failed_id]]
+    assert completed_src in _menu_cards(at)[0]
+    assert "AI 이미지 생성 중" in _menu_cards(at)[1]
+    # AppTest는 fragment rerun 전 버튼 노드를 남기므로 실제 위젯 상태 제거를 확인한다.
+    assert "fg_retry_images" not in at.session_state.filtered_state
+    phase["failed"] = "completed"
+    rerun(at)
+    assert _automatic_photo(failed_id)["src"] in _menu_cards(at)[1]
+    assert retries == [[failed_id]] and at.session_state["scan"] == scan

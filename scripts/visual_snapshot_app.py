@@ -103,6 +103,12 @@ if case.get("action") in {"processing", "provider-error"}:
 
 if st.session_state.get("_capture_case") != case_id:
     st.session_state.clear()
+    if native:
+        from core import foodguide_images
+        def snapshot_images(items, session):
+            return {item["id"]: {"status": "completed", "photo": dict(dish_images._illustration(item), label="예시 이미지"), "message": ""} for item in items}
+        foodguide_images.ensure_images = snapshot_images
+        foodguide_images.retry_images = blocked_provider
     people = copy.deepcopy(menu2.DEFAULT_PEOPLE)
     simple_id = case.get("simple")
     active = [p for p in people if p["id"] == simple_id] if simple_id else people
