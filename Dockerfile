@@ -8,8 +8,9 @@ WORKDIR /home/user/app
 
 COPY --chown=user requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
-# 링크 미리보기(카카오톡 등)에 'Streamlit' 대신 모시고 제목과 그림이 나오게
+# 링크 미리보기(카카오톡 등)에 'Streamlit' 대신 모시고 제목과 그림이 나오게, 첫 로딩에 거북이
 COPY --chown=user scripts/patch_index.py scripts/
+COPY --chown=user ui/common.py ui/
 RUN python scripts/patch_index.py
 
 COPY --chown=user . .
