@@ -273,8 +273,9 @@ def run_scan(data, mime):
                 if type(e).__name__ in ("StopException", "RerunException"):
                     raise
                 print(f"[scan] 실패: {e!r}")
+                nearby._err("사진 읽기", e)
                 box.update(label="읽지 못했어요", state="error")
-                go("scan", scan_warn="사진을 읽지 못했어요. 글씨가 잘 보이게 다시 찍어 주세요.")
+                go("scan", scan_warn=LLM_DOWN if llm_down(e) else "사진을 읽지 못했어요. 글씨가 잘 보이게 다시 찍어 주세요.")
             if raw is not None and (raw.get("is_menu") is False or not [i for i in raw.get("items", []) if not i.get("unreadable")]):
                 box.update(label="메뉴판을 찾지 못했어요", state="error")
                 go("scan", scan_warn=NOT_MENU)
@@ -291,6 +292,15 @@ def run_scan(data, mime):
     s.place = None  # 고른 식당은 이번 메뉴판에만 쓴다
     rejudge()
     go("menu", menu_mode_w="번역만", combo_w=None)
+
+
+LLM_DOWN = "지금은 메뉴 읽기를 쓸 수 없어요. 잠시 뒤 다시 해 주세요."
+
+
+def llm_down(e):
+    """사진 탓이 아니라 API 쪽(사용 한도, 크레딧, 과부하, 연결) 문제인지."""
+    t = f"{type(e).__name__} {e}".lower()
+    return any(w in t for w in ("usage limit", "credit", "overloaded", "rate_limit", "ratelimit", "apiconnection", "authentication", "permission"))
 
 
 WEB_MISS = "이 식당 메뉴를 인터넷에서 찾지 못했어요. 메뉴판을 찍어 주세요."
@@ -317,15 +327,17 @@ def run_web():
 
     show("이 식당 메뉴를 찾는 중이에요")
     try:
+        n_err = len(nearby.ERRORS)
         raw = webmenu.read_web(place, active(), show)
+        down = any(llm_down(Exception(x)) for x in nearby.ERRORS[n_err:])  # 찾기 중 API 오류는 webmenu가 기록만 하고 None을 준다
     except Exception as e:
         if type(e).__name__ in ("StopException", "RerunException"):
             raise
         print(f"[web] 실패: {e!r}")
-        raw = None
+        raw, down = None, llm_down(e)
     box.empty()
     if not raw:
-        s.scan_warn = WEB_MISS
+        s.scan_warn = LLM_DOWN if down else WEB_MISS
         return
     s.scan_raw, s.scan_img, s.scan_note, s.scan_source = raw, None, raw.get("note"), "web"
     if (s.get("hurry") or {}).get("id") != place.get("id"):

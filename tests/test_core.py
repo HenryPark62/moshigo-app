@@ -178,3 +178,10 @@ def test_streamed_lines_parser_handles_split_chunks():
         for i in range(0, len(src), step):
             out += p.feed(src[i:i + step])
         assert [o["name_orig"] for o in out] == ['Croque {m} "x"', "B"]
+
+
+def test_llm_down_is_not_blamed_on_the_photo():
+    from ui.screens import llm_down
+    assert llm_down(Exception("Error code: 400 - You have reached your specified workspace API usage limits."))
+    assert llm_down(Exception("overloaded_error"))
+    assert not llm_down(ValueError("Expecting value: line 1 column 1"))
