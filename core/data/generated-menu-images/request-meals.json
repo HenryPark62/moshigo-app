@@ -1,0 +1,37 @@
+[
+  {
+    "input_name": "Allgäuer Kässpätzle",
+    "profile": {
+      "name": "알고이어 케스페츨레",
+      "original_name": "Allgäuer Kässpätzle",
+      "main_ingredients": [
+        "밀가루",
+        "계란",
+        "치즈",
+        "양파"
+      ],
+      "cooking_methods": [
+        "삶기",
+        "볶음"
+      ],
+      "status": "known"
+    }
+  },
+  {
+    "input_name": "Sellerie-Schnitzel",
+    "profile": {
+      "name": "셀러리 슈니첼",
+      "original_name": "Sellerie-Schnitzel",
+      "main_ingredients": [
+        "셀러리",
+        "밀가루",
+        "계란",
+        "빵가루"
+      ],
+      "cooking_methods": [
+        "튀김"
+      ],
+      "status": "known"
+    }
+  }
+]

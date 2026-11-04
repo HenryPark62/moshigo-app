@@ -1,0 +1,49 @@
+--- a/foodguide/stage1.py
++++ b/foodguide/stage1.py
+@@ -6,6 +6,7 @@
+ import math
+ import os
+ import warnings
++from typing import Literal
+ from PIL import Image, ImageOps
+ from pydantic import Field
+
+@@ -67,6 +68,9 @@
+     items: list[MenuItem] = Field(max_length=20)
+     warnings: list[str]
+     language: str = Field(default='', description='Predominant printed menu language as ISO 639 code, or empty if uncertain.')
++    currency_code: str = Field(default='', pattern=r'^(?:[A-Z]{3})?$', description='ISO 4217 uppercase currency code, or empty if unknown.')
++    currency_source: Literal['printed', 'inferred', 'unknown'] = 'unknown'
++    currency_evidence: str = Field(default='', max_length=300, description='Short Korean rationale grounded in visible menu evidence.')
+
+
+ def extract_menu(image_bytes: bytes) -> dict:
+@@ -83,6 +87,16 @@
+                           'or general culinary knowledge in description. Never invent dishes or prices: missing price is null. '
+                           'photo_bbox is [left,top,right,bottom] normalized 0..1 for the corresponding visible FOOD PHOTO only, '
+                           'not text or the menu entry; null if absent or uncertain. Give confidence 0..1 and Korean warnings. '
++                          'Determine menu-level currency from this image automatically; never ask the user. '
++                          'currency_code must be a recognized uppercase ISO 4217 code, or empty if uncertain. '
++                          'Use currency_source=printed only when a visible code or unambiguous symbol identifies the currency. '
++                          'Ambiguous symbols such as $ or ¥ do not identify a currency alone. '
++                          'When no unambiguous currency is printed, infer only from combined visible restaurant, place, menu, '
++                          'and price-format evidence; never infer from language alone. Use currency_source=inferred in that case. '
++                          'If evidence is insufficient, conflicting, or multiple currencies cannot be reduced to one menu currency, '
++                          'return currency_code empty and currency_source=unknown. '
++                          'currency_evidence is a short Korean rationale citing visible evidence and distinguishing inference from printed facts. '
++                          'Preserve each original price string, including any printed symbol; do not convert prices. '
+                           'Unreadable entries must be omitted with a warning. No tools or execution.'),
+             input=[{'role': 'user', 'content': [{'type': 'input_image', 'image_url':
+                      'data:image/png;base64,' + base64.b64encode(normalized).decode('ascii')}]}],
+--- a/foodguide/api_models.py
++++ b/foodguide/api_models.py
+@@ -107,6 +107,9 @@
+     items: list[MenuInputMetadata]
+     warnings: list[str] = Field(default_factory=list)
+     language: str = ''
++    currency_code: str = Field(default='', pattern=r'^(?:[A-Z]{3})?$', description='ISO 4217 대문자 통화 코드. 판단할 수 없으면 빈 문자열.')
++    currency_source: Literal['printed', 'inferred', 'unknown'] = 'unknown'
++    currency_evidence: str = Field(default='', max_length=300, description='이미지에서 확인한 통화 또는 추정 근거를 짧은 한국어로 설명.')
+
+
+ class AnalysisReport(BaseModel):

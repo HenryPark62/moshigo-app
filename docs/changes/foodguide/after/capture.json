@@ -1,0 +1,270 @@
+{
+  "phase": "after",
+  "source_commit": "7de2afa1356fb8433b825c925f1bab84d269105f",
+  "source_dirty": false,
+  "playwright_version": "1.57.0",
+  "fixture": "tests/visual/fixtures/foodguide-paris.json",
+  "live_provider_evidence": false,
+  "records": [
+    {
+      "id": "people",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1495,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "edit-adult",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2276,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "edit-child",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2595,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "scan",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 932,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "menu-translated",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 4165,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "menu-original",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 4587,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "menu-people",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 6004,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "dish",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2154,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "dish-details",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2400,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "dish-allergy",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2489,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "combo-all",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1587,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "combo-local",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1587,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "combo-fast",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1587,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "order",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1293,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "order-large",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1507,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "survey",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1040,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "simple-scan",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 932,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "simple-menu",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 5165,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "simple-dish",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1391,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "simple-order-empty",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1668,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "simple-order",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1033,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "simple-dish-avoid",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1379,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "edit-parent",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2398,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "menu-web",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 4015,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "processing",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1496,
+      "page_errors": [],
+      "controlled_provider_state": "processing"
+    },
+    {
+      "id": "provider-error",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1676,
+      "page_errors": [],
+      "controlled_provider_state": "provider-error"
+    }
+  ]
+}

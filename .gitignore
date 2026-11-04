@@ -3,3 +3,6 @@ __pycache__/
 .streamlit/secrets.toml
 core/data/*.db
 .DS_Store
+.pytest_cache/
+tests/visual/node_modules/
+.env

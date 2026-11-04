@@ -6,7 +6,7 @@ import streamlit as st
 st.set_page_config(page_title="모시고 · 가족 메뉴판 도우미", page_icon="🐢", layout="centered", initial_sidebar_state="collapsed")
 
 # 키는 Streamlit secrets(배포) 또는 환경 변수(로컬)에서 읽는다
-for k in ("ANTHROPIC_API_KEY", "CLOVA_OCR_URL", "CLOVA_OCR_SECRET", "KAKAO_REST_KEY", "GEOAPIFY_KEY"):
+for k in ("FOODGUIDE_API_URL", "FOODGUIDE_API_KEY", "FOODGUIDE_MAX_WAIT_SECONDS", "MOSHIGO_ANALYSIS_PROVIDER", "ANTHROPIC_API_KEY", "CLOVA_OCR_URL", "CLOVA_OCR_SECRET", "KAKAO_REST_KEY", "GEOAPIFY_KEY"):
     try:
         if k in st.secrets and not os.environ.get(k):
             os.environ[k] = str(st.secrets[k])
@@ -74,6 +74,14 @@ else:
         "start": screens.start, "people": screens.people, "edit": screens.edit, "scan": screens.scan, "menu": screens.menu,
         "dish": screens.dish, "survey": screens.survey, "combo": screens.combo, "order": screens.order_card, "free": screens.free, "nearby": screens.nearby_view,
     }.get(view, screens.start)
+# Food Guide 결과에는 예전 메뉴 추정 필드를 적용하지 않는다.
+from core import foodguide_flow
+from ui import foodguide
+if view == "scan" and foodguide_flow.enabled() and not s.get("dev"):  # 개발 버전은 API 없이 예시 데이터 화면으로
+    page = foodguide.scan
+elif (s.get("scan") or {}).get("provider") == "foodguide":
+    page = {"menu": foodguide.menu, "dish": foodguide.dish, "sdish": foodguide.dish,
+            "combo": foodguide.combo, "order": foodguide.order_view, "survey": foodguide.survey}.get(view, page)
 try:
     page()
 except Exception as e:  # 화면을 그리다 오류가 나면 내부 기록 대신 안내를 보여 준다

@@ -47,11 +47,18 @@ def active():
 def save_people(people):
     st.session_state.people = people
     store.save(st.session_state.code, people)
-    if st.session_state.get("scan_raw"):
+    if (st.session_state.get("scan") or {}).get("provider") == "foodguide":
+        from core import foodguide_flow
+        foodguide_flow.invalidate(st.session_state)
+    elif st.session_state.get("scan_raw"):
         rejudge()
 
 
 def rejudge():
+    if (st.session_state.get("scan") or {}).get("provider") == "foodguide":
+        from core import foodguide_flow
+        foodguide_flow.invalidate(st.session_state)
+        return
     act = active()
     scan = menu2.enrich(st.session_state.scan_raw, act)
     menu2.apply_feedback(scan, reviews.feedback([i["name_orig"] for i in scan["items"]]))
@@ -119,6 +126,10 @@ def person_tile(p, alone, many):
     with st.container(key=f"pc_{'' if on else 'off_'}{p['id']}"):
         md(f'<div class="pcard">{avatar(p.get("relation", "가족"), 64)}<div class="pname">{E(p["name"])}</div>'
            + (f'<div class="pmeta">{E(meta)}</div>' if meta else "") + state + f'<div class="chips">{tags}</div></div>')
+        from core import foodguide_flow
+        if foodguide_flow.enabled():
+            from .foodguide import reference_indicator
+            reference_indicator(p)
         btns = ["edit"] + (["act"] if many and not alone else [])
         cols = dict(zip(btns, st.columns(len(btns))))
         cols["edit"].button("고치기", key=f"edit_{p['id']}", width="stretch", on_click=nav, args=("edit",), kwargs={"edit_id": p["id"]})
@@ -146,8 +157,11 @@ def people():
                     else:
                         person_tile(p, alone, len(shown) > 1)
     n = len(active())
+    from core import foodguide_flow
+    if foodguide_flow.enabled() and n > 6:
+        st.warning("입맛 비교는 한 번에 최대 6명까지 할 수 있어요. 오늘 같이 먹는 사람을 골라 주세요.")
     nxt = "자유 식사 식당 보기" if s.get("trip") == "package" else "메뉴판 찍기"
-    st.button(f"{n}명 기준으로 {nxt}", type="primary", width="stretch", disabled=n == 0, on_click=nav, args=('free' if s.get('trip') == 'package' else 'menu' if s.get('scan') else 'scan',))
+    st.button(f"{n}명 기준으로 {nxt}", type="primary", width="stretch", disabled=n == 0 or (foodguide_flow.enabled() and n > 6), on_click=nav, args=('free' if s.get('trip') == 'package' else 'menu' if s.get('scan') else 'scan',))
     from .simple import share_section
 
     share_section()
@@ -159,6 +173,8 @@ def people():
             if got is None:
                 st.error("이 코드로 저장된 입맛이 없어요.")
             else:
+                if code != s.code:
+                    foodguide_flow.clear_analysis(s)
                 s.code, s.people, s.cookie_set = code, got, False
                 st.rerun()
 
@@ -183,6 +199,13 @@ def edit():
     for c in countries:
         opts = [f for f, v in world.WORLD.items() if v[0] == c]
         fav += st.pills(c, opts, selection_mode="multi", default=[f for f in p["favorites"] if f in opts], key=f"fav_{k}_{c}") or []
+    from core import foodguide_flow
+    from .foodguide import COMPARISON_SCOPE, reference_choices
+    if foodguide_flow.enabled():
+        st.caption(COMPARISON_SCOPE)
+    foodguide_refs = reference_choices(dict(p, favorites=fav), k) if foodguide_flow.enabled() else dict(p.get("foodguide_refs") or {})
+    if len(fav) > 50:
+        st.warning("즐겨 먹는 음식은 최대 50개까지 비교할 수 있어요.")
     likes = st.pills("좋아하는 맛", LIKES, selection_mode="multi", default=[x for x in p["likes"] if x in LIKES], key=f"lk_{k}")
     avoid = st.pills("되도록 피하고 싶은 맛", AVOID, selection_mode="multi", default=[x for x in p["avoid"] if x in AVOID], key=f"av_{k}")
     cannot = st.pills("못 먹는 것", CANNOT, selection_mode="multi", default=[x for x in p["cannot"] if x in CANNOT], key=f"cn_{k}")
@@ -195,7 +218,7 @@ def edit():
         po = st.pills("이럴 때 골라내요", PICK_OUT, selection_mode="multi", default=c["pick_out"], key=f"po_{k}")
         gd = st.pills("잘 먹는 재료", GOOD, selection_mode="multi", default=c["good"], key=f"gd_{k}")
         child = {"new_food": nf or "망설여요", "pick_out": po or [], "good": gd or []}
-    save = st.button("저장하기", type="primary", width="stretch", disabled=not name.strip())
+    save = st.button("저장하기", type="primary", width="stretch", disabled=not name.strip() or (foodguide_flow.enabled() and len(fav) > 50))
     if orig and orig["id"] != "me" and st.button(f"{orig['name']} 지우기", icon=":material/delete:", width="stretch", key="del_person"):
         save_people([x for x in s.people if x["id"] != orig["id"]])
         go("people")
@@ -203,6 +226,7 @@ def edit():
         nick = name.strip()
         new = dict(p, name=nick, relation=rel or NICK_REL.get(nick, "가족"), age=age or "", favorites=fav, likes=likes or [], avoid=avoid or [],
                    cannot=cannot or [], allergies=allergies or [], child=child,
+                   foodguide_refs={f: v for f, v in foodguide_refs.items() if f in fav},
                    sex={"엄마": "female", "어머니": "female", "아빠": "male", "아버지": "male"}.get(nick, p.get("sex")), active=True)
         if new["relation"] == "아이" and not new["child"]:
             new["child"] = {"new_food": "망설여요", "pick_out": [], "good": []}
@@ -219,7 +243,7 @@ def scan():
     s = st.session_state
     if s.pop("web_go", False) and s.get("place"):
         run_web()  # 찾으면 메뉴 화면으로 간다. 못 찾으면 아래 찍기 화면을 그대로 보여 준다
-    title("메뉴판 찍기", "예시 메뉴판을 골라 주세요." if s.get("dev") else "글씨가 다 보이게 한 장씩 찍어 주세요.")
+    title("메뉴판 찍기", "메뉴판을 골라 주세요." if s.get("dev") else "글씨가 다 보이게 한 장씩 찍어 주세요.")
     if s.get("place"):
         md(f'<div class="card sunbox small"><div><b>{E(s.place["name"])}</b>에서 찍는 메뉴판이에요.</div></div>')
     warn = s.pop("scan_warn", None)
@@ -253,13 +277,12 @@ NOT_MENU = "올린 사진이 메뉴판이 맞는지 다시 한번 확인해 주�
 
 def example_picker(where):
     """개발 버전: 사진을 찍는 대신 예시 메뉴판을 고른다 (API를 쓰지 않는다)."""
-    md('<div class="card soft small">개발 버전이에요. 사진을 읽지 않고, 전에 읽어 둔 예시 메뉴판 결과로 보여 줘요.</div>')
     for ex in demo.EXAMPLES:
         with st.container(key=f"ex_{where}_{ex['key']}"):
             c1, c2 = st.columns([1, 2], vertical_alignment="center")
             c1.image(str(ex["img"]), width="stretch")
             c2.markdown(f'<div class="name">{E(ex["title"])}</div><div class="small muted">{E(ex["sub"])}</div>', unsafe_allow_html=True)
-            if c2.button("예시 메뉴판 보기", key=f"exbtn_{where}_{ex['key']}", width="stretch"):
+            if c2.button("이 메뉴판 보기", key=f"exbtn_{where}_{ex['key']}", width="stretch"):
                 run_scan(None, None, example=ex["key"])
 
 
@@ -386,9 +409,7 @@ def menu():
     h = s.get("hurry")  # 자유식이면 같은 식당의 다른 장으로 본다
     again = {"place": {"name": h["place"], "id": h["id"]}} if h else {}
     web = scan.get("source") or {}
-    if web.get("kind") == "demo":
-        md('<div class="card soft small">개발 버전이라 이 식당의 실제 메뉴가 아니라 예시 메뉴를 보여 줘요.</div>')
-    elif web.get("kind") == "web":  # 인터넷에서 불러온 메뉴: 사진 대신 출처
+    if web.get("kind") == "web":  # 인터넷에서 불러온 메뉴: 사진 대신 출처
         where = "가게 홈페이지에서 불러온 메뉴예요." if web.get("own") else "인터넷에서 찾은 이 가게 메뉴예요."
         md(f'<div class="card small">{where} 지금 메뉴와 다를 수 있어요.'
            f'<div><a href="{E(web["url"])}" target="_blank" rel="noopener">{E(web.get("title") or web.get("site") or "메뉴 페이지")} 열기</a></div></div>')
@@ -895,7 +916,6 @@ def geo_block(key, slot=None):
     s = st.session_state
     if s.get("dev"):  # 개발 버전: 파리 루브르 근처 예시 위치 (위치를 묻지 않는다)
         ex = demo.near()
-        md(f'<div class="note">개발 버전이라 {E(ex["label"])}를 예시 위치로 써요.</div>')
         return ex["geo"]
     if s.get("geo"):
         return s.geo
