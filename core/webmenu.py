@@ -19,7 +19,8 @@ from urllib.parse import urlparse
 from . import menu2
 
 DB = Path(os.environ.get("MOSHIGO_DB", Path(__file__).parent / "data" / "moshigo.db"))
-FIND_MODEL = "claude-sonnet-5-5"  # 검색, 열기, 옮기기 (빠르고 싼 모델로 충분하다)
+FIND_MODEL = "claude-sonnet-5-5"  # 검색, 열기, 옮기기 (빠른 모드를 못 쓸 때)
+# 빠른 모드가 켜져 있으면(menu2.FAST) Opus 5.5 빠른 모드로 먼저 찾는다: 19~22초 -> 13~14초
 KEEP_FOUND = 14 * 86400           # 찾은 메뉴는 2주 기억
 KEEP_MISS = 86400                 # 못 찾음은 하루만 (가게가 홈페이지를 새로 열 수 있다)
 TIMEOUT = 70                      # 한 번 묻는 데 쓰는 최대 초
@@ -170,14 +171,24 @@ def _client():
 
 
 def ask(place, say):
-    """Claude가 검색하고 열어 본 뒤 답한다. 돌려주는 것: (답 JSON, 실제로 연 페이지들)."""
+    """Claude가 검색하고 열어 본 뒤 답한다. 돌려주는 것: (답 JSON, 실제로 연 페이지들).
+    빠른 모드로 먼저 해 보고, 막히면(한도, 미지원) 보통 모드로 다시."""
+    if menu2.FAST:
+        try:
+            return _ask(place, say, menu2.FAST_MODEL, {"speed": "fast", "betas": ["fast-mode-2026-02-01"]})
+        except Exception as e:
+            print(f"[webmenu] 빠른 모드 실패, 보통 모드로: {e!r}"[:200])
+    return _ask(place, say, FIND_MODEL, {})
+
+
+def _ask(place, say, model, extra):
     tools = [{"type": "web_fetch_20260209", "name": "web_fetch", "max_uses": FETCHES, "max_content_tokens": 20000, "allowed_callers": ["direct"]},
              {"type": "web_search_20260209", "name": "web_search", "max_uses": SEARCHES, "allowed_callers": ["direct"]}]
     messages = [{"role": "user", "content": ask_text(place)}]
     pages, msg, start = [], None, time.time()
     for _ in range(3):  # 서버 쪽 반복 한도에 걸리면(pause_turn) 이어서 묻는다
-        with _client().beta.messages.stream(model=FIND_MODEL, max_tokens=12000, system=FIND_SYSTEM, messages=messages, tools=tools,
-                                            output_config={"effort": "low", "format": {"type": "json_schema", "schema": FIND_SCHEMA}}) as stream:
+        with _client().beta.messages.stream(model=model, max_tokens=12000, system=FIND_SYSTEM, messages=messages, tools=tools,
+                                            output_config={"effort": "low", "format": {"type": "json_schema", "schema": FIND_SCHEMA}}, **extra) as stream:
             for ev in stream:
                 if ev.type == "content_block_start" and getattr(ev.content_block, "type", "") == "server_tool_use":
                     say("이 식당 메뉴를 검색하는 중이에요" if ev.content_block.name == "web_search" else "메뉴 페이지를 여는 중이에요")

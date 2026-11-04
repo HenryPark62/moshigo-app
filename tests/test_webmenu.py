@@ -158,5 +158,6 @@ def test_read_web_feeds_phase2_and_marks_source(monkeypatch):
     raw = webmenu.read_web(PLACE, menu2.DEFAULT_PEOPLE, asker=lambda p, s: (answer(GOOD), PAGES))
     assert raw["source"]["kind"] == "web" and raw["source"]["url"].endswith("/carte/")
     assert raw["is_menu"] and raw["restaurant"] == "Chez Test"
-    assert "Steak frites | 24 €" in seen_asks[0] and "Entrées" in seen_asks[0]  # 페이지에서 옮긴 묶음, 이름, 가격이 2단계로
+    asks = "\n".join(seen_asks)  # 3개씩 나눠 동시에 보내므로 순서는 정해져 있지 않다
+    assert "Steak frites | 24 €" in asks and "Entrées" in asks  # 페이지에서 옮긴 묶음, 이름, 가격이 2단계로
     assert webmenu.read_web(dict(PLACE, name="None", lat=2.0), menu2.DEFAULT_PEOPLE, asker=lambda p, s: (None, [])) is None

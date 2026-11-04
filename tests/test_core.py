@@ -166,3 +166,15 @@ def test_staff_asks():
     assert menu2._bare({"section_orig": "", "name_orig": "x", "price": ""})["staff_asks"] == []
     item = menu2._schema(["나"])["properties"]["items"]["items"]
     assert "staff_asks" in item["required"] and item["properties"]["staff_asks"]["items"]["additionalProperties"] is False
+
+
+def test_streamed_lines_parser_handles_split_chunks():
+    from core.menu2 import _Lines
+    src = json.dumps({"is_menu": True, "restaurant": 'A "q" {x}', "menu_language": "프랑스어", "language_code": "fr",
+                      "lines": [{"section_orig": "S", "name_orig": 'Croque {m} "x"', "price": "9", "note": ""},
+                                {"section_orig": "S", "name_orig": "B", "price": "1", "note": "a}b"}]}, ensure_ascii=False)
+    for step in (1, 5, 13):
+        p, out = _Lines(), []
+        for i in range(0, len(src), step):
+            out += p.feed(src[i:i + step])
+        assert [o["name_orig"] for o in out] == ['Croque {m} "x"', "B"]

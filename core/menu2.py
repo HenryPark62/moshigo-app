@@ -4,8 +4,10 @@ Claude는 메뉴판을 읽고 옮기며, 메뉴마다 맛 수치와 사람별 �
 알레르기와 못 먹는 것은 코드에서 다시 확인해 반드시 '피하기'로 만든다. 닮은꼴과 조합은 코드로 계산한다.
 """
 import base64
+import contextlib
 import itertools
 import json
+import os
 import re
 from pathlib import Path
 
@@ -148,9 +150,14 @@ LIST_SCHEMA = {"type": "object", "properties": {
 LIST_SYSTEM = """메뉴판에 적힌 메뉴를 위에서 아래, 왼쪽에서 오른쪽 순서대로 빠짐없이 적는다. 음료도 적는다.
 요리 이름은 원래 글자 그대로(악센트, 한자, 가나 포함) 적고, 번역하지 않는다. 흐려서 못 읽은 줄은 name_orig에 읽은 만큼 적는다.
 메뉴판이 아니면 is_menu=false, lines는 빈 배열."""
-CHUNK = 6         # 한 번에 설명을 만드는 메뉴 수 (나눠서 동시에 만든다)
+CHUNK = 3         # 한 번에 설명을 만드는 메뉴 수. 작게 나눠 동시에 만들수록 빨리 끝난다 (6개씩 36초 -> 3개씩 18초, 25개 메뉴판)
+PARALLEL = 20     # 동시에 보내는 2단계 요청 수 (메뉴 60개 / 3)
 LIST_MODEL = "claude-opus-5-5"     # 1단계: 메뉴 이름 빠짐없이 (사진 읽기는 가장 정확한 모델로)
-DESC_MODEL = "claude-sonnet-5-5"   # 2단계: 글자만 보고 설명과 판정 (빠른 모델)
+DESC_MODEL = "claude-sonnet-5-5"   # 2단계: 글자만 보고 설명과 판정 (빠른 모드를 못 쓸 때)
+# 빠른 모드(Opus 5.5 speed=fast): 출력이 두 배 넘게 빨라서 메뉴 25개 2단계가 19.5초 -> 8.9초. 값은 메뉴판 한 장에 약 1달러.
+# MOSHIGO_FAST=0이면 끈다. 빠른 모드가 막히면(한도, 미지원) 그 요청은 원래 모델로 다시 보낸다.
+FAST = os.environ.get("MOSHIGO_FAST", "1") != "0"
+FAST_MODEL = "claude-opus-5-5"
 MAX_ITEMS = 60    # 너무 긴 메뉴판은 앞쪽부터 이만큼만
 
 
@@ -161,14 +168,26 @@ def _client():
 
 
 def _stream(system, content, schema, max_tokens, model=LIST_MODEL):
+    """구조화된 JSON 한 번 받기. 빠른 모드가 켜져 있으면 Opus 빠른 모드로 먼저 보내고, 안 되면 model로."""
+    if FAST:
+        try:
+            return _stream_once(system, content, schema, max_tokens, FAST_MODEL, fast=True)
+        except Exception as e:
+            if type(e).__name__ == "RuntimeError":  # 출력 한도, 거절은 모델을 바꿔도 같다
+                raise
+            print(f"[menu2] 빠른 모드 실패, 보통 모드로: {e!r}"[:200])
+    return _stream_once(system, content, schema, max_tokens, model)
+
+
+def _stream_once(system, content, schema, max_tokens, model, fast=False):
+    extra = {"speed": "fast", "betas": ["fast-mode-2026-02-01"]} if fast else {"betas": ["server-side-fallback-2026-07-01"], "fallbacks": "default"}
     with _client().beta.messages.stream(
         model=model,
         max_tokens=max_tokens,
         system=system,
         messages=[{"role": "user", "content": content}],
         output_config={"effort": "low", "format": {"type": "json_schema", "schema": schema}},
-        betas=["server-side-fallback-2026-07-01"],
-        fallbacks="default",
+        **extra,
     ) as stream:
         response = stream.get_final_message()
     if response.stop_reason in ("refusal", "max_tokens"):
@@ -177,52 +196,146 @@ def _stream(system, content, schema, max_tokens, model=LIST_MODEL):
 
 
 def _read(source, people, progress=None):
-    """1단계: 메뉴 이름 목록만 빠르게 뽑는다. 2단계: 12개씩 나눠 동시에 번역, 설명, 판정을 만든다.
-    메뉴가 많은 메뉴판(수십 개)도 출력 한도에 걸리지 않고, 걸리는 시간도 메뉴 수와 덜 상관있다."""
+    """1단계(메뉴 이름 목록)를 받아 오는 동안, 이름이 3개 모일 때마다 바로 2단계(번역, 설명, 판정)를 동시에 시작한다.
+    두 단계를 겹쳐서 돌리므로 전체 시간은 대략 '1단계 시간 + 마지막 묶음 하나'가 된다."""
     say = progress or (lambda *_: None)
     say("메뉴 이름을 찾는 중이에요")
-    head = _stream(LIST_SYSTEM, source + [{"type": "text", "text": "이 메뉴판의 메뉴를 순서대로 적어 주세요."}], LIST_SCHEMA, 16000, LIST_MODEL)
-    return describe_list(head, people, progress)
+    content = source + [{"type": "text", "text": "이 메뉴판의 메뉴를 순서대로 적어 주세요."}]
+    extra = {"speed": "fast", "betas": ["fast-mode-2026-02-01"]} if FAST else {"betas": ["server-side-fallback-2026-07-01"], "fallbacks": "default"}
+    with _Describer(people, say) as d:
+        with _client().beta.messages.stream(
+            model=LIST_MODEL, max_tokens=16000, system=LIST_SYSTEM, messages=[{"role": "user", "content": content}],
+            output_config={"effort": "low", "format": {"type": "json_schema", "schema": LIST_SCHEMA}}, **extra,
+        ) as stream:
+            lines = _Lines()
+            for text in stream.text_stream:
+                for ln in lines.feed(text):
+                    if not d.lang:  # 메뉴판 언어는 lines보다 먼저 나온다
+                        m = re.search(r'"menu_language"\s*:\s*"([^"]*)"', lines.buf)
+                        d.lang = m.group(1) if m else ""
+                    d.add(ln)
+            response = stream.get_final_message()
+        if response.stop_reason in ("refusal", "max_tokens"):
+            raise RuntimeError(f"llm stop_reason={response.stop_reason}")
+        head = json.loads(next(b.text for b in response.content if b.type == "text"))
+        return d.finish(head)
 
 
-def describe_list(head, people, progress=None):
-    """2단계만: 이미 뽑은 메뉴 목록(LIST_SCHEMA 모양: restaurant, menu_language, language_code, lines)에
-    번역, 설명, 사람별 판정을 붙인다. 사진(_read)과 인터넷에서 불러온 메뉴(webmenu)가 같이 쓴다."""
-    from concurrent.futures import ThreadPoolExecutor
+class _Lines:
+    """1단계 JSON이 흘러 들어오는 대로 "lines" 배열에서 다 닫힌 메뉴 객체를 하나씩 꺼낸다."""
 
-    say = progress or (lambda *_: None)
-    lines = head.get("lines") or []
-    if not head.get("is_menu", True) or not lines:
-        return {**{k: head.get(k, "") for k in ("restaurant", "menu_language", "language_code")}, "is_menu": False, "items": []}
-    cut = len(lines) > MAX_ITEMS
-    lines = lines[:MAX_ITEMS]
-    groups = [lines[i:i + CHUNK] for i in range(0, len(lines), CHUNK)]
-    say(f"메뉴 {len(lines)}개를 찾았어요. 무슨 맛인지 적는 중이에요")
-    system = SYSTEM.format(people="\n".join("- " + describe(p) for p in people))
-    schema = _schema([p["name"] for p in people])
+    def __init__(self):
+        self.buf, self.pos, self.start, self.depth, self.q, self.esc, self.obj = "", 0, None, 0, False, False, None
 
-    def one(group):
-        listing = "\n".join(f"{i + 1:02d} | {g['section_orig']} | {g['name_orig']} | {g['price']}" + (f" | {g['note']}" if g["note"] else "")
+    def feed(self, text):
+        self.buf += text
+        out = []
+        if self.start is None:
+            k = self.buf.find('"lines"')
+            if k < 0:
+                return out
+            b = self.buf.find("[", k)
+            if b < 0:
+                return out
+            self.start = self.pos = b + 1
+        while self.pos < len(self.buf):
+            c = self.buf[self.pos]
+            if self.q:
+                if self.esc:
+                    self.esc = False
+                elif c == "\\":
+                    self.esc = True
+                elif c == '"':
+                    self.q = False
+            elif c == '"':
+                self.q = True
+            elif c == "{":
+                if self.depth == 0:
+                    self.obj = self.pos
+                self.depth += 1
+            elif c == "}":
+                self.depth -= 1
+                if self.depth == 0 and self.obj is not None:
+                    with contextlib.suppress(ValueError):  # 깨진 조각은 건너뛰고 finish()에서 마저 보낸다
+                        out.append(json.loads(self.buf[self.obj:self.pos + 1]))
+                    self.obj = None
+            self.pos += 1
+        return out
+
+
+class _Describer:
+    """2단계: 메뉴를 CHUNK개씩 받아 바로 동시에 설명을 만든다. finish()에서 순서대로 모은다."""
+
+    def __init__(self, people, say):
+        from concurrent.futures import ThreadPoolExecutor
+
+        self.people, self.say, self.lang = people, say, ""
+        self.system = SYSTEM.format(people="\n".join("- " + describe(p) for p in people))
+        self.schema = _schema([p["name"] for p in people])
+        self.pool = ThreadPoolExecutor(PARALLEL)
+        self.jobs, self.pending, self.n = [], [], 0
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.pool.shutdown(wait=False, cancel_futures=True)
+
+    def add(self, line):
+        if self.n >= MAX_ITEMS:
+            return
+        self.n += 1
+        self.pending.append(line)
+        if len(self.pending) >= CHUNK:
+            self._send()
+        if self.n % 3 == 0:
+            self.say(f"메뉴 {self.n}개를 찾았어요. 무슨 맛인지 적는 중이에요")
+
+    def _send(self):
+        if self.pending:
+            self.jobs.append(self.pool.submit(self._one, self.pending))
+            self.pending = []
+
+    def _one(self, group):
+        listing = "\n".join(f"{i + 1:02d} | {g['section_orig']} | {g['name_orig']} | {g['price']}" + (f" | {g['note']}" if g.get("note") else "")
                             for i, g in enumerate(group))
-        ask = [{"type": "text", "text": f"{lang} 메뉴판에서 읽은 아래 {len(group)}개 메뉴만, 이 순서 그대로 하나씩 옮기고 판정해 주세요. "
+        ask = [{"type": "text", "text": f"{self.lang} 메뉴판에서 읽은 아래 {len(group)}개 메뉴만, 이 순서 그대로 하나씩 옮기고 판정해 주세요. "
                                          f"다른 메뉴는 넣지 마세요.\n(번호 | 묶음 | 이름 | 가격 | 메뉴판 설명)\n{listing}"}]
+        err = None
         for _ in range(2):  # 한 번 실패하면 한 번 더
             try:
-                return _stream(system, ask, schema, 8000, DESC_MODEL).get("items") or []
-            except Exception as e:  # 한 번 더 해 보고, 그래도 안 되면 이 묶음은 이름만 남긴다
+                return _stream(self.system, ask, self.schema, 8000, DESC_MODEL).get("items") or []
+            except Exception as e:  # 그래도 안 되면 이 묶음은 이름만 남긴다
                 err = e
         print(f"[menu2] 묶음 실패: {err!r}")
         return [_bare(g) for g in group]
 
-    lang = head.get("menu_language") or ""
-    with ThreadPoolExecutor(min(10, len(groups))) as pool:
-        parts = list(pool.map(one, groups))
-    items = [it for part in parts for it in part]
-    out = {"is_menu": True, "restaurant": head.get("restaurant", ""), "menu_language": head.get("menu_language", ""),
-           "language_code": head.get("language_code", ""), "items": items}
-    if cut:
-        out["note"] = f"메뉴가 많아서 앞쪽 {MAX_ITEMS}개만 옮겼어요. 나머지는 해당 부분을 가까이서 다시 찍어 주세요."
-    return out
+    def finish(self, head):
+        """1단계 전체 결과(head)로 마무리. 흘려받지 못한 메뉴가 있으면(파싱 실패 등) 여기서 마저 보낸다."""
+        lines = head.get("lines") or []
+        if not head.get("is_menu", True) or not lines:
+            return {**{k: head.get(k, "") for k in ("restaurant", "menu_language", "language_code")}, "is_menu": False, "items": []}
+        self.lang = head.get("menu_language") or ""
+        for ln in lines[self.n + len(self.pending):]:  # 흘려받은 수보다 많으면 나머지를 마저
+            self.add(ln)
+        self._send()
+        self.say(f"메뉴 {min(len(lines), MAX_ITEMS)}개를 찾았어요. 무슨 맛인지 적는 중이에요")
+        items = [it for job in self.jobs for it in job.result()]
+        out = {"is_menu": True, "restaurant": head.get("restaurant", ""), "menu_language": head.get("menu_language", ""),
+               "language_code": head.get("language_code", ""), "items": items}
+        if len(lines) > MAX_ITEMS:
+            out["note"] = f"메뉴가 많아서 앞쪽 {MAX_ITEMS}개만 옮겼어요. 나머지는 해당 부분을 가까이서 다시 찍어 주세요."
+        return out
+
+
+def describe_list(head, people, progress=None):
+    """2단계만: 이미 뽑은 메뉴 목록(LIST_SCHEMA 모양: restaurant, menu_language, language_code, lines)에
+    번역, 설명, 사람별 판정을 붙인다. 인터넷에서 불러온 메뉴(webmenu)가 쓴다."""
+    say = progress or (lambda *_: None)
+    if head.get("is_menu", True) and head.get("lines"):
+        say(f"메뉴 {min(len(head['lines']), MAX_ITEMS)}개를 찾았어요. 무슨 맛인지 적는 중이에요")
+    with _Describer(people, say) as d:
+        return d.finish(head)
 
 
 def _bare(g):
