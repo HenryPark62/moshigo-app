@@ -1,0 +1,36 @@
+[
+  {
+    "input_name": "Hausgemachte Grüne Sauce",
+    "profile": {
+      "name": "그뤼네 소스",
+      "original_name": "Hausgemachte Grüne Sauce",
+      "main_ingredients": [
+        "허브",
+        "마요네즈",
+        "사워크림"
+      ],
+      "cooking_methods": [
+        "혼합"
+      ],
+      "status": "known"
+    }
+  },
+  {
+    "input_name": "Allgäuer Kässpätzle",
+    "profile": {
+      "name": "알고이어 케스페츨레",
+      "original_name": "Allgäuer Kässpätzle",
+      "main_ingredients": [
+        "밀가루",
+        "계란",
+        "치즈",
+        "양파"
+      ],
+      "cooking_methods": [
+        "삶기",
+        "볶음"
+      ],
+      "status": "known"
+    }
+  }
+]
