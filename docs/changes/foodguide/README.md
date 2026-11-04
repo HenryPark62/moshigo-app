@@ -1,6 +1,6 @@
 # Food Guide 연동 화면 비교
 
-최신 추가 변경: [상위 두 메뉴의 OpenAI 생성 이미지](../generated-top-menus/README.md).
+최신 추가 변경: [식사류 우선 추천](../meal-recommendations/README.md).
 
 현재 메뉴 목록은 [추천 강조·음식 이미지·원화 가격의 최신 비교](../menu-recommendations/README.md)를 확인하세요. 아래 26개 사례는 최초 API 연동 시점의 기록입니다.
 
