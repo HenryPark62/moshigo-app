@@ -7,6 +7,7 @@
 import os
 import threading
 import time
+import unicodedata
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 
 import httpx
@@ -235,6 +236,12 @@ def _nominatim(q, lat, lng, d):
     return r.json()
 
 
+def _nomi_id(x):
+    """Nominatim 결과의 원본 번호. 점(node)은 번호 그대로, 건물(way)과 묶음(relation)은 앞에 w, r을 붙인다 (종류가 다르면 번호가 겹칠 수 있다)."""
+    t = (x.get("osm_type") or "node")[0]
+    return x.get("osm_id") if t == "n" else f"{t}{x.get('osm_id')}"
+
+
 def fetch_nominatim(lat, lng, radius=900):
     d = radius / 111000 * 1.1
     out, seen = [], set()
@@ -242,10 +249,10 @@ def fetch_nominatim(lat, lng, radius=900):
         for x in _nominatim(q, lat, lng, d):
             nd, et = x.get("namedetails") or {}, x.get("extratags") or {}
             name = x.get("name") or nd.get("name")
-            if not name or x.get("osm_id") in seen:
+            if not name or _nomi_id(x) in seen:
                 continue
-            seen.add(x.get("osm_id"))
-            out.append({"type": "nominatim", "id": x.get("osm_id"), "lat": float(x["lat"]), "lon": float(x["lon"]),
+            seen.add(_nomi_id(x))
+            out.append({"type": "nominatim", "id": _nomi_id(x), "lat": float(x["lat"]), "lon": float(x["lon"]),
                         "tags": {"name": name, "name:ko": nd.get("name:ko", ""), "amenity": x.get("type", "restaurant"),
                                  "cuisine": et.get("cuisine", ""), "opening_hours": et.get("opening_hours", ""),
                                  **web_tags(et), "addr": x.get("display_name", "")}})
@@ -341,8 +348,60 @@ def to_places(elements, lat, lng):
             "price": "", "note": ("영업시간: " + hours_ko(t["opening_hours"])) if t.get("opening_hours") else "", "url": t.get("url", ""),
             "dishes": [dish(f) for f in foods[:4]], "distance_m": round(_dist(lat, lng, la, lo)),
             "website": site_of(t)[0], "menu_url": site_of(t)[1], "address": address_of(t),
+            "_tags": sum(1 for v in t.values() if v),  # 같은 가게가 둘일 때 어느 쪽 정보가 많은지 (dedupe_places에서 지운다)
         })
-    return out
+    return dedupe_places(out)
+
+
+# ---------- 같은 식당 한 번만 ----------
+# OpenStreetMap에는 같은 가게가 점(입구)과 건물 모양으로 따로 올라오거나, 여러 검색어 결과에 함께 나오는 일이 있다.
+# 이름이 같고 아주 가까우면 한 곳으로 친다. 같은 체인의 다른 지점은 보통 수백 m 떨어져 있어서 그대로 둔다.
+SAME_PLACE_M = 60  # 이름이 같은 두 곳이 이 거리(m) 안이면 같은 식당
+FILL = ("orig_name", "note", "url", "website", "menu_url", "address")  # 남기는 쪽에 비어 있으면 버리는 쪽 값으로 채운다
+
+
+def name_key(s):
+    """비교용 이름: 대소문자, 라틴 글자 악센트, 문장 부호, 띄어쓰기를 무시한다. "McDonald’s" == "mcdonalds", "Café" == "cafe".
+    태국어 모음 같은 다른 글자의 결합 부호는 뜻이 달라지므로 그대로 둔다."""
+    out = []
+    for c in unicodedata.normalize("NFKD", s or ""):
+        if unicodedata.combining(c) and out and ord(out[-1]) < 0x250:
+            continue
+        out.append(c)
+    s = unicodedata.normalize("NFC", "".join(out)).casefold()
+    return "".join(c for c in s if c.isalnum() or unicodedata.category(c)[0] == "M")
+
+
+def _keys(p):
+    return {k for k in (name_key(p.get("name")), name_key(p.get("orig_name"))) if k}
+
+
+def _richness(p):
+    """정보가 많은 쪽을 남긴다: 영업시간, 메뉴 페이지, 홈페이지, 대표 메뉴, 주소 순. 같으면 태그가 많은 쪽."""
+    return (3 * bool(p.get("note")) + 3 * bool(p.get("menu_url")) + 2 * bool(p.get("website")) + 2 * bool(p.get("dishes"))
+            + bool(p.get("address")) + bool(p.get("url")) + bool(p.get("orig_name")), p.get("_tags", 0))
+
+
+def _same(a, b):
+    if a["id"] == b["id"]:
+        return True
+    return bool(_keys(a) & _keys(b)) and _dist(a["lat"], a["lng"], b["lat"], b["lng"]) <= SAME_PLACE_M
+
+
+def dedupe_places(places):
+    """같은 식당이 여러 번 나오지 않게 한다. 순서는 처음 나온 자리를 따르고, 정보가 많은 기록을 남긴다.
+    id가 같으면 같은 곳, 이름(한국어 이름이나 원래 이름)이 같고 SAME_PLACE_M 안이면 같은 곳. 이름이 다르면 합치지 않는다."""
+    kept = []
+    for p in places:
+        i = next((i for i, k in enumerate(kept) if _same(k, p)), None)
+        if i is None:
+            kept.append(dict(p))
+            continue
+        keep, drop = (p, kept[i]) if _richness(p) > _richness(kept[i]) else (kept[i], p)
+        kept[i] = {**keep, **{f: drop[f] for f in FILL if not keep.get(f) and drop.get(f) and drop[f] != keep.get("name")}}
+    for k in kept:
+        k.pop("_tags", None)
+    return kept
 
 
 # ---------- 주변 둘러볼 곳 (볼거리, 공원, 문화, 쇼핑, 여가) ----------
@@ -577,10 +636,10 @@ def places_from_browser(results, lat, lng, radius=900):
         for x in res:
             nd, et = x.get("namedetails") or {}, x.get("extratags") or {}
             name = x.get("name") or nd.get("name")
-            if not name or x.get("osm_id") in seen or x.get("category") != "amenity":
+            if not name or _nomi_id(x) in seen or x.get("category") != "amenity":
                 continue
-            seen.add(x.get("osm_id"))
-            out.append({"type": "nominatim", "id": x.get("osm_id"), "lat": float(x["lat"]), "lon": float(x["lon"]),
+            seen.add(_nomi_id(x))
+            out.append({"type": "nominatim", "id": _nomi_id(x), "lat": float(x["lat"]), "lon": float(x["lon"]),
                         "tags": {"name": name, "name:ko": nd.get("name:ko", ""), "amenity": x.get("type", "restaurant"),
                                  "cuisine": et.get("cuisine", ""), "opening_hours": et.get("opening_hours", ""),
                                  **web_tags(et), "addr": x.get("display_name", "")}})
