@@ -1,0 +1,248 @@
+{
+  "phase": "before",
+  "source_commit": "c9309485e3552c3be344d84d56fa79e3e281fe37",
+  "playwright_version": "1.57.0",
+  "fixture": "core/data/demo_paris.json",
+  "live_provider_evidence": false,
+  "records": [
+    {
+      "id": "people",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1446,
+      "page_errors": []
+    },
+    {
+      "id": "edit-adult",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2078,
+      "page_errors": []
+    },
+    {
+      "id": "edit-child",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2416,
+      "page_errors": []
+    },
+    {
+      "id": "scan",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 932,
+      "page_errors": []
+    },
+    {
+      "id": "menu-translated",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 4380,
+      "page_errors": []
+    },
+    {
+      "id": "menu-original",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 5776,
+      "page_errors": []
+    },
+    {
+      "id": "menu-people",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 3472,
+      "page_errors": []
+    },
+    {
+      "id": "dish",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2825,
+      "page_errors": []
+    },
+    {
+      "id": "dish-details",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 3245,
+      "page_errors": []
+    },
+    {
+      "id": "dish-allergy",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2976,
+      "page_errors": []
+    },
+    {
+      "id": "combo-all",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1383,
+      "page_errors": []
+    },
+    {
+      "id": "combo-local",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1411,
+      "page_errors": []
+    },
+    {
+      "id": "combo-fast",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1383,
+      "page_errors": []
+    },
+    {
+      "id": "order",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2920,
+      "page_errors": []
+    },
+    {
+      "id": "order-large",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 3113,
+      "page_errors": []
+    },
+    {
+      "id": "survey",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 998,
+      "page_errors": []
+    },
+    {
+      "id": "simple-scan",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 932,
+      "page_errors": []
+    },
+    {
+      "id": "simple-menu",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2441,
+      "page_errors": []
+    },
+    {
+      "id": "simple-dish",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 932,
+      "page_errors": []
+    },
+    {
+      "id": "simple-order-empty",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 932,
+      "page_errors": []
+    },
+    {
+      "id": "simple-order",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1002,
+      "page_errors": []
+    },
+    {
+      "id": "simple-dish-avoid",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 932,
+      "page_errors": []
+    },
+    {
+      "id": "edit-parent",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 2150,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "menu-web",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 4492,
+      "page_errors": [],
+      "controlled_provider_state": null
+    },
+    {
+      "id": "processing",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1713,
+      "page_errors": [],
+      "controlled_provider_state": "processing"
+    },
+    {
+      "id": "provider-error",
+      "viewport": [
+        430,
+        932
+      ],
+      "full_height": 1754,
+      "page_errors": [],
+      "controlled_provider_state": "provider-error"
+    }
+  ],
+  "source_dirty": false
+}

@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "entries": {
+    "6150ec9dfa6fe4281c24fb94e6109db76a72f001c666a1ae65f45488e3533915": {
+      "descriptor_hash": "92acb0aa70582e2cb1bd2b6004f9a1ec6d3c665e5c9d80f993550742615bac7d",
+      "descriptor": {
+        "name": "그뤼네 소스",
+        "original_name": "Hausgemachte Grüne Sauce",
+        "ingredients": [
+          "허브",
+          "마요네즈",
+          "사워크림"
+        ],
+        "cooking_methods": [
+          "혼합"
+        ]
+      },
+      "model": "gpt-image-1",
+      "prompt_version": "foodguide-stage3-v1",
+      "quality": "low",
+      "size": "1024x1024",
+      "output_format": "png",
+      "state": "uncertain",
+      "created_at": "2026-11-04T06:09:25+00:00",
+      "completed_at": "2026-11-04T06:09:26+00:00",
+      "error": "API가 요청을 처리하지 못했습니다. 모델 설정과 서비스 상태를 확인해 주세요."
+    },
+    "e7f5f781be56bd5e2943395f7f8d1d04aad7625d44ab3e7c2ef1070e965781fe": {
+      "descriptor_hash": "e47fe449666e9c7cebc7627ffbcf24ff493ce9a1848d531ecb8b115e42fbf76f",
+      "descriptor": {
+        "name": "알고이어 케스페츨레",
+        "original_name": "Allgäuer Kässpätzle",
+        "ingredients": [
+          "밀가루",
+          "계란",
+          "치즈",
+          "양파"
+        ],
+        "cooking_methods": [
+          "삶기",
+          "볶음"
+        ]
+      },
+      "model": "gpt-image-1",
+      "prompt_version": "foodguide-stage3-v1",
+      "quality": "low",
+      "size": "1024x1024",
+      "output_format": "png",
+      "state": "uncertain",
+      "created_at": "2026-11-04T06:09:26+00:00",
+      "completed_at": "2026-11-04T06:09:27+00:00",
+      "error": "API가 요청을 처리하지 못했습니다. 모델 설정과 서비스 상태를 확인해 주세요."
+    },
+    "2946dcfa96114abf9bf3eaba9673c6ed1f0fe804bab59f28860e7a7d83e91744": {
+      "descriptor_hash": "92acb0aa70582e2cb1bd2b6004f9a1ec6d3c665e5c9d80f993550742615bac7d",
+      "descriptor": {
+        "name": "그뤼네 소스",
+        "original_name": "Hausgemachte Grüne Sauce",
+        "ingredients": [
+          "허브",
+          "마요네즈",
+          "사워크림"
+        ],
+        "cooking_methods": [
+          "혼합"
+        ]
+      },
+      "model": "gpt-image-2-2026-04-21",
+      "prompt_version": "foodguide-stage3-v1",
+      "quality": "low",
+      "size": "1024x1024",
+      "output_format": "png",
+      "state": "completed",
+      "created_at": "2026-11-04T06:11:44+00:00",
+      "file": "2946dcfa96114abf9bf3eaba9673c6ed1f0fe804bab59f28860e7a7d83e91744.png",
+      "sha256": "fe3df643a5f85d3312d1ad186e5395b5ced387cfc40493e585d3ded718eb2bc0",
+      "completed_at": "2026-11-04T06:12:03+00:00"
+    },
+    "08e0adc7ad5822b3ac430405a786ebb34060bb04dd35e5efc786fc7b725d1443": {
+      "descriptor_hash": "e47fe449666e9c7cebc7627ffbcf24ff493ce9a1848d531ecb8b115e42fbf76f",
+      "descriptor": {
+        "name": "알고이어 케스페츨레",
+        "original_name": "Allgäuer Kässpätzle",
+        "ingredients": [
+          "밀가루",
+          "계란",
+          "치즈",
+          "양파"
+        ],
+        "cooking_methods": [
+          "삶기",
+          "볶음"
+        ]
+      },
+      "model": "gpt-image-2-2026-04-21",
+      "prompt_version": "foodguide-stage3-v1",
+      "quality": "low",
+      "size": "1024x1024",
+      "output_format": "png",
+      "state": "completed",
+      "created_at": "2026-11-04T06:12:03+00:00",
+      "file": "08e0adc7ad5822b3ac430405a786ebb34060bb04dd35e5efc786fc7b725d1443.png",
+      "sha256": "a7f8d8b768971bb2754985258b842264dba6ebd696480bb224cc680c6768f7b0",
+      "completed_at": "2026-11-04T06:12:17+00:00"
+    },
+    "f8a714b6c2a2971d2a844448bcc48adca50546c904773445848f9700df9c6a63": {
+      "descriptor_hash": "46d9acf7f2075670b44d6d827dae98314baa428744241d42b565f0dad00f4340",
+      "descriptor": {
+        "name": "셀러리 슈니첼",
+        "original_name": "Sellerie-Schnitzel",
+        "ingredients": [
+          "셀러리",
+          "밀가루",
+          "계란",
+          "빵가루"
+        ],
+        "cooking_methods": [
+          "튀김"
+        ]
+      },
+      "model": "gpt-image-2-2026-04-21",
+      "prompt_version": "foodguide-stage3-v1",
+      "quality": "low",
+      "size": "1024x1024",
+      "output_format": "png",
+      "state": "completed",
+      "created_at": "2026-11-04T06:24:55+00:00",
+      "file": "f8a714b6c2a2971d2a844448bcc48adca50546c904773445848f9700df9c6a63.png",
+      "sha256": "d6fde2ff6a18c4efc4bde9290a769eb314b7f38bcab45a9a5499bd43904309b7",
+      "completed_at": "2026-11-04T06:25:09+00:00"
+    }
+  }
+}
