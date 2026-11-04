@@ -47,6 +47,14 @@ background:var(--surface)!important;color:var(--ink)!important;text-decoration:n
 .top{display:flex;align-items:center;justify-content:space-between;padding:10px 0 6px;border-bottom:1px solid var(--hair);margin:0 -16px;padding-left:12px;padding-right:12px;background:var(--surface)}
 .top .brand{display:flex;align-items:center;gap:6px;font-family:var(--display);font-size:24px}
 .pill{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--tint-sun);font-size:12px;font-weight:700}
+/* 개발 버전 예시 메뉴판 고르기: 작은 사진 + 이름과 버튼 (휴대폰에서도 한 줄) */
+[class*="st-key-ex_"]{background:var(--surface);border:1px solid var(--hair);border-radius:16px;padding:10px}
+[class*="st-key-ex_"] [data-testid="stHorizontalBlock"]{flex-wrap:nowrap!important;gap:12px!important;align-items:center}
+[class*="st-key-ex_"] [data-testid="stColumn"]:first-child{flex:0 0 84px!important;min-width:84px!important;max-width:84px!important}
+[class*="st-key-ex_"] [data-testid="stColumn"]:last-child{flex:1 1 auto!important;min-width:0!important}
+[class*="st-key-ex_"] img{height:96px!important;object-fit:cover;border-radius:10px}
+[class*="st-key-ex_"] [data-testid="stImageToolbar"],[class*="st-key-ex_"] [data-testid="StyledFullScreenButton"]{display:none!important}
+.top .pill.dev{background:var(--tint-warn);color:var(--warn);margin-left:auto;margin-right:6px}
 .pill.ink{background:var(--ink);color:#fff}
 .h1{font-family:var(--display);font-size:26px;line-height:1.3;margin:10px 0 4px}
 .h2d{font-family:var(--display);font-size:22px;line-height:1.3}

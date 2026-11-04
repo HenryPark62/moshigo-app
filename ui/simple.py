@@ -97,13 +97,15 @@ def scan():
     warn = s.pop("scan_warn", None)
     if warn:
         st.warning(warn)
-    up = st.file_uploader("메뉴판 사진", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed", key="simple_up")
-    if up is not None:
-        st.image(up.getvalue(), width="stretch")
-        if st.button("이 사진으로 읽기", type="primary", width="stretch", key="simple_read"):
-            run_scan(up.getvalue(), up.type or "image/jpeg")
-    if s.get("dev") and st.button("예시 메뉴판 보기 (개발 확인용)", width="stretch", key="simple_demo"):
-        run_scan(None, None)
+    if s.get("dev"):
+        from .screens import example_picker
+        example_picker("simple")
+    else:
+        up = st.file_uploader("메뉴판 사진", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed", key="simple_up")
+        if up is not None:
+            st.image(up.getvalue(), width="stretch")
+            if st.button("이 사진으로 읽기", type="primary", width="stretch", key="simple_read"):
+                run_scan(up.getvalue(), up.type or "image/jpeg")
     md(f'<div class="sec">{E(p["name"])} 입맛</div>' + tastes(p))
     escape_button()
 

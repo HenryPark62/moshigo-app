@@ -5,7 +5,7 @@ import os
 import streamlit as st
 import streamlit.components.v1 as components
 
-from core import burden, freemeal, menu2, nearby, ocr, order, plan, reviews, store, webmenu, world
+from core import burden, demo, freemeal, menu2, nearby, ocr, order, plan, reviews, store, webmenu, world
 from .common import ALLERGENS, LOADER_CSS, E, VCLASS, VMARK, avatar, badges, chips, ghost_avatar, go, josa, level, loader, marks, md, momo, nav
 
 RELATIONS = ["나", "부모님", "아이", "배우자", "친구", "가족"]
@@ -17,7 +17,6 @@ ALLERGY = ["견과류", "우유", "달걀", "밀가루", "갑각류", "조개류
 NEW_FOOD = ["잘 먹어요", "망설여요", "싫어해요"]
 PICK_OUT = ["채소가 보이면", "매우면", "향이 세면", "모양이 낯설면"]
 GOOD = ["치즈", "감자", "빵", "밥", "면", "고기", "달걀"]
-DEMO_IMG = menu2.DATA / "paris_menu.jpg"
 EXAMPLE_IDS = {"mom", "dad", "jiwoo"}  # 예전 버전이 넣어 두던 예시 가족
 
 
@@ -86,8 +85,11 @@ def start():
     md(f'<div class="hero">{momo(84)}<div class="h1">처음 보는 메뉴판,<br>무슨 맛인지 먼저 알고 시켜요</div>'
        '<div class="sub">같이 먹는 사람마다, 아는 음식에 빗대어</div></div>')
     s = st.session_state
-    md('<div class="sec">오늘 누구랑 먹어요?</div>')
     with st.container(key="choices"):
+        md('<div class="sec">어떤 버전으로 볼까요?</div>')
+        st.button("**실제 버전**  \n지금 위치와 직접 찍은 메뉴판으로", type="secondary" if s.get("dev") else "primary", width="stretch", on_click=_set, kwargs={"dev": False})
+        st.button("**개발 버전**  \n예시 지도와 예시 메뉴판으로", type="primary" if s.get("dev") else "secondary", width="stretch", on_click=_set, kwargs={"dev": True})
+        md('<div class="sec">오늘 누구랑 먹어요?</div>')
         st.button("**혼자**  \n내 입맛만", type="primary" if s.get("alone") is True else "secondary", width="stretch", on_click=_set, kwargs={"alone": True})
         st.button("**여럿이**  \n가족, 친구, 아이까지 한 사람씩", type="primary" if s.get("alone") is False else "secondary", width="stretch", on_click=_set, kwargs={"alone": False})
         md('<div class="sec">어떤 여행이에요?</div>')
@@ -217,7 +219,7 @@ def scan():
     s = st.session_state
     if s.pop("web_go", False) and s.get("place"):
         run_web()  # 찾으면 메뉴 화면으로 간다. 못 찾으면 아래 찍기 화면을 그대로 보여 준다
-    title("메뉴판 찍기", "글씨가 다 보이게 한 장씩 찍어 주세요.")
+    title("메뉴판 찍기", "예시 메뉴판을 골라 주세요." if s.get("dev") else "글씨가 다 보이게 한 장씩 찍어 주세요.")
     if s.get("place"):
         md(f'<div class="card sunbox small"><div><b>{E(s.place["name"])}</b>에서 찍는 메뉴판이에요.</div></div>')
     warn = s.pop("scan_warn", None)
@@ -225,13 +227,14 @@ def scan():
         st.warning(warn)
         if s.get("dev") and nearby.ERRORS:
             md('<div class="note">[dev] ' + E(" / ".join(nearby.ERRORS[-3:])) + "</div>")
-    up = st.file_uploader("메뉴판 사진", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
-    if up is not None:
-        st.image(up.getvalue(), width="stretch")
-        if st.button("이 사진으로 읽기", type="primary", width="stretch"):
-            run_scan(up.getvalue(), up.type or "image/jpeg")
-    if s.get("dev") and st.button("예시 메뉴판 보기 (개발 확인용)", width="stretch"):
-        run_scan(None, None)
+    if s.get("dev"):
+        example_picker("scan")
+    else:
+        up = st.file_uploader("메뉴판 사진", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
+        if up is not None:
+            st.image(up.getvalue(), width="stretch")
+            if st.button("이 사진으로 읽기", type="primary", width="stretch"):
+                run_scan(up.getvalue(), up.type or "image/jpeg")
     md('<div class="sec">식당을 아직 못 골랐다면</div>')
     st.button("주변 식당 찾기", icon=":material/map:", width="stretch", on_click=nav, args=('nearby',))
     act = active()
@@ -248,7 +251,19 @@ def scan():
 NOT_MENU = "올린 사진이 메뉴판이 맞는지 다시 한번 확인해 주세요."
 
 
-def run_scan(data, mime):
+def example_picker(where):
+    """개발 버전: 사진을 찍는 대신 예시 메뉴판을 고른다 (API를 쓰지 않는다)."""
+    md('<div class="card soft small">개발 버전이에요. 사진을 읽지 않고, 전에 읽어 둔 예시 메뉴판 결과로 보여 줘요.</div>')
+    for ex in demo.EXAMPLES:
+        with st.container(key=f"ex_{where}_{ex['key']}"):
+            c1, c2 = st.columns([1, 2], vertical_alignment="center")
+            c1.image(str(ex["img"]), width="stretch")
+            c2.markdown(f'<div class="name">{E(ex["title"])}</div><div class="small muted">{E(ex["sub"])}</div>', unsafe_allow_html=True)
+            if c2.button("예시 메뉴판 보기", key=f"exbtn_{where}_{ex['key']}", width="stretch"):
+                run_scan(None, None, example=ex["key"])
+
+
+def run_scan(data, mime, example=None):
     s = st.session_state
     act = active()
     raw, note, source = None, None, "demo"
@@ -280,9 +295,9 @@ def run_scan(data, mime):
                 box.update(label="메뉴판을 찾지 못했어요", state="error")
                 go("scan", scan_warn=NOT_MENU)
             box.update(label="다 읽었어요", state="complete")
-    if raw is None:
-        raw = json.loads((menu2.DATA / "demo_paris.json").read_text("utf-8"))
-        data, source = DEMO_IMG.read_bytes(), "demo"
+    if raw is None:  # 개발 버전: 예시 결과와 사진
+        raw, data = demo.raw(example or "paris", act)
+        source = "demo"
     elif s.get("place") and not raw.get("restaurant"):
         raw["restaurant"] = s.place["name"]
     note = note or raw.get("note")
@@ -310,6 +325,15 @@ def run_web():
     """고른 식당(s.place)의 메뉴를 인터넷에서 불러와 메뉴판을 찍은 것과 같은 화면으로. 못 찾으면 찍기 화면에 알림만 남긴다."""
     s = st.session_state
     place = s.place
+    if s.get("dev"):  # API를 쓰지 않고 이 식당에 어울리는 예시 메뉴로
+        raw, _ = demo.raw(demo.for_place(place), active())
+        raw["source"] = {"kind": "demo"}
+        s.scan_raw, s.scan_img, s.scan_note, s.scan_source = raw, None, None, "web"
+        if (s.get("hurry") or {}).get("id") != place.get("id"):
+            s.hurry = None
+        s.place = None
+        rejudge()
+        go("menu", menu_mode_w="번역만", combo_w=None)
     if not os.environ.get("ANTHROPIC_API_KEY"):
         s.scan_warn = WEB_MISS
         return
@@ -362,7 +386,9 @@ def menu():
     h = s.get("hurry")  # 자유식이면 같은 식당의 다른 장으로 본다
     again = {"place": {"name": h["place"], "id": h["id"]}} if h else {}
     web = scan.get("source") or {}
-    if web.get("kind") == "web":  # 인터넷에서 불러온 메뉴: 사진 대신 출처
+    if web.get("kind") == "demo":
+        md('<div class="card soft small">개발 버전이라 이 식당의 실제 메뉴가 아니라 예시 메뉴를 보여 줘요.</div>')
+    elif web.get("kind") == "web":  # 인터넷에서 불러온 메뉴: 사진 대신 출처
         where = "가게 홈페이지에서 불러온 메뉴예요." if web.get("own") else "인터넷에서 찾은 이 가게 메뉴예요."
         md(f'<div class="card small">{where} 지금 메뉴와 다를 수 있어요.'
            f'<div><a href="{E(web["url"])}" target="_blank" rel="noopener">{E(web.get("title") or web.get("site") or "메뉴 페이지")} 열기</a></div></div>')
@@ -867,6 +893,10 @@ def _places(lat, lng):
 def geo_block(key, slot=None):
     """지금 위치를 묻는다. 위치가 있으면 {lat, lng}, 없으면 None. 위치는 저장하지 않고 이 화면에서만 쓴다."""
     s = st.session_state
+    if s.get("dev"):  # 개발 버전: 파리 루브르 근처 예시 위치 (위치를 묻지 않는다)
+        ex = demo.near()
+        md(f'<div class="note">개발 버전이라 {E(ex["label"])}를 예시 위치로 써요.</div>')
+        return ex["geo"]
     if s.get("geo"):
         return s.geo
     if s.get("geo_asking"):
@@ -958,6 +988,9 @@ def get_spots(geo, groups, slot=None):
     """주변 둘러볼 곳 원본 {done: 찾아본 묶음, items}. 브라우저가 묻는 중이면 'wait'.
     고른 묶음만 묻고, 이 위치에서 한 번 찾은 묶음은 다시 묻지 않는다."""
     s = st.session_state
+    if s.get("dev"):
+        ex = demo.near()
+        return {"done": ex["groups"], "items": ex["spots"]}
     lat, lng = round(geo["lat"], 3), round(geo["lng"], 3)
     ck = f"spots_{lat}_{lng}"
     have = s[ck] if isinstance(s.get(ck), dict) else {"done": [], "items": []}
@@ -1039,6 +1072,8 @@ def spots_view(geo, slot, left=None, buffer=0):
 def places_here(geo, slot=None):
     """주변 식당. 키가 없으면 휴대폰 브라우저가 직접 묻고, 안 되면 서버가 묻는다. 기다리는 중이면 ('wait', None)."""
     s = st.session_state
+    if s.get("dev"):  # 개발 버전: 받아 둔 예시 지도 데이터
+        return "예시 지도 데이터", demo.near()["places"]
     lat, lng = round(geo["lat"], 3), round(geo["lng"], 3)
     ck = f"places_{lat}_{lng}"
     if ck in s:

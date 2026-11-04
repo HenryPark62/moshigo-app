@@ -26,7 +26,8 @@ if "code" not in s:
     s.code = code
     s.people = screens.clean_examples(store.load_or_default(code, menu2.START_PEOPLE))
     store.save(code, s.people)
-    s.dev = st.query_params.get("dev") == "1"  # 개발자 확인용 (예시 메뉴판 버튼)
+    # 개발 버전: API를 쓰지 않고 예시 지도, 예시 메뉴판, 예시 결과로. 시작 화면에서 고르거나, 주소 ?dev=1, 배포 환경 변수 MOSHIGO_DEMO=1이면 처음부터 개발 버전
+    s.dev = st.query_params.get("dev") == "1" or os.environ.get("MOSHIGO_DEMO") == "1"
     s.view = "start"
     s.picks = {}
     s.cookie_set = False
@@ -56,6 +57,7 @@ if s.get("simple"):
     st.markdown(simple.CSS, unsafe_allow_html=True)
 act = [p["name"] for p in screens.active()]
 md(f'<div class="top"><div class="brand">{momo(32)}<span>모시고</span></div>'
+   + ('<span class="pill dev">개발 버전</span>' if s.get("dev") else "")
    + (f'<span class="pill">{E(" · ".join(act))}</span>' if act and s.view != "start" else "") + "</div>")
 
 has_scan = bool(s.get("scan"))

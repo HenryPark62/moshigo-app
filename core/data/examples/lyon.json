@@ -1,0 +1,1174 @@
+{
+ "is_menu": true,
+ "restaurant": "",
+ "menu_language": "프랑스어",
+ "language_code": "fr-FR",
+ "items": [
+  {
+   "section_orig": "Formules midi",
+   "section_ko": "점심 세트",
+   "name_orig": "Plat du Jour",
+   "reading": "플라 뒤 쥬르",
+   "name_ko": "오늘의 요리",
+   "price": "9€20",
+   "desc_ko": "그날 바뀌는 주요리 한 접시예요. 어떤 요리인지는 직원에게 물어봐야 해요.",
+   "glossary": [
+    {
+     "term": "Plat du Jour",
+     "meaning": "그날 정해 둔 오늘의 요리"
+    },
+    {
+     "term": "Formule",
+     "meaning": "여러 코스를 묶어 싸게 파는 세트"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [],
+   "ingredient": "채소",
+   "cooking": "볶기",
+   "t_salty": 0.5,
+   "t_sweet": 0.2,
+   "t_spicy": 0.2,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.4,
+   "t_oily": 0.5,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "짭짤한",
+    "고소한"
+   ],
+   "aroma_kw": [
+    "볶은 향"
+   ],
+   "texture_kw": [
+    "촉촉한"
+   ],
+   "taste_line": "그날 요리에 따라 달라서 정확히 알기 어려워요. 보통 짭짤하고 든든한 맛이에요.",
+   "ko_compare": "식당 백반의 오늘의 메뉴와 비슷하지만 메뉴가 매일 바뀌어요.",
+   "imagine": "든든한 한 접시, 따뜻한 밥 생각, 매일 달라지는 재미",
+   "good_for": [
+    "그날 메뉴를 골라 먹어 보고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 15,
+   "share_ok": false,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "어떤 요리인지 몰라서 간이 셀 수 있어요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "조개류가 들었는지 확인이 필요해요."
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "처음 보는 음식일 수 있어요. 채소가 보이면 덜어 달라고 해요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Quel est le plat du jour ?",
+     "q_ko": "오늘의 요리가 뭔지 알려 달라고 해요.",
+     "answers": [
+      {
+       "orig": "Qu'est-ce que c'est ?",
+       "ko": "무슨 요리예요?"
+      },
+      {
+       "orig": "Sans fruits de mer, s'il vous plaît.",
+       "ko": "해산물은 빼 주세요."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Formules midi",
+   "section_ko": "점심 세트",
+   "name_orig": "Entrée + Plat",
+   "reading": "앙트레 + 플라",
+   "name_ko": "전채 + 주요리 세트",
+   "price": "14€00",
+   "desc_ko": "전채 하나와 주요리 하나를 함께 주는 점심 세트예요.",
+   "glossary": [
+    {
+     "term": "Entrée",
+     "meaning": "프랑스에서는 전채 요리"
+    },
+    {
+     "term": "Plat",
+     "meaning": "주요리"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [],
+   "ingredient": "채소",
+   "cooking": "볶기",
+   "t_salty": 0.5,
+   "t_sweet": 0.2,
+   "t_spicy": 0.2,
+   "t_sour": 0.2,
+   "t_umami": 0.6,
+   "t_aroma": 0.4,
+   "t_oily": 0.5,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "짭짤한",
+    "고소한"
+   ],
+   "aroma_kw": [
+    "볶은 향"
+   ],
+   "texture_kw": [
+    "바삭한",
+    "촉촉한"
+   ],
+   "taste_line": "고르는 메뉴에 따라 달라요. 전채는 가볍고 주요리는 든든해요.",
+   "ko_compare": "한식 정식에서 반찬과 메인을 같이 주는 것과 비슷해요.",
+   "imagine": "가벼운 전채로 시작, 든든한 주요리, 두 가지를 고르는 재미",
+   "good_for": [
+    "점심을 두 접시로 먹고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 20,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "고르는 요리에 따라 간이 셀 수 있어요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "조개류가 든 요리는 빼고 골라야 해요."
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "처음 보는 음식이 나올 수 있어요. 견과류도 확인해야 해요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Quelle entrée et quel plat ?",
+     "q_ko": "전채와 주요리를 뭐로 할지 물어봐요.",
+     "answers": [
+      {
+       "orig": "Nems, s'il vous plaît.",
+       "ko": "넴으로 주세요."
+      },
+      {
+       "orig": "Le plat du jour.",
+       "ko": "오늘의 요리로 주세요."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Formule midi et soir",
+   "section_ko": "점심·저녁 세트",
+   "name_orig": "Entrée + Plat + dessert",
+   "reading": "앙트레 + 플라 + 데세르",
+   "name_ko": "전채 + 주요리 + 후식 세트",
+   "price": "18€50",
+   "desc_ko": "전채, 주요리, 후식을 모두 주는 세트예요. 점심과 저녁 모두 주문할 수 있어요.",
+   "glossary": [
+    {
+     "term": "Dessert",
+     "meaning": "후식"
+    },
+    {
+     "term": "midi et soir",
+     "meaning": "점심과 저녁"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [],
+   "ingredient": "채소",
+   "cooking": "볶기",
+   "t_salty": 0.5,
+   "t_sweet": 0.4,
+   "t_spicy": 0.2,
+   "t_sour": 0.2,
+   "t_umami": 0.6,
+   "t_aroma": 0.4,
+   "t_oily": 0.5,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "짭짤한",
+    "달큰한"
+   ],
+   "aroma_kw": [
+    "볶은 향"
+   ],
+   "texture_kw": [
+    "바삭한",
+    "부드러운"
+   ],
+   "taste_line": "짭짤한 전채와 주요리 뒤에 달콤한 후식이 나와요.",
+   "ko_compare": "한식 코스에서 후식까지 나오는 정식과 비슷해요.",
+   "imagine": "세 번에 나눠 먹는 식사, 마지막 달콤함, 천천히 먹는 점심",
+   "good_for": [
+    "후식까지 제대로 먹고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 35,
+   "share_ok": false,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "짠 요리를 고르지 않게 살펴봐야 해요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "조개류가 든 요리는 빼야 해요."
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "후식에 견과류가 있는지 확인해야 해요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Quel dessert voulez-vous ?",
+     "q_ko": "후식을 뭐로 할지 물어봐요.",
+     "answers": [
+      {
+       "orig": "Qu'avez-vous comme desserts ?",
+       "ko": "어떤 후식이 있어요?"
+      },
+      {
+       "orig": "Sans noix, s'il vous plaît.",
+       "ko": "견과류 없는 걸로 주세요."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Les entrées",
+   "section_ko": "전채",
+   "name_orig": "Nems porc ou poulet x4",
+   "reading": "넴 포르 우 풀레 x4",
+   "name_ko": "돼지고기 또는 닭고기 스프링롤 4개",
+   "price": "5€00",
+   "desc_ko": "고기 소를 넣어 튀긴 작은 스프링롤 4개예요. 돼지고기나 닭고기 중에 골라요.",
+   "glossary": [
+    {
+     "term": "Nems",
+     "meaning": "베트남식 튀김 스프링롤"
+    },
+    {
+     "term": "porc",
+     "meaning": "돼지고기"
+    },
+    {
+     "term": "poulet",
+     "meaning": "닭고기"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "밀가루",
+    "돼지고기",
+    "닭고기",
+    "달걀",
+    "양파"
+   ],
+   "ingredient": "돼지고기",
+   "cooking": "튀기기",
+   "t_salty": 0.5,
+   "t_sweet": 0.2,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.5,
+   "t_oily": 0.7,
+   "t_soft": 0.2,
+   "taste_kw": [
+    "고소한",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "튀김 향",
+    "고기 향"
+   ],
+   "texture_kw": [
+    "바삭한",
+    "촉촉한 속"
+   ],
+   "taste_line": "겉이 바삭하고 속은 고기 맛이 고소하고 짭짤해요.",
+   "ko_compare": "한국 군만두와 비슷한데 피가 더 얇고 바삭하고 소에 채소 향이 있어요.",
+   "imagine": "바삭한 껍질, 고기 소의 고소함, 소스에 찍어 먹는 맛",
+   "good_for": [
+    "바삭한 튀김이 당기는 분",
+    "가볍게 시작하고 싶은 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "튀김이라 기름지고 소스가 짤 수 있어요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "속에 채소가 보이면 덜어 내야 하고 소스를 따로 달라고 해요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Porc ou poulet ?",
+     "q_ko": "돼지고기로 할지 닭고기로 할지 물어봐요.",
+     "answers": [
+      {
+       "orig": "Porc, s'il vous plaît.",
+       "ko": "돼지고기로 주세요."
+      },
+      {
+       "orig": "Poulet, s'il vous plaît.",
+       "ko": "닭고기로 주세요."
+      },
+      {
+       "orig": "Deux de chaque.",
+       "ko": "각각 두 개씩 주세요."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Les entrées",
+   "section_ko": "전채",
+   "name_orig": "Beignets aux crevettes x3",
+   "reading": "베녜 오 크르베트 x3",
+   "name_ko": "새우튀김 3개",
+   "price": "5€00",
+   "desc_ko": "새우를 반죽에 입혀 튀긴 요리 3개예요.",
+   "glossary": [
+    {
+     "term": "Beignets",
+     "meaning": "반죽을 입혀 튀긴 것"
+    },
+    {
+     "term": "crevettes",
+     "meaning": "새우"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "갑각류",
+    "밀가루",
+    "달걀"
+   ],
+   "ingredient": "해산물",
+   "cooking": "튀기기",
+   "t_salty": 0.5,
+   "t_sweet": 0.2,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.4,
+   "t_oily": 0.7,
+   "t_soft": 0.3,
+   "taste_kw": [
+    "고소한",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "튀김 향",
+    "새우 향"
+   ],
+   "texture_kw": [
+    "바삭한",
+    "탱탱한 속"
+   ],
+   "taste_line": "튀김옷이 바삭하고 속의 새우가 탱글하고 고소해요.",
+   "ko_compare": "한국 새우튀김과 비슷한데 반죽이 더 두툼하고 소스에 찍어 먹어요.",
+   "imagine": "바삭한 튀김옷, 탱글한 새우, 고소한 기름 맛",
+   "good_for": [
+    "바삭한 새우튀김이 당기는 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "튀김이라 기름지고 소스가 짤 수 있어요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "새우는 처음 보는 음식일 수 있어요. 소스는 따로 달라고 해요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "Les entrées",
+   "section_ko": "전채",
+   "name_orig": "Salade Riz pai (Porc et Poulet)",
+   "reading": "살라드 리 파이 (포르 에 풀레)",
+   "name_ko": "쌀 샐러드 (돼지고기와 닭고기)",
+   "price": "5€50",
+   "desc_ko": "밥에 채소와 돼지고기, 닭고기를 올려 차갑게 먹는 샐러드로 보여요. 정확한 재료는 직원에게 확인해 주세요.",
+   "glossary": [
+    {
+     "term": "Salade",
+     "meaning": "샐러드"
+    },
+    {
+     "term": "Riz",
+     "meaning": "쌀, 밥"
+    },
+    {
+     "term": "Porc et Poulet",
+     "meaning": "돼지고기와 닭고기"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "돼지고기",
+    "닭고기",
+    "양파",
+    "날것"
+   ],
+   "ingredient": "밥",
+   "cooking": "섞기",
+   "t_salty": 0.5,
+   "t_sweet": 0.3,
+   "t_spicy": 0.2,
+   "t_sour": 0.4,
+   "t_umami": 0.5,
+   "t_aroma": 0.5,
+   "t_oily": 0.3,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "새콤한",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "허브 향",
+    "고기 향"
+   ],
+   "texture_kw": [
+    "아삭한 채소",
+    "쫀득한 밥"
+   ],
+   "taste_line": "새콤한 소스에 고기와 채소를 비벼 먹는 맛이에요.",
+   "ko_compare": "한국 비빔밥과 비슷한데 차갑고 새콤한 소스를 써요.",
+   "imagine": "허브 향, 새콤한 소스, 아삭한 채소",
+   "good_for": [
+    "새로운 맛이 궁금한 분",
+    "가볍게 시작하고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 보이면 고기와 밥만 먹도록 덜어 달라고 해요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "Les entrées",
+   "section_ko": "먼저 먹는 요리",
+   "name_orig": "Bì cuốn (Rouleaux frais au porc) x2",
+   "reading": "비 꾸온 (룰로 프레 오 포르) 두 개",
+   "name_ko": "돼지고기 월남쌈 2개",
+   "price": "5€50",
+   "desc_ko": "쌀종이에 삶은 돼지고기와 채소, 국수를 말아 차게 먹는 베트남 월남쌈이에요.",
+   "glossary": [
+    {
+     "term": "Rouleaux frais",
+     "meaning": "튀기지 않은 신선한 롤"
+    },
+    {
+     "term": "porc",
+     "meaning": "돼지고기"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "돼지고기"
+   ],
+   "ingredient": "돼지고기",
+   "cooking": "삶기",
+   "t_salty": 0.35,
+   "t_sweet": 0.25,
+   "t_spicy": 0.1,
+   "t_sour": 0.2,
+   "t_umami": 0.45,
+   "t_aroma": 0.5,
+   "t_oily": 0.15,
+   "t_soft": 0.7,
+   "taste_kw": [
+    "담백함",
+    "새콤달콤한 소스"
+   ],
+   "aroma_kw": [
+    "민트 향",
+    "고수 향"
+   ],
+   "texture_kw": [
+    "쫀득함",
+    "촉촉함"
+   ],
+   "taste_line": "담백하고 시원한 롤이에요. 찍어 먹는 소스는 달고 짭짤해요.",
+   "ko_compare": "월남쌈과 거의 같아요. 보통 땅콩 소스나 느억맘 소스를 곁들여요.",
+   "imagine": "차가운 쌀종이, 허브 향, 달콤짭짤한 소스",
+   "good_for": [
+    "가볍게 시작하고 싶은 분",
+    "허브 향을 좋아하는 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 8,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소와 허브가 보여요. 고기만 골라 먹어도 돼요. 땅콩 소스는 빼 달라고 해 주세요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Quelle sauce voulez-vous ?",
+     "q_ko": "어떤 소스로 드릴까요?",
+     "answers": [
+      {
+       "orig": "Sauce nuoc-mâm, s'il vous plaît.",
+       "ko": "느억맘 소스로 주세요"
+      },
+      {
+       "orig": "Sans cacahuètes, s'il vous plaît.",
+       "ko": "땅콩 빼 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Les plats",
+   "section_ko": "주요리",
+   "name_orig": "Bò Bún",
+   "reading": "보 분",
+   "name_ko": "소고기 비빔쌀국수",
+   "price": "9€80",
+   "desc_ko": "생채소와 가는 쌀국수, 튀김 롤, 양파 소고기볶음을 얹은 베트남식 비빔국수예요.",
+   "glossary": [
+    {
+     "term": "crudités",
+     "meaning": "생채소"
+    },
+    {
+     "term": "vermicelles",
+     "meaning": "가는 쌀국수"
+    },
+    {
+     "term": "nems",
+     "meaning": "튀긴 롤(스프링롤)"
+    },
+    {
+     "term": "boeuf aux oignons",
+     "meaning": "양파를 넣은 소고기볶음"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "소고기",
+    "양파",
+    "밀가루",
+    "돼지고기",
+    "견과류"
+   ],
+   "ingredient": "당면",
+   "cooking": "섞기",
+   "t_salty": 0.5,
+   "t_sweet": 0.4,
+   "t_spicy": 0.15,
+   "t_sour": 0.35,
+   "t_umami": 0.6,
+   "t_aroma": 0.6,
+   "t_oily": 0.4,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "새콤달콤",
+    "짭짤함",
+    "감칠맛"
+   ],
+   "aroma_kw": [
+    "허브 향",
+    "볶은 양파 향",
+    "마늘 향"
+   ],
+   "texture_kw": [
+    "바삭한 롤",
+    "아삭한 채소",
+    "부드러운 국수"
+   ],
+   "taste_line": "새콤달콤한 소스에 비벼 먹는 차가운 국수예요. 볶은 소고기는 짭짤하고 달큰해요.",
+   "ko_compare": "비빔국수와 비슷하지만 고추장 대신 새콤달콤한 생선 소스를 써서 맵지 않아요.",
+   "imagine": "차가운 국수, 따뜻한 소고기, 바삭한 튀김 롤",
+   "good_for": [
+    "새로운 맛이 궁금한 분",
+    "국수와 고기를 함께 먹고 싶은 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": true,
+   "serve_minutes": 12,
+   "share_ok": false,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "소스가 짭짤해요. 소스를 적게 넣어 달라고 하면 돼요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 많이 보여요. 튀김 롤과 국수만 먼저 먹어도 돼요. 땅콩이 올라가는지 확인이 필요해요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Avec cacahuètes ?",
+     "q_ko": "땅콩 올릴까요?",
+     "answers": [
+      {
+       "orig": "Oui, avec.",
+       "ko": "네, 넣어 주세요"
+      },
+      {
+       "orig": "Sans cacahuètes, s'il vous plaît.",
+       "ko": "땅콩 빼 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Les plats",
+   "section_ko": "주요리",
+   "name_orig": "Maxi Bò Bún",
+   "reading": "맥시 보 분",
+   "name_ko": "대용량 소고기 비빔쌀국수",
+   "price": "14€90",
+   "desc_ko": "보 분의 큰 양 메뉴예요. 메뉴판에 세트보다 4유로 더라고 적혀 있어요.",
+   "glossary": [
+    {
+     "term": "Maxi",
+     "meaning": "큰 사이즈"
+    },
+    {
+     "term": "formule",
+     "meaning": "세트 메뉴"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "소고기",
+    "양파",
+    "밀가루",
+    "돼지고기",
+    "견과류"
+   ],
+   "ingredient": "당면",
+   "cooking": "섞기",
+   "t_salty": 0.5,
+   "t_sweet": 0.4,
+   "t_spicy": 0.15,
+   "t_sour": 0.35,
+   "t_umami": 0.6,
+   "t_aroma": 0.6,
+   "t_oily": 0.4,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "새콤달콤",
+    "짭짤함",
+    "감칠맛"
+   ],
+   "aroma_kw": [
+    "허브 향",
+    "볶은 양파 향"
+   ],
+   "texture_kw": [
+    "바삭한 롤",
+    "아삭한 채소",
+    "부드러운 국수"
+   ],
+   "taste_line": "보 분과 같은 맛이고 양이 더 많아요.",
+   "ko_compare": "큰 그릇에 담긴 비빔국수 같아요. 양만 달라요.",
+   "imagine": "넉넉한 국수, 소고기 듬뿍, 새콤달콤한 소스",
+   "good_for": [
+    "양을 넉넉히 먹고 싶은 분",
+    "한 그릇으로 든든히 먹고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 12,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "소스가 짭짤해요. 소스를 적게 넣어 달라고 하면 돼요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 많이 보여요. 튀김 롤과 국수만 먼저 먹어도 돼요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Avec cacahuètes ?",
+     "q_ko": "땅콩 올릴까요?",
+     "answers": [
+      {
+       "orig": "Oui, avec.",
+       "ko": "네, 넣어 주세요"
+      },
+      {
+       "orig": "Sans cacahuètes, s'il vous plaît.",
+       "ko": "땅콩 빼 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Les plats",
+   "section_ko": "주요리",
+   "name_orig": "Poulet croustillant",
+   "reading": "풀레 크루스티양",
+   "name_ko": "바삭한 닭튀김",
+   "price": "12€00",
+   "desc_ko": "겉을 바삭하게 튀긴 닭고기 요리예요. 메뉴판에 세트보다 1.5유로 더라고 적혀 있어요.",
+   "glossary": [
+    {
+     "term": "croustillant",
+     "meaning": "바삭한"
+    },
+    {
+     "term": "poulet",
+     "meaning": "닭고기"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "닭고기",
+    "밀가루"
+   ],
+   "ingredient": "닭고기",
+   "cooking": "튀기기",
+   "t_salty": 0.5,
+   "t_sweet": 0.25,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.55,
+   "t_aroma": 0.35,
+   "t_oily": 0.7,
+   "t_soft": 0.4,
+   "taste_kw": [
+    "고소함",
+    "짭짤함",
+    "바삭함"
+   ],
+   "aroma_kw": [
+    "튀김 향"
+   ],
+   "texture_kw": [
+    "바삭한 튀김옷",
+    "촉촉한 속살"
+   ],
+   "taste_line": "겉은 바삭하고 고소하고, 속은 촉촉한 닭튀김이에요.",
+   "ko_compare": "치킨과 비슷하지만 튀김옷이 얇고 소스는 베트남식으로 달고 짭짤해요.",
+   "imagine": "바삭한 튀김옷, 촉촉한 닭고기, 달콤짭짤한 소스",
+   "good_for": [
+    "바삭한 음식을 좋아하는 분",
+    "익숙한 맛이 편한 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 12,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "튀김이라 기름지고 간이 셀 수 있어요. 소스는 따로 달라고 하면 돼요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Quelle sauce voulez-vous ?",
+     "q_ko": "어떤 소스로 드릴까요?",
+     "answers": [
+      {
+       "orig": "Sauce douce, s'il vous plaît.",
+       "ko": "달콤한 소스로 주세요"
+      },
+      {
+       "orig": "Sauce à part, s'il vous plaît.",
+       "ko": "소스는 따로 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Les plats",
+   "section_ko": "주요리",
+   "name_orig": "Bún bì chay",
+   "reading": "분 비 차이",
+   "name_ko": "채식 비빔쌀국수",
+   "price": "10€50",
+   "desc_ko": "생채소와 쌀국수, 두부, 감자, 고구마를 얹은 채식 비빔국수예요.",
+   "glossary": [
+    {
+     "term": "chay",
+     "meaning": "베트남어로 채식"
+    },
+    {
+     "term": "Tofu",
+     "meaning": "두부"
+    },
+    {
+     "term": "patates douces",
+     "meaning": "고구마"
+    },
+    {
+     "term": "Pommes de terre",
+     "meaning": "감자"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [],
+   "ingredient": "두부",
+   "cooking": "섞기",
+   "t_salty": 0.4,
+   "t_sweet": 0.4,
+   "t_spicy": 0.1,
+   "t_sour": 0.35,
+   "t_umami": 0.4,
+   "t_aroma": 0.5,
+   "t_oily": 0.3,
+   "t_soft": 0.6,
+   "taste_kw": [
+    "새콤달콤",
+    "담백함",
+    "고소함"
+   ],
+   "aroma_kw": [
+    "허브 향",
+    "튀긴 두부 향"
+   ],
+   "texture_kw": [
+    "부드러운 감자",
+    "아삭한 채소",
+    "쫀득한 국수"
+   ],
+   "taste_line": "고기 없이 담백하고 새콤달콤하게 비벼 먹는 국수예요. 감자와 고구마가 달큰해요.",
+   "ko_compare": "비빔국수에 두부와 감자를 넣은 맛이에요. 고기 육수 맛이 없어 더 가벼워요.",
+   "imagine": "달큰한 고구마, 고소한 두부, 시원한 국수",
+   "good_for": [
+    "담백한 맛을 좋아하는 분",
+    "감자와 두부를 좋아하는 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 12,
+   "share_ok": false,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없어요. 고기 요리를 하나 더 시키면 돼요."
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 보여요. 감자와 고구마, 국수부터 먹어도 돼요. 땅콩이 올라가는지 확인이 필요해요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Avec cacahuètes ?",
+     "q_ko": "땅콩 올릴까요?",
+     "answers": [
+      {
+       "orig": "Oui, avec.",
+       "ko": "네, 넣어 주세요"
+      },
+      {
+       "orig": "Sans cacahuètes, s'il vous plaît.",
+       "ko": "땅콩 빼 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Les plats",
+   "section_ko": "주요리",
+   "name_orig": "Bò kho",
+   "reading": "보 코",
+   "name_ko": "베트남식 소고기 스튜",
+   "price": "11€00",
+   "desc_ko": "소고기를 당근과 다섯 가지 향신료와 함께 오래 끓인 베트남식 스튜예요.",
+   "glossary": [
+    {
+     "term": "mijoté",
+     "meaning": "오래 끓인"
+    },
+    {
+     "term": "5 épices",
+     "meaning": "오향(다섯 가지 향신료)"
+    },
+    {
+     "term": "carottes",
+     "meaning": "당근"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "소고기",
+    "양파"
+   ],
+   "ingredient": "소고기",
+   "cooking": "오래 끓이기",
+   "t_salty": 0.55,
+   "t_sweet": 0.3,
+   "t_spicy": 0.2,
+   "t_sour": 0.1,
+   "t_umami": 0.7,
+   "t_aroma": 0.85,
+   "t_oily": 0.5,
+   "t_soft": 0.85,
+   "taste_kw": [
+    "진한 국물",
+    "감칠맛",
+    "짭짤함"
+   ],
+   "aroma_kw": [
+    "팔각 향",
+    "계피 향",
+    "레몬그라스 향"
+   ],
+   "texture_kw": [
+    "부드러운 소고기",
+    "푹 익은 당근"
+   ],
+   "taste_line": "향신료 향이 진하고 국물이 걸쭉한 소고기 스튜예요. 고기가 포크로 풀릴 만큼 부드러워요.",
+   "ko_compare": "갈비찜과 비슷하게 푹 익은 고기와 당근이 들어가요. 간장 대신 팔각과 계피 같은 향신료 향이 강해요.",
+   "imagine": "팔각 향, 부드러운 소고기, 진한 국물",
+   "good_for": [
+    "향이 진한 음식을 좋아하는 분",
+    "푹 익힌 고기를 좋아하는 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": true,
+   "serve_minutes": 15,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "국물이 짭짤할 수 있어요. 국물은 덜 드시면 돼요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "향신료 향이 낯설 수 있어요. 당근이 보여요. 고기만 덜어 주세요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Avec du riz ou du pain ?",
+     "q_ko": "밥이랑 드실래요, 빵이랑 드실래요?",
+     "answers": [
+      {
+       "orig": "Avec du riz, s'il vous plaît.",
+       "ko": "밥으로 주세요"
+      },
+      {
+       "orig": "Avec du pain, s'il vous plaît.",
+       "ko": "빵으로 주세요"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

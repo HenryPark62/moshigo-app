@@ -1,0 +1,2136 @@
+{
+ "is_menu": true,
+ "restaurant": "Sawadee",
+ "menu_language": "영어",
+ "language_code": "en-GB",
+ "items": [
+  {
+   "section_orig": "SET A £44.90 (£22.45 per person) - Starters",
+   "section_ko": "세트 A 먼저 먹는 요리 (2인 £44.90, 1인 £22.45)",
+   "name_orig": "Chicken Satay",
+   "reading": "치킨 사테이",
+   "name_ko": "닭꼬치 구이",
+   "price": "",
+   "desc_ko": "양념한 닭고기를 꼬치에 꽂아 구운 요리예요. 땅콩이 들어가요.",
+   "glossary": [
+    {
+     "term": "Satay",
+     "meaning": "양념해 꼬치에 꿰어 굽는 동남아 요리. 보통 땅콩 소스를 곁들여요."
+    },
+    {
+     "term": "(n)",
+     "meaning": "견과류 표시"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "견과류",
+    "닭고기"
+   ],
+   "ingredient": "닭고기",
+   "cooking": "굽기",
+   "t_salty": 0.5,
+   "t_sweet": 0.5,
+   "t_spicy": 0.2,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.6,
+   "t_oily": 0.5,
+   "t_soft": 0.6,
+   "taste_kw": [
+    "달큰",
+    "고소",
+    "짭짤"
+   ],
+   "aroma_kw": [
+    "숯불 향",
+    "땅콩 향"
+   ],
+   "texture_kw": [
+    "쫄깃",
+    "촉촉"
+   ],
+   "taste_line": "달큰하고 고소한 땅콩 소스 맛이 나는 닭꼬치예요.",
+   "ko_compare": "닭꼬치와 비슷한데 땅콩 소스가 더해져 훨씬 고소하고 달아요.",
+   "imagine": "숯불에 구운 향, 달큰한 양념, 고소한 땅콩 소스",
+   "good_for": [
+    "새로운 맛이 궁금한 분",
+    "향이 진한 요리를 좋아하는 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "양념이 짭짤할 수 있어서 소스를 조금만 찍어 드시면 좋아요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "견과류가 들어 있어요. 땅콩 소스가 있어서 먹지 마세요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET A £44.90 (£22.45 per person) - Starters",
+   "section_ko": "세트 A 먼저 먹는 요리 (2인 £44.90, 1인 £22.45)",
+   "name_orig": "Thai Spring Rolls",
+   "reading": "타이 스프링 롤즈",
+   "name_ko": "태국식 채소 춘권",
+   "price": "",
+   "desc_ko": "작은 채소 춘권을 바삭하게 튀긴 요리예요. 밀가루가 들어가요.",
+   "glossary": [
+    {
+     "term": "Spring roll",
+     "meaning": "얇은 피에 속을 싸서 튀긴 춘권"
+    },
+    {
+     "term": "(g)",
+     "meaning": "글루텐(밀가루) 표시"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "밀가루",
+    "양파"
+   ],
+   "ingredient": "채소",
+   "cooking": "튀기기",
+   "t_salty": 0.4,
+   "t_sweet": 0.3,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.3,
+   "t_aroma": 0.3,
+   "t_oily": 0.7,
+   "t_soft": 0.2,
+   "taste_kw": [
+    "고소",
+    "담백",
+    "짭짤"
+   ],
+   "aroma_kw": [
+    "튀긴 기름 향"
+   ],
+   "texture_kw": [
+    "바삭",
+    "겉바속촉"
+   ],
+   "taste_line": "겉이 바삭하고 속은 채소가 부드러운 담백한 춘권이에요.",
+   "ko_compare": "분식집 야채 튀김 만두와 비슷한데 피가 더 얇고 바삭해요.",
+   "imagine": "바삭한 소리, 따뜻한 채소 속, 달콤한 칠리 소스",
+   "good_for": [
+    "바삭한 튀김이 당기는 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 8,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없어서 아쉬울 수 있어요."
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 들어 있어요. 바삭한 겉만 먹고 속은 덜어 낼 수 있어요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET A £44.90 (£22.45 per person) - Main Course",
+   "section_ko": "세트 A 주요리 (2인 £44.90, 1인 £22.45)",
+   "name_orig": "Chicken Masaman Curry",
+   "reading": "치킨 마사만 커리",
+   "name_ko": "닭고기 마사만 카레",
+   "price": "",
+   "desc_ko": "닭고기와 감자를 코코넛 밀크 카레에 끓인 요리예요. 견과류가 들어가요.",
+   "glossary": [
+    {
+     "term": "Masaman",
+     "meaning": "향신료 향이 나고 순한 편인 태국 남부식 카레"
+    },
+    {
+     "term": "Coconut milk",
+     "meaning": "코코넛 열매로 만든 고소한 우유 같은 국물"
+    },
+    {
+     "term": "(n)",
+     "meaning": "견과류 표시"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "견과류",
+    "닭고기",
+    "양파"
+   ],
+   "ingredient": "닭고기",
+   "cooking": "끓이기",
+   "t_salty": 0.5,
+   "t_sweet": 0.6,
+   "t_spicy": 0.3,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.8,
+   "t_oily": 0.6,
+   "t_soft": 0.8,
+   "taste_kw": [
+    "달큰",
+    "고소",
+    "진한 카레"
+   ],
+   "aroma_kw": [
+    "계피 향",
+    "코코넛 향",
+    "향신료 향"
+   ],
+   "texture_kw": [
+    "부드러운 감자",
+    "걸쭉한 소스"
+   ],
+   "taste_line": "달큰하고 고소하며 향신료 향이 진한 걸쭉한 카레예요.",
+   "ko_compare": "일본식 카레보다 덜 매운 대신 코코넛 맛이 진하고 향신료 향이 강해요.",
+   "imagine": "코코넛의 고소함, 계피 같은 향, 포슬포슬한 감자",
+   "good_for": [
+    "향이 진한 카레가 궁금한 분",
+    "부드러운 감자 카레를 좋아하는 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": true,
+   "serve_minutes": 15,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "소스가 짭짤할 수 있어서 밥과 함께 드시면 좋아요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "견과류가 들어 있어요. 먹지 마세요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "How spicy would you like it?",
+     "q_ko": "얼마나 맵게 드릴까요?",
+     "answers": [
+      {
+       "orig": "Mild, please.",
+       "ko": "순하게 해 주세요"
+      },
+      {
+       "orig": "Medium, please.",
+       "ko": "보통 맵기로 해 주세요"
+      },
+      {
+       "orig": "Spicy, please.",
+       "ko": "맵게 해 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "SET A £44.90 (£22.45 per person) - Main Course",
+   "section_ko": "세트 A 주요리 (2인 £44.90, 1인 £22.45)",
+   "name_orig": "Duck Ga-prao",
+   "reading": "덕 까파오",
+   "name_ko": "오리고기 바질 볶음",
+   "price": "",
+   "desc_ko": "구운 오리고기를 바질, 양파, 붉은 고추와 볶은 요리예요.",
+   "glossary": [
+    {
+     "term": "Ga-prao",
+     "meaning": "태국 바질(홀리 바질)을 넣고 센 불에 볶는 요리법"
+    },
+    {
+     "term": "Roasted duck",
+     "meaning": "오븐에 구운 오리고기"
+    },
+    {
+     "term": "Stir fried",
+     "meaning": "센 불에 빠르게 볶은"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "양파",
+    "날것"
+   ],
+   "ingredient": "오리고기",
+   "cooking": "볶기",
+   "t_salty": 0.7,
+   "t_sweet": 0.3,
+   "t_spicy": 0.7,
+   "t_sour": 0.1,
+   "t_umami": 0.8,
+   "t_aroma": 0.9,
+   "t_oily": 0.6,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "짭짤",
+    "매콤",
+    "감칠맛"
+   ],
+   "aroma_kw": [
+    "바질 향",
+    "고추 향",
+    "구운 오리 향"
+   ],
+   "texture_kw": [
+    "쫄깃",
+    "기름진"
+   ],
+   "taste_line": "짭짤하고 매콤하며 바질 향이 센 볶음이에요.",
+   "ko_compare": "제육볶음처럼 짭짤매콤한데 오리고기에 바질 향이 강하게 나요.",
+   "imagine": "센 바질 향, 매콤한 끝맛, 진한 오리고기",
+   "good_for": [
+    "향이 진하고 새로운 맛을 찾는 분",
+    "매콤한 고기 볶음을 좋아하는 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 12,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "피하기",
+     "reason": "간이 센 편이라 짠 음식을 피하는 입맛과 맞지 않아요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "맵고 채소와 바질이 보여요. 입맛에 잘 안 맞아요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "How spicy would you like it?",
+     "q_ko": "얼마나 맵게 드릴까요?",
+     "answers": [
+      {
+       "orig": "Mild, please.",
+       "ko": "순하게 해 주세요"
+      },
+      {
+       "orig": "Medium, please.",
+       "ko": "보통 맵기로 해 주세요"
+      },
+      {
+       "orig": "Spicy, please.",
+       "ko": "맵게 해 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "SET A £44.90 (£22.45 per person) - Main Course",
+   "section_ko": "세트 A 주요리 (2인 £44.90, 1인 £22.45)",
+   "name_orig": "Vegetable Stir Fry",
+   "reading": "베지터블 스터 프라이",
+   "name_ko": "채소 볶음",
+   "price": "",
+   "desc_ko": "여러 가지 채소를 센 불에 볶은 요리예요.",
+   "glossary": [
+    {
+     "term": "Stir fry",
+     "meaning": "센 불에 빠르게 볶는 조리법"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "양파"
+   ],
+   "ingredient": "채소",
+   "cooking": "볶기",
+   "t_salty": 0.5,
+   "t_sweet": 0.3,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.5,
+   "t_aroma": 0.4,
+   "t_oily": 0.4,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "담백",
+    "짭짤",
+    "고소"
+   ],
+   "aroma_kw": [
+    "마늘 향"
+   ],
+   "texture_kw": [
+    "아삭",
+    "부드러운"
+   ],
+   "taste_line": "담백하고 약간 짭짤한 소스에 채소가 아삭한 볶음이에요.",
+   "ko_compare": "한국 채소볶음보다 굴소스 맛이 조금 더 나요.",
+   "imagine": "아삭한 식감, 은은한 마늘 향, 깔끔한 맛",
+   "good_for": [
+    "담백한 요리를 찾는 분",
+    "다른 요리 사이에 입을 쉬고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "조심",
+     "reason": "새로운 맛이 적어서 심심할 수 있어요."
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "피하기",
+     "reason": "고기가 없어서 입맛과 거리가 있어요."
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 많이 보여요. 먹기 편한 것만 골라 먹어도 돼요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET A £44.90 (£22.45 per person) - Main Course",
+   "section_ko": "세트 A 주요리 (2인 £44.90, 1인 £22.45)",
+   "name_orig": "Steamed Thai Jasmine Rice",
+   "reading": "스팀드 타이 재스민 라이스",
+   "name_ko": "찐 태국 재스민 쌀밥",
+   "price": "",
+   "desc_ko": "향이 은은한 태국 쌀로 지은 흰밥이에요.",
+   "glossary": [
+    {
+     "term": "Jasmine rice",
+     "meaning": "향이 은은하고 찰기가 적은 태국 쌀"
+    },
+    {
+     "term": "Steamed",
+     "meaning": "찐"
+    }
+   ],
+   "unreadable": false,
+   "course": "side",
+   "contains": [],
+   "ingredient": "밥",
+   "cooking": "찌기",
+   "t_salty": 0.0,
+   "t_sweet": 0.2,
+   "t_spicy": 0.0,
+   "t_sour": 0.0,
+   "t_umami": 0.1,
+   "t_aroma": 0.3,
+   "t_oily": 0.0,
+   "t_soft": 0.8,
+   "taste_kw": [
+    "담백",
+    "은은한 단맛"
+   ],
+   "aroma_kw": [
+    "고소한 쌀 향"
+   ],
+   "texture_kw": [
+    "포슬포슬",
+    "부드러운"
+   ],
+   "taste_line": "담백하고 은은하게 단 흰밥이에요.",
+   "ko_compare": "한국 쌀밥보다 찰기가 적고 포슬포슬해요.",
+   "imagine": "은은한 쌀 향, 가벼운 식감, 카레와 잘 맞는 맛",
+   "good_for": [
+    "카레나 볶음을 같이 먹고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 5,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET B £40.90 (£20.45 per person) - Starters",
+   "section_ko": "세트 B 먼저 나오는 요리 (2인 40.90파운드, 1인 20.45파운드)",
+   "name_orig": "Chicken Satay",
+   "reading": "치킨 사테이",
+   "name_ko": "닭꼬치 구이",
+   "price": "",
+   "desc_ko": "양념한 닭고기를 꼬치에 꿰어 구운 요리예요. 메뉴판에 (n) 표시가 있어 땅콩 같은 견과류가 들어갈 수 있어요.",
+   "glossary": [
+    {
+     "term": "Satay",
+     "meaning": "양념한 고기를 꼬치에 꿰어 구운 동남아 요리. 보통 땅콩소스를 찍어 먹어요"
+    },
+    {
+     "term": "(n)",
+     "meaning": "견과류가 들어 있다는 표시"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "견과류",
+    "닭고기"
+   ],
+   "ingredient": "닭고기",
+   "cooking": "굽기",
+   "t_salty": 0.5,
+   "t_sweet": 0.5,
+   "t_spicy": 0.2,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.6,
+   "t_oily": 0.5,
+   "t_soft": 0.6,
+   "taste_kw": [
+    "짭짤한",
+    "달큰한",
+    "고소한"
+   ],
+   "aroma_kw": [
+    "숯불 향",
+    "향신료 향"
+   ],
+   "texture_kw": [
+    "쫄깃한",
+    "촉촉한"
+   ],
+   "taste_line": "달큰짭짤한 양념에 땅콩 맛이 고소한 닭꼬치예요.",
+   "ko_compare": "닭꼬치와 비슷한데, 땅콩소스가 붙어 더 고소하고 달아요.",
+   "imagine": "숯불 향, 고소한 땅콩소스, 쫄깃한 닭고기",
+   "good_for": [
+    "향이 진한 꼬치를 좋아하는 분",
+    "새로운 소스가 궁금한 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "양념이 짭짤할 수 있어요. 소스는 따로 달라고 하면 돼요"
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "견과류 표시(n)가 있어요. 먹지 않아요"
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET B £40.90 (£20.45 per person) - Starters",
+   "section_ko": "세트 B 먼저 나오는 요리 (2인 40.90파운드, 1인 20.45파운드)",
+   "name_orig": "Thai Spring Rolls",
+   "reading": "타이 스프링 롤스",
+   "name_ko": "태국식 야채 춘권",
+   "price": "",
+   "desc_ko": "작은 춘권 안에 채소를 넣고 튀긴 요리예요. 메뉴판에 (g)가 있어 밀가루(글루텐)가 들어가요.",
+   "glossary": [
+    {
+     "term": "(g)",
+     "meaning": "글루텐(밀가루)이 들어 있다는 표시"
+    },
+    {
+     "term": "Spring roll",
+     "meaning": "얇은 피에 속을 싸서 튀긴 춘권"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "밀가루",
+    "양파"
+   ],
+   "ingredient": "채소",
+   "cooking": "튀기기",
+   "t_salty": 0.3,
+   "t_sweet": 0.3,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.3,
+   "t_aroma": 0.3,
+   "t_oily": 0.6,
+   "t_soft": 0.2,
+   "taste_kw": [
+    "고소한",
+    "담백한"
+   ],
+   "aroma_kw": [
+    "튀김 향"
+   ],
+   "texture_kw": [
+    "바삭한",
+    "아삭한"
+   ],
+   "taste_line": "겉이 바삭하고 속은 채소 맛이 나는 담백한 튀김이에요.",
+   "ko_compare": "야채 튀김이나 미니 만두튀김과 비슷한데, 속이 채소 위주라 더 가벼워요.",
+   "imagine": "바삭한 껍질, 아삭한 채소, 달콤한 소스",
+   "good_for": [
+    "바삭한 튀김을 좋아하는 분",
+    "가볍게 시작하고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없어 아쉬울 수 있어요"
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 보여요. 속 채소만 빼고 먹으면 돼요"
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET B £40.90 (£20.45 per person) - Main Course",
+   "section_ko": "세트 B 주요리 (2인 40.90파운드, 1인 20.45파운드)",
+   "name_orig": "Chicken Green Curry",
+   "reading": "치킨 그린 커리",
+   "name_ko": "닭고기 그린 커리",
+   "price": "",
+   "desc_ko": "닭고기와 채소를 코코넛밀크와 초록 카레 소스에 끓인 요리예요.",
+   "glossary": [
+    {
+     "term": "Green curry",
+     "meaning": "초록 고추와 향신료로 만든 태국 카레"
+    },
+    {
+     "term": "Coconut milk",
+     "meaning": "코코넛 열매로 만든 고소한 우유 같은 액체"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "닭고기",
+    "양파"
+   ],
+   "ingredient": "닭고기",
+   "cooking": "끓이기",
+   "t_salty": 0.5,
+   "t_sweet": 0.4,
+   "t_spicy": 0.6,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.8,
+   "t_oily": 0.6,
+   "t_soft": 0.7,
+   "taste_kw": [
+    "매콤한",
+    "고소한",
+    "달큰한"
+   ],
+   "aroma_kw": [
+    "바질 향",
+    "코코넛 향",
+    "향신료 향"
+   ],
+   "texture_kw": [
+    "걸쭉한",
+    "부드러운"
+   ],
+   "taste_line": "코코넛 맛이 고소하고 은근히 매콤한 카레예요.",
+   "ko_compare": "닭볶음탕보다 국물이 걸쭉하고, 매운맛 뒤에 코코넛 단맛과 허브 향이 강해요.",
+   "imagine": "코코넛 향, 매콤한 뒤끝, 밥에 비벼 먹는 진한 소스",
+   "good_for": [
+    "향이 진한 카레를 좋아하는 분",
+    "새로운 맛이 궁금한 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 15,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "소스가 짭짤하고 매울 수 있어요. 밥과 같이 먹으면 돼요"
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 보이고 매울 수 있어요. 닭고기와 밥만 먹으면 돼요"
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "How spicy would you like it?",
+     "q_ko": "얼마나 맵게 해 드릴까요?",
+     "answers": [
+      {
+       "orig": "Mild, please.",
+       "ko": "순하게 해 주세요"
+      },
+      {
+       "orig": "Medium, please.",
+       "ko": "보통 맵기로 해 주세요"
+      },
+      {
+       "orig": "Spicy, please.",
+       "ko": "맵게 해 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "SET B £40.90 (£20.45 per person) - Main Course",
+   "section_ko": "세트 B 주요리 (2인 40.90파운드, 1인 20.45파운드)",
+   "name_orig": "Pork Ga-prao",
+   "reading": "포크 가프라오",
+   "name_ko": "돼지고기 바질 볶음",
+   "price": "",
+   "desc_ko": "돼지고기를 스위트 바질, 양파, 붉은 고추와 같이 볶은 요리예요.",
+   "glossary": [
+    {
+     "term": "Ga-prao",
+     "meaning": "태국 바질과 고추를 넣어 볶는 요리법"
+    },
+    {
+     "term": "Sweet basil",
+     "meaning": "향이 진한 바질 잎"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "돼지고기",
+    "양파"
+   ],
+   "ingredient": "돼지고기",
+   "cooking": "볶기",
+   "t_salty": 0.6,
+   "t_sweet": 0.3,
+   "t_spicy": 0.7,
+   "t_sour": 0.1,
+   "t_umami": 0.7,
+   "t_aroma": 0.8,
+   "t_oily": 0.5,
+   "t_soft": 0.4,
+   "taste_kw": [
+    "매콤한",
+    "짭짤한",
+    "감칠맛 나는"
+   ],
+   "aroma_kw": [
+    "바질 향",
+    "마늘 향"
+   ],
+   "texture_kw": [
+    "촉촉한",
+    "쫄깃한"
+   ],
+   "taste_line": "짭짤하고 매콤한 양념에 바질 향이 진한 돼지고기 볶음이에요.",
+   "ko_compare": "제육볶음과 비슷하지만 덜 달고, 바질 향이 강하고 더 매워요.",
+   "imagine": "바질 향, 매콤한 고기, 밥을 부르는 짭짤함",
+   "good_for": [
+    "고기 볶음에 밥을 먹고 싶은 분",
+    "향이 진한 요리를 좋아하는 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": true,
+   "serve_minutes": 12,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "짭짤하고 매울 수 있어요. 밥과 같이 먹으면 돼요"
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "고추와 양파, 바질이 보여요. 고기만 덜어 주세요"
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "How spicy would you like it?",
+     "q_ko": "얼마나 맵게 해 드릴까요?",
+     "answers": [
+      {
+       "orig": "Mild, please.",
+       "ko": "순하게 해 주세요"
+      },
+      {
+       "orig": "Medium, please.",
+       "ko": "보통 맵기로 해 주세요"
+      },
+      {
+       "orig": "Spicy, please.",
+       "ko": "맵게 해 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "SET B £40.90 (£20.45 per person) - Main Course",
+   "section_ko": "세트 B 주요리 (2인 40.90파운드, 1인 20.45파운드)",
+   "name_orig": "Vegetable Stir Fry",
+   "reading": "베지터블 스터 프라이",
+   "name_ko": "채소 볶음",
+   "price": "",
+   "desc_ko": "여러 가지 채소를 센 불에 볶은 요리예요.",
+   "glossary": [
+    {
+     "term": "Stir fry",
+     "meaning": "센 불에 빠르게 볶는 조리법"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "양파"
+   ],
+   "ingredient": "채소",
+   "cooking": "볶기",
+   "t_salty": 0.4,
+   "t_sweet": 0.2,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.4,
+   "t_aroma": 0.4,
+   "t_oily": 0.4,
+   "t_soft": 0.4,
+   "taste_kw": [
+    "담백한",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "마늘 향"
+   ],
+   "texture_kw": [
+    "아삭한"
+   ],
+   "taste_line": "소스가 가볍고 채소가 아삭한 담백한 볶음이에요.",
+   "ko_compare": "야채볶음과 비슷한데, 굴소스 같은 짭짤한 양념이 조금 더 느껴져요.",
+   "imagine": "아삭한 식감, 가벼운 짠맛, 마늘 향",
+   "good_for": [
+    "고기 요리 옆에 가볍게 곁들일 분",
+    "담백한 맛을 좋아하는 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없어 아쉬울 수 있어요"
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "채소가 가득 보여요. 먹기 망설여져요"
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET B £40.90 (£20.45 per person) - Main Course",
+   "section_ko": "세트 B 주요리 (2인 40.90파운드, 1인 20.45파운드)",
+   "name_orig": "Steamed Thai Jasmine Rice",
+   "reading": "스팀드 타이 재스민 라이스",
+   "name_ko": "찐 태국 재스민 쌀밥",
+   "price": "",
+   "desc_ko": "향이 은은한 태국 쌀로 지은 흰밥이에요.",
+   "glossary": [
+    {
+     "term": "Jasmine rice",
+     "meaning": "향이 은은하고 찰기가 적은 태국 쌀"
+    }
+   ],
+   "unreadable": false,
+   "course": "side",
+   "contains": [],
+   "ingredient": "밥",
+   "cooking": "찌기",
+   "t_salty": 0.0,
+   "t_sweet": 0.2,
+   "t_spicy": 0.0,
+   "t_sour": 0.0,
+   "t_umami": 0.1,
+   "t_aroma": 0.3,
+   "t_oily": 0.0,
+   "t_soft": 0.8,
+   "taste_kw": [
+    "담백한",
+    "고소한"
+   ],
+   "aroma_kw": [
+    "쌀 향"
+   ],
+   "texture_kw": [
+    "보슬보슬한",
+    "부드러운"
+   ],
+   "taste_line": "간이 없고 담백한 흰밥이에요.",
+   "ko_compare": "한국 쌀밥보다 찰기가 적고 알이 길어서 보슬보슬해요.",
+   "imagine": "은은한 쌀 향, 카레와 어울리는 담백함, 보슬한 식감",
+   "good_for": [
+    "카레나 볶음 소스를 밥에 올려 먹을 분",
+    "간이 센 요리 옆에 담백한 것이 필요한 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 5,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET V £40.90 (£20.45 per person) - Starters",
+   "section_ko": "세트 V (2인 40.90파운드, 1인 20.45파운드) - 먼저 먹는 요리",
+   "name_orig": "Mushroom Satay",
+   "reading": "머쉬룸 사테이",
+   "name_ko": "버섯 사테 꼬치",
+   "price": "",
+   "desc_ko": "버섯을 꼬치에 꿰어 구운 태국식 요리예요. 보통 땅콩 소스가 함께 나와요.",
+   "glossary": [
+    {
+     "term": "Satay",
+     "meaning": "꼬치에 꿰어 구운 요리. 땅콩 소스를 곁들여요"
+    },
+    {
+     "term": "(n)",
+     "meaning": "견과류가 들어 있다는 표시"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "견과류",
+    "버섯"
+   ],
+   "ingredient": "채소",
+   "cooking": "굽기",
+   "t_salty": 0.5,
+   "t_sweet": 0.5,
+   "t_spicy": 0.2,
+   "t_sour": 0.1,
+   "t_umami": 0.7,
+   "t_aroma": 0.7,
+   "t_oily": 0.4,
+   "t_soft": 0.6,
+   "taste_kw": [
+    "고소한",
+    "달큰한",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "숯불 향",
+    "땅콩 향"
+   ],
+   "texture_kw": [
+    "쫄깃한",
+    "촉촉한"
+   ],
+   "taste_line": "땅콩 소스가 고소하고 달큰하며 버섯은 쫄깃해요.",
+   "ko_compare": "버섯꼬치구이와 비슷한데 땅콩 소스가 있어서 더 고소하고 달아요.",
+   "imagine": "숯불에 구운 향, 고소한 땅콩 소스, 쫄깃한 버섯",
+   "good_for": [
+    "새로운 소스 맛이 궁금한 분",
+    "향이 진한 요리를 좋아하는 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "소스가 짭짤할 수 있어요. 소스를 적게 부탁해 보세요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없어서 든든하지 않을 수 있어요."
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "견과류 표시(n)가 있어요. 땅콩 소스 때문에 먹지 않아요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET V £40.90 (£20.45 per person) - Starters",
+   "section_ko": "세트 V (2인 40.90파운드, 1인 20.45파운드) - 먼저 먹는 요리",
+   "name_orig": "Thai Spring Rolls",
+   "reading": "타이 스프링 롤즈",
+   "name_ko": "태국식 야채 춘권",
+   "price": "",
+   "desc_ko": "채소를 넣어 바삭하게 튀긴 작은 춘권이에요.",
+   "glossary": [
+    {
+     "term": "Spring roll",
+     "meaning": "얇은 피에 속을 말아 튀긴 춘권"
+    },
+    {
+     "term": "(g)",
+     "meaning": "글루텐(밀)이 들어 있다는 표시"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "밀가루",
+    "양파",
+    "날것"
+   ],
+   "ingredient": "채소",
+   "cooking": "튀기기",
+   "t_salty": 0.4,
+   "t_sweet": 0.3,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.4,
+   "t_aroma": 0.3,
+   "t_oily": 0.6,
+   "t_soft": 0.2,
+   "taste_kw": [
+    "고소한",
+    "담백한"
+   ],
+   "aroma_kw": [
+    "튀김 향"
+   ],
+   "texture_kw": [
+    "바삭한",
+    "아삭한"
+   ],
+   "taste_line": "겉은 바삭하고 속은 채소가 아삭하며 담백해요.",
+   "ko_compare": "야채 튀김 만두와 비슷한데 속이 채소 위주라 더 가벼워요.",
+   "imagine": "바삭한 껍질, 아삭한 채소, 달콤한 소스",
+   "good_for": [
+    "바삭한 튀김이 당기는 분",
+    "가볍게 시작하고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없어서 아쉬울 수 있어요."
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 보이면 골라낼 수 있어요. 바삭해서 한 개는 먹어 볼 만해요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET V £40.90 (£20.45 per person) - Main Course",
+   "section_ko": "세트 V (2인 40.90파운드, 1인 20.45파운드) - 주요리",
+   "name_orig": "Red Curry Beancurd",
+   "reading": "레드 커리 빈커드",
+   "name_ko": "두부 레드 커리",
+   "price": "",
+   "desc_ko": "두부와 채소를 붉은 카레와 코코넛 밀크에 끓인 요리예요.",
+   "glossary": [
+    {
+     "term": "Beancurd",
+     "meaning": "두부"
+    },
+    {
+     "term": "Red curry",
+     "meaning": "붉은 고추로 만든 태국식 카레"
+    },
+    {
+     "term": "Coconut milk",
+     "meaning": "코코넛 열매로 만든 하얀 국물"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "양파"
+   ],
+   "ingredient": "두부",
+   "cooking": "끓이기",
+   "t_salty": 0.5,
+   "t_sweet": 0.4,
+   "t_spicy": 0.6,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.8,
+   "t_oily": 0.6,
+   "t_soft": 0.8,
+   "taste_kw": [
+    "매콤한",
+    "고소한",
+    "달큰한"
+   ],
+   "aroma_kw": [
+    "코코넛 향",
+    "향신료 향",
+    "바질 향"
+   ],
+   "texture_kw": [
+    "부드러운",
+    "걸쭉한"
+   ],
+   "taste_line": "코코넛 때문에 고소하고 달큰한데 끝에 매운맛이 올라와요.",
+   "ko_compare": "순한 카레에 두부를 넣은 맛인데 코코넛 향과 향신료가 훨씬 진해요.",
+   "imagine": "코코넛 향, 부드러운 두부, 끝에 남는 매콤함",
+   "good_for": [
+    "향이 진한 요리를 좋아하는 분",
+    "부드러운 국물 요리를 찾는 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": true,
+   "serve_minutes": 15,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "국물이 간간할 수 있어요. 밥과 같이 먹으면 좋아요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없고 매울 수 있어요."
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "채소가 보이고 매울 수 있어요. 두부와 밥만 덜어 주세요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "How spicy would you like it?",
+     "q_ko": "얼마나 맵게 드릴까요?",
+     "answers": [
+      {
+       "orig": "Mild, please.",
+       "ko": "순하게 해 주세요"
+      },
+      {
+       "orig": "Medium, please.",
+       "ko": "보통으로 해 주세요"
+      },
+      {
+       "orig": "Spicy, please.",
+       "ko": "맵게 해 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "SET V £40.90 (£20.45 per person) - Main Course",
+   "section_ko": "세트 V (2인 40.90파운드, 1인 20.45파운드) - 주요리",
+   "name_orig": "Tao-hu Khing",
+   "reading": "따오후 킹",
+   "name_ko": "생강 두부볶음",
+   "price": "",
+   "desc_ko": "두부를 생강과 양파와 함께 볶은 요리예요.",
+   "glossary": [
+    {
+     "term": "Tao-hu",
+     "meaning": "태국어로 두부"
+    },
+    {
+     "term": "Khing",
+     "meaning": "태국어로 생강"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "양파"
+   ],
+   "ingredient": "두부",
+   "cooking": "볶기",
+   "t_salty": 0.5,
+   "t_sweet": 0.3,
+   "t_spicy": 0.2,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.7,
+   "t_oily": 0.4,
+   "t_soft": 0.7,
+   "taste_kw": [
+    "짭짤한",
+    "담백한",
+    "알싸한"
+   ],
+   "aroma_kw": [
+    "생강 향",
+    "간장 향"
+   ],
+   "texture_kw": [
+    "부드러운",
+    "촉촉한"
+   ],
+   "taste_line": "간장 맛이 나고 생강이 알싸하며 두부는 부드러워요.",
+   "ko_compare": "두부 간장볶음에 생강을 더한 맛이에요. 향이 더 또렷해요.",
+   "imagine": "생강의 알싸함, 부드러운 두부, 짭짤한 간장 맛",
+   "good_for": [
+    "담백한 두부 요리를 좋아하는 분",
+    "생강 향이 궁금한 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 12,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "간이 센 편일 수 있어요. 간을 약하게 부탁해 보세요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없어서 든든하지 않을 수 있어요."
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "양파가 보이면 골라낼 수 있어요. 두부만 덜어 주세요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET V £40.90 (£20.45 per person) - Main Course",
+   "section_ko": "세트 V (2인 40.90파운드, 1인 20.45파운드) - 주요리",
+   "name_orig": "Vegetable Stir Fry",
+   "reading": "베지터블 스터 프라이",
+   "name_ko": "모듬 채소볶음",
+   "price": "",
+   "desc_ko": "여러 가지 채소를 센 불에 볶은 요리예요.",
+   "glossary": [
+    {
+     "term": "Stir fry",
+     "meaning": "센 불에서 빠르게 볶기"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "양파"
+   ],
+   "ingredient": "채소",
+   "cooking": "볶기",
+   "t_salty": 0.5,
+   "t_sweet": 0.3,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.5,
+   "t_aroma": 0.4,
+   "t_oily": 0.4,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "담백한",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "간장 향",
+    "마늘 향"
+   ],
+   "texture_kw": [
+    "아삭한"
+   ],
+   "taste_line": "간장 맛이 은은하고 채소가 아삭해요.",
+   "ko_compare": "야채볶음과 비슷한데 굴소스나 간장 맛이 조금 더 진해요.",
+   "imagine": "아삭한 채소, 마늘 향, 가벼운 간장 맛",
+   "good_for": [
+    "담백한 채소 요리가 먹고 싶은 분",
+    "다른 요리와 밥을 같이 먹고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없어서 심심할 수 있어요."
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "채소만 가득 보여서 골라내고 싶어져요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "SET V £40.90 (£20.45 per person) - Main Course",
+   "section_ko": "세트 V (2인 40.90파운드, 1인 20.45파운드) - 주요리",
+   "name_orig": "Steamed Thai Jasmine Rice",
+   "reading": "스팀드 타이 자스민 라이스",
+   "name_ko": "찐 태국 자스민 쌀밥",
+   "price": "",
+   "desc_ko": "향이 은은한 태국 쌀로 지은 흰밥이에요.",
+   "glossary": [
+    {
+     "term": "Jasmine rice",
+     "meaning": "꽃향기가 나는 길쭉한 태국 쌀"
+    }
+   ],
+   "unreadable": false,
+   "course": "side",
+   "contains": [],
+   "ingredient": "밥",
+   "cooking": "찌기",
+   "t_salty": 0.0,
+   "t_sweet": 0.2,
+   "t_spicy": 0.0,
+   "t_sour": 0.0,
+   "t_umami": 0.1,
+   "t_aroma": 0.4,
+   "t_oily": 0.0,
+   "t_soft": 0.8,
+   "taste_kw": [
+    "담백한",
+    "고소한"
+   ],
+   "aroma_kw": [
+    "꽃 향",
+    "쌀 향"
+   ],
+   "texture_kw": [
+    "보슬보슬한",
+    "부드러운"
+   ],
+   "taste_line": "담백하고 은은하게 달며 부드러워요.",
+   "ko_compare": "흰쌀밥과 비슷한데 알이 길고 밥이 더 포슬포슬해요.",
+   "imagine": "은은한 꽃 향, 포슬포슬한 밥알, 카레와 잘 맞는 맛",
+   "good_for": [
+    "카레나 볶음과 같이 먹고 싶은 분",
+    "담백한 밥이 필요한 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 8,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "Special SET £52.90 (£26.45 per person) - Starters",
+   "section_ko": "스페셜 세트 (2인 52.90파운드, 1인 26.45파운드) - 먼저 먹는 요리",
+   "name_orig": "Chicken Satay",
+   "reading": "치킨 사테이",
+   "name_ko": "닭꼬치 구이",
+   "price": "",
+   "desc_ko": "구운 닭꼬치예요. 보통 땅콩 소스를 찍어 먹어요. 메뉴판에 견과류(n) 표시가 있어요.",
+   "glossary": [
+    {
+     "term": "Satay",
+     "meaning": "양념한 고기를 꼬치에 꿰어 구운 동남아 요리"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "견과류",
+    "닭고기"
+   ],
+   "ingredient": "닭고기",
+   "cooking": "굽기",
+   "t_salty": 0.5,
+   "t_sweet": 0.4,
+   "t_spicy": 0.2,
+   "t_sour": 0.1,
+   "t_umami": 0.6,
+   "t_aroma": 0.6,
+   "t_oily": 0.5,
+   "t_soft": 0.6,
+   "taste_kw": [
+    "짭짤한",
+    "고소한",
+    "달큰한"
+   ],
+   "aroma_kw": [
+    "숯불 향",
+    "땅콩 향"
+   ],
+   "texture_kw": [
+    "쫄깃한",
+    "촉촉한"
+   ],
+   "taste_line": "짭짤하고 달큰하며 땅콩 맛이 고소한 닭꼬치예요.",
+   "ko_compare": "닭꼬치와 비슷한데, 땅콩 소스가 걸쭉하고 향신료 향이 더 나요.",
+   "imagine": "숯불 향, 고소한 땅콩 소스, 쫄깃한 닭고기",
+   "good_for": [
+    "새로운 소스 맛이 궁금한 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 15,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "소스가 짭짤할 수 있어요. 소스를 따로 달라고 하면 돼요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "견과류 알레르기가 있어서 땅콩 소스가 들어간 음식은 안 돼요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "Special SET £52.90 (£26.45 per person) - Starters",
+   "section_ko": "스페셜 세트 (2인 52.90파운드, 1인 26.45파운드) - 먼저 먹는 요리",
+   "name_orig": "Thai Spring Rolls",
+   "reading": "타이 스프링 롤즈",
+   "name_ko": "태국식 채소 춘권",
+   "price": "",
+   "desc_ko": "작은 채소 춘권을 튀긴 요리예요. 메뉴판에 글루텐(g) 표시가 있어요.",
+   "glossary": [
+    {
+     "term": "Spring roll",
+     "meaning": "얇은 피에 속을 싸서 튀긴 춘권"
+    }
+   ],
+   "unreadable": false,
+   "course": "starter",
+   "contains": [
+    "밀가루",
+    "날것"
+   ],
+   "ingredient": "채소",
+   "cooking": "튀기기",
+   "t_salty": 0.4,
+   "t_sweet": 0.3,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.4,
+   "t_aroma": 0.3,
+   "t_oily": 0.6,
+   "t_soft": 0.2,
+   "taste_kw": [
+    "고소한",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "튀김 향"
+   ],
+   "texture_kw": [
+    "바삭한",
+    "아삭한"
+   ],
+   "taste_line": "겉은 바삭하고 속은 채소가 아삭한 담백한 튀김이에요.",
+   "ko_compare": "야채 튀김이나 춘권과 비슷한데, 크기가 작고 달콤한 칠리소스를 찍어 먹어요.",
+   "imagine": "바삭한 겉, 아삭한 채소, 달콤한 소스",
+   "good_for": [
+    "바삭한 튀김이 먹고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "속에 채소가 보여요. 바삭한 겉만 먹어도 돼요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "Special SET £52.90 (£26.45 per person) - Main Course",
+   "section_ko": "스페셜 세트 (2인 52.90파운드, 1인 26.45파운드) - 주요리",
+   "name_orig": "Duck Masaman Curry",
+   "reading": "덕 마사만 커리",
+   "name_ko": "오리 마사만 카레",
+   "price": "",
+   "desc_ko": "구운 오리고기를 감자와 코코넛 밀크를 넣은 마사만 카레에 끓인 요리예요. 메뉴판에 견과류(n) 표시가 있어요.",
+   "glossary": [
+    {
+     "term": "Masaman",
+     "meaning": "향신료와 코코넛 밀크로 만든 순하고 달큰한 태국 카레"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "견과류",
+    "날것"
+   ],
+   "ingredient": "오리고기",
+   "cooking": "오래 끓이기",
+   "t_salty": 0.5,
+   "t_sweet": 0.6,
+   "t_spicy": 0.3,
+   "t_sour": 0.1,
+   "t_umami": 0.7,
+   "t_aroma": 0.8,
+   "t_oily": 0.7,
+   "t_soft": 0.8,
+   "taste_kw": [
+    "달큰한",
+    "고소한",
+    "진한"
+   ],
+   "aroma_kw": [
+    "코코넛 향",
+    "계피 향",
+    "향신료 향"
+   ],
+   "texture_kw": [
+    "부드러운",
+    "걸쭉한",
+    "포슬포슬한"
+   ],
+   "taste_line": "달큰하고 코코넛 맛이 진한 걸쭉한 카레예요. 향신료 향이 나요.",
+   "ko_compare": "한국 카레보다 훨씬 달고 코코넛 향이 진하며, 오리고기가 들어가요.",
+   "imagine": "코코넛 향, 부드러운 감자, 진한 국물",
+   "good_for": [
+    "향이 진한 카레가 궁금한 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": true,
+   "serve_minutes": 25,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "기름지고 진한 편이에요. 밥과 같이 먹으면 덜해요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "견과류 알레르기가 있어서 땅콩이 들어간 카레는 안 돼요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "Would you like steamed rice or egg fried rice?",
+     "q_ko": "흰 쌀밥으로 드릴까요, 계란볶음밥으로 드릴까요?",
+     "answers": [
+      {
+       "orig": "Steamed rice, please.",
+       "ko": "흰 쌀밥 주세요"
+      },
+      {
+       "orig": "Egg fried rice, please.",
+       "ko": "계란볶음밥 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Special SET £52.90 (£26.45 per person) - Main Course",
+   "section_ko": "스페셜 세트 (2인 52.90파운드, 1인 26.45파운드) - 주요리",
+   "name_orig": "Pork Gra-tiam",
+   "reading": "포크 그라티암",
+   "name_ko": "마늘 후추 돼지고기볶음",
+   "price": "",
+   "desc_ko": "돼지고기를 마늘과 흰 후추로 볶은 요리예요.",
+   "glossary": [
+    {
+     "term": "Gra-tiam",
+     "meaning": "태국어로 마늘이라는 뜻"
+    },
+    {
+     "term": "White pepper",
+     "meaning": "흰 후추. 검은 후추보다 향이 깔끔하고 톡 쏘는 맛"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "돼지고기"
+   ],
+   "ingredient": "돼지고기",
+   "cooking": "볶기",
+   "t_salty": 0.6,
+   "t_sweet": 0.2,
+   "t_spicy": 0.3,
+   "t_sour": 0.1,
+   "t_umami": 0.7,
+   "t_aroma": 0.7,
+   "t_oily": 0.5,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "짭짤한",
+    "마늘 맛",
+    "톡 쏘는"
+   ],
+   "aroma_kw": [
+    "마늘 향",
+    "후추 향"
+   ],
+   "texture_kw": [
+    "쫄깃한",
+    "촉촉한"
+   ],
+   "taste_line": "마늘 맛이 진하고 후추가 톡 쏘는 짭짤한 돼지고기볶음이에요.",
+   "ko_compare": "제육볶음에서 고추장 양념을 빼고 마늘과 후추 맛을 더한 느낌이에요.",
+   "imagine": "볶은 마늘 향, 후추의 칼칼함, 밥 위에 올린 고기",
+   "good_for": [
+    "마늘 향이 강한 고기볶음이 먹고 싶은 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 15,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "간이 짭짤한 편이에요. 밥과 같이 먹으면 돼요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "조심",
+     "reason": "처음 보는 볶음 요리라 망설일 수 있어요. 고기만 덜어 주세요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "Special SET £52.90 (£26.45 per person) - Main Course",
+   "section_ko": "스페셜 세트 (2인 52.90파운드, 1인 26.45파운드) - 주요리",
+   "name_orig": "Prawn Ga-prao",
+   "reading": "프라운 가파오",
+   "name_ko": "바질 새우볶음",
+   "price": "",
+   "desc_ko": "새우를 바질, 양파, 붉은 고추와 같이 볶은 요리예요.",
+   "glossary": [
+    {
+     "term": "Prawn",
+     "meaning": "새우"
+    },
+    {
+     "term": "Ga-prao",
+     "meaning": "태국 바질로 매콤하게 볶는 요리 방식"
+    }
+   ],
+   "unreadable": false,
+   "course": "main",
+   "contains": [
+    "갑각류",
+    "양파"
+   ],
+   "ingredient": "해산물",
+   "cooking": "볶기",
+   "t_salty": 0.6,
+   "t_sweet": 0.2,
+   "t_spicy": 0.7,
+   "t_sour": 0.1,
+   "t_umami": 0.7,
+   "t_aroma": 0.9,
+   "t_oily": 0.4,
+   "t_soft": 0.4,
+   "taste_kw": [
+    "매콤한",
+    "짭짤한",
+    "감칠맛"
+   ],
+   "aroma_kw": [
+    "바질 향",
+    "마늘 향"
+   ],
+   "texture_kw": [
+    "탱글한",
+    "아삭한"
+   ],
+   "taste_line": "바질 향이 강하고 매콤하며 짭짤한 새우볶음이에요.",
+   "ko_compare": "새우볶음에 깻잎 비슷한 향채를 듬뿍 넣고 더 맵게 볶은 맛이에요.",
+   "imagine": "진한 바질 향, 탱글한 새우, 입안에 남는 매콤함",
+   "good_for": [
+    "향이 진하고 매콤한 맛이 궁금한 분"
+   ],
+   "local_popular": true,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 15,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "조심",
+     "reason": "간이 짭짤하고 매울 수 있어요. 덜 맵게 부탁하면 돼요."
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "새우는 갑각류라 조개류와 달라요. 고기가 아니라 아쉬울 수 있어요."
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "고추와 바질 향이 강해서 입맛과 맞지 않아요. 양파도 보여요."
+    }
+   ],
+   "staff_asks": [
+    {
+     "q_orig": "How spicy would you like it?",
+     "q_ko": "얼마나 맵게 드릴까요?",
+     "answers": [
+      {
+       "orig": "Mild, please.",
+       "ko": "순하게 주세요"
+      },
+      {
+       "orig": "Medium, please.",
+       "ko": "중간 맵기로 주세요"
+      },
+      {
+       "orig": "Spicy, please.",
+       "ko": "맵게 주세요"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "section_orig": "Special SET £52.90 (£26.45 per person) - Main Course",
+   "section_ko": "스페셜 세트 (2인 52.90파운드, 1인 26.45파운드) - 주요리",
+   "name_orig": "Vegetable Stir Fry",
+   "reading": "베지터블 스터 프라이",
+   "name_ko": "채소볶음",
+   "price": "",
+   "desc_ko": "여러 가지 채소를 한꺼번에 볶은 요리예요.",
+   "glossary": [],
+   "unreadable": false,
+   "course": "side",
+   "contains": [],
+   "ingredient": "채소",
+   "cooking": "볶기",
+   "t_salty": 0.4,
+   "t_sweet": 0.2,
+   "t_spicy": 0.1,
+   "t_sour": 0.1,
+   "t_umami": 0.4,
+   "t_aroma": 0.3,
+   "t_oily": 0.4,
+   "t_soft": 0.5,
+   "taste_kw": [
+    "담백한",
+    "짭짤한"
+   ],
+   "aroma_kw": [
+    "마늘 향"
+   ],
+   "texture_kw": [
+    "아삭한"
+   ],
+   "taste_line": "간이 슴슴하고 채소가 아삭한 담백한 볶음이에요.",
+   "ko_compare": "한국의 채소볶음과 비슷한데, 굴소스 맛이 조금 더 나요.",
+   "imagine": "아삭한 채소, 담백한 간, 가벼운 마늘 향",
+   "good_for": [
+    "담백한 채소 요리가 먹고 싶은 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "조심",
+     "reason": "고기가 없어서 아쉬울 수 있어요."
+    },
+    {
+     "name": "아이",
+     "verdict": "피하기",
+     "reason": "채소만 있어서 골라낼 게 많아요."
+    }
+   ],
+   "staff_asks": []
+  },
+  {
+   "section_orig": "Special SET £52.90 (£26.45 per person) - Main Course",
+   "section_ko": "스페셜 세트 (2인 52.90파운드, 1인 26.45파운드) - 주요리",
+   "name_orig": "Steamed Thai Jasmine Rice",
+   "reading": "스팀드 타이 재스민 라이스",
+   "name_ko": "쪄서 지은 태국 재스민 쌀밥",
+   "price": "",
+   "desc_ko": "향이 은은한 태국 쌀로 지은 흰밥이에요. 세트 요리와 함께 나와요.",
+   "glossary": [
+    {
+     "term": "Jasmine Rice",
+     "meaning": "재스민 향이 나는 길쭉한 태국 쌀"
+    }
+   ],
+   "unreadable": false,
+   "course": "side",
+   "contains": [],
+   "ingredient": "밥",
+   "cooking": "찌기",
+   "t_salty": 0.02,
+   "t_sweet": 0.1,
+   "t_spicy": 0,
+   "t_sour": 0,
+   "t_umami": 0.05,
+   "t_aroma": 0.3,
+   "t_oily": 0.05,
+   "t_soft": 0.8,
+   "taste_kw": [
+    "담백한",
+    "은은하게 단"
+   ],
+   "aroma_kw": [
+    "재스민 향",
+    "고소한 쌀 향"
+   ],
+   "texture_kw": [
+    "부드러운",
+    "살짝 찰진"
+   ],
+   "taste_line": "간이 없어 담백하고 쌀 향이 은은해요.",
+   "ko_compare": "한국 흰쌀밥보다 알이 길고 찰기가 덜하며, 꽃 같은 향이 살짝 나요.",
+   "imagine": "담백한 밥맛, 은은한 꽃 향, 포슬포슬한 식감",
+   "good_for": [
+    "짭짤한 요리와 곁들일 밥이 필요한 분",
+    "담백한 맛을 좋아하는 분"
+   ],
+   "local_popular": false,
+   "kids_only": false,
+   "chef_pick": false,
+   "serve_minutes": 10,
+   "share_ok": true,
+   "people": [
+    {
+     "name": "나",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "엄마",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아빠",
+     "verdict": "편히",
+     "reason": ""
+    },
+    {
+     "name": "아이",
+     "verdict": "편히",
+     "reason": ""
+    }
+   ],
+   "staff_asks": []
+  }
+ ]
+}
