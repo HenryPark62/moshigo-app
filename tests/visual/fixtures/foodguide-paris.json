@@ -5,7 +5,9 @@
     "people": "core.menu2.DEFAULT_PEOPLE",
     "source": "Actual local Food Guide image job after separate favorite-name resolution",
     "external_calls_succeeded": true,
-    "redaction": "Only fields used by UI retained; no credentials, job IDs or full catalog"
+    "redaction": "Only fields used by UI retained; no credentials, job IDs or full catalog",
+    "role_metadata": "Restored food_type, meal_roles, unknown_fields from the original successful API response; all previously retained profile fields matched exactly.",
+    "original_capture_sha256": "afa07125cb7d4aedb42d98c3e786ffe0572450af69cf3b809df58139c01fcc4a"
   },
   "report": {
     "schema_version": "menu-guide-v1",
@@ -61,7 +63,13 @@
             "끓이기",
             "그라탱"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "국물요리",
+          "meal_roles": [
+            "국물",
+            "주요리"
+          ],
+          "unknown_fields": []
         },
         "matches": [
           {
@@ -217,7 +225,13 @@
           "cooking_methods": [
             "굽기"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "생선·해산물요리",
+          "meal_roles": [
+            "간식",
+            "주요리"
+          ],
+          "unknown_fields": []
         },
         "matches": [
           {
@@ -335,7 +349,13 @@
           "cooking_methods": [
             "굽기"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "샐러드·포케",
+          "meal_roles": [
+            "반찬",
+            "주식"
+          ],
+          "unknown_fields": []
         },
         "matches": [],
         "preferences": [
@@ -435,7 +455,12 @@
           "cooking_methods": [
             "조림"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "고기요리",
+          "meal_roles": [
+            "주요리"
+          ],
+          "unknown_fields": []
         },
         "matches": [
           {
@@ -596,7 +621,12 @@
             "삶기",
             "튀기기"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "생선·해산물요리",
+          "meal_roles": [
+            "주요리"
+          ],
+          "unknown_fields": []
         },
         "matches": [
           {
@@ -731,7 +761,12 @@
           "cooking_methods": [
             "그릴"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "고기요리",
+          "meal_roles": [
+            "주요리"
+          ],
+          "unknown_fields": []
         },
         "matches": [
           {
@@ -887,7 +922,12 @@
             "로스트",
             "그라탱"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "고기요리",
+          "meal_roles": [
+            "주요리"
+          ],
+          "unknown_fields": []
         },
         "matches": [
           {
@@ -1047,7 +1087,12 @@
             "그릴",
             "베이킹"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "빵·페이스트리",
+          "meal_roles": [
+            "주식"
+          ],
+          "unknown_fields": []
         },
         "matches": [],
         "preferences": [
@@ -1144,7 +1189,13 @@
             "굽기",
             "튀김"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "고기요리",
+          "meal_roles": [
+            "주요리",
+            "디저트"
+          ],
+          "unknown_fields": []
         },
         "matches": [
           {
@@ -1305,7 +1356,12 @@
           "cooking_methods": [
             "굽기"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "푸딩·젤리·무스",
+          "meal_roles": [
+            "디저트"
+          ],
+          "unknown_fields": []
         },
         "matches": [],
         "preferences": [
@@ -1401,7 +1457,12 @@
             "섞기",
             "냉장"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "푸딩·젤리·무스",
+          "meal_roles": [
+            "디저트"
+          ],
+          "unknown_fields": []
         },
         "matches": [],
         "preferences": [
@@ -1497,7 +1558,12 @@
             "굽기",
             "캐러멜라이즈"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "빵·페이스트리",
+          "meal_roles": [
+            "디저트"
+          ],
+          "unknown_fields": []
         },
         "matches": [],
         "preferences": [
@@ -1578,7 +1644,17 @@
           ],
           "seasonings": [],
           "cooking_methods": [],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "음료",
+          "meal_roles": [
+            "음료"
+          ],
+          "unknown_fields": [
+            "taste",
+            "aroma",
+            "seasonings",
+            "cooking_methods"
+          ]
         },
         "matches": [],
         "preferences": [
@@ -1668,7 +1744,14 @@
           "cooking_methods": [
             "발효"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "주류",
+          "meal_roles": [
+            "주류"
+          ],
+          "unknown_fields": [
+            "seasonings"
+          ]
         },
         "matches": [],
         "preferences": [
@@ -1756,7 +1839,14 @@
           "cooking_methods": [
             "착즙"
           ],
-          "source": "ai_estimate"
+          "source": "ai_estimate",
+          "food_type": "음료",
+          "meal_roles": [
+            "음료"
+          ],
+          "unknown_fields": [
+            "seasonings"
+          ]
         },
         "matches": [],
         "preferences": [

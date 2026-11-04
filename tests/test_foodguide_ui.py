@@ -212,6 +212,7 @@ def test_recommendation_averages_every_active_person_and_keeps_individual_rows()
     assert len(first["preferences"]) == 4
     for item in scan["items"]:
         item["status"] = "ok"
+        item["profile"] = dict(item.get("profile") or {}, status="known", meal_roles=["주요리"], unknown_fields=[])
         for row in item["preferences"]:
             row.update(score=0, eligible=True)
     for row in first["preferences"]:
@@ -243,6 +244,7 @@ def test_top_two_use_raw_group_means_stable_ties_and_exclude_any_restriction():
     scan = deepcopy(at.session_state["scan"])
     for item in scan["items"]:
         item["status"] = "ok"
+        item["profile"] = dict(item.get("profile") or {}, status="known", meal_roles=["주요리"], unknown_fields=[])
         for row in item["preferences"]:
             row.update(score=None, eligible=True)
     for index, value in enumerate([44.1, 44.4, 99.9, 44.3, 44.4]):
@@ -350,6 +352,7 @@ def test_generated_asset_lookup_only_overrides_two_recommended_cards(monkeypatch
     scan = deepcopy(at.session_state["scan"])
     for index, item in enumerate(scan["items"]):
         item["status"] = "ok"
+        item["profile"] = dict(item.get("profile") or {}, status="known", meal_roles=["주요리"], unknown_fields=[])
         score = {1: 95, 3: 90}.get(index, 10)
         for row in item["preferences"]:
             row.update(score=score, eligible=eligible)
@@ -388,3 +391,59 @@ def test_generated_asset_lookup_only_overrides_two_recommended_cards(monkeypatch
         assert expected["src"] in card and expected["label"] in card
         if kind == "fallback":
             assert "생성 자산 확인" not in card
+
+
+@pytest.mark.parametrize("profile, expected", [
+    ({"meal_roles": ["주식"]}, True),
+    ({"status": "known", "meal_roles": ["주요리", "곁들임"]}, True),
+    ({"status": "unknown", "meal_roles": ["주요리"]}, False),
+    ({"status": "known", "meal_roles": ["주요리"], "unknown_fields": ["meal_roles"]}, False),
+    ({"status": "known", "meal_roles": ["양념"]}, False),
+    ({"status": "known", "meal_roles": ["음료"]}, False),
+    ({"status": "known", "meal_roles": ["후식"]}, False),
+    ({"status": "known"}, False),
+    ({"meal_roles": []}, False),
+    (None, False),
+])
+def test_meal_recommendation_requires_known_meal_roles_not_name(profile, expected):
+    # 같은 '소스' 이름도 역할 정보에 따라 판단해야 한다.
+    item = {"name_ko": "소스 곁들인 주요리", "profile": profile}
+    assert foodguide._is_meal(item) is expected
+
+
+@pytest.mark.parametrize("meal_count", [1, 2])
+def test_meals_precede_high_scoring_condiments_and_badges_match_available_meals(meal_count):
+    at = capture("menu-translated")
+    scan = deepcopy(at.session_state["scan"])
+    scan["items"] = scan["items"][:8]
+    roles = [["양념"], ["음료"], ["후식"], ["주요리"], ["주식"] if meal_count == 2 else ["곁들임"], ["주요리"], [], ["주요리"]]
+    scores = [100, 99, 98, 60, 55, 97, 96, 95]
+    for index, item in enumerate(scan["items"]):
+        item["status"] = "ok"
+        item["profile"] = dict(item.get("profile") or {}, status="known", meal_roles=roles[index], unknown_fields=[])
+        item["name_ko"] = f"검증 메뉴 {index}"
+        for row in item["preferences"]:
+            row.update(score=scores[index], eligible=True)
+    scan["items"][0]["name_ko"] = "스테이크 소스"
+    scan["items"][3]["name_ko"] = "소스 곁들인 스테이크"
+    scan["items"][5]["profile"]["unknown_fields"] = ["meal_roles"]
+    scan["items"][6]["profile"].pop("meal_roles")
+    scan["items"][7]["profile"]["status"] = "unknown"
+    before = deepcopy(scan)
+    at.session_state["scan"] = scan
+    rerun(at)
+    cards = [element.value for element in at.markdown if 'class="fg_menu_tile_content"' in element.value]
+    order = [3, 4, 0, 1, 2, 5, 6, 7] if meal_count == 2 else [3, 0, 1, 2, 5, 6, 7, 4]
+    assert len(cards) == 8
+    for position, index in enumerate(order):
+        assert scan["items"][index]["name_ko"] in cards[position]
+    assert sum('class="fg_recommend_badge"' in card for card in cards) == meal_count
+    assert all('class="fg_recommend_badge"' in card for card in cards[:meal_count])
+    assert all('class="fg_recommend_badge"' not in card for card in cards[meal_count:])
+    people = [p for p in at.session_state["people"] if p.get("active", True)]
+    for item, score in zip(scan["items"], scores):
+        # 식사 우선순위는 원래 평균 점수 자체를 깎거나 올리지 않는다.
+        assert foodguide._menu_rank(item, people, True) == score
+        assert foodguide._group_score(item, people, True) == (str(score), "점")
+        assert at.button(key=f'fg_open_{item["id"]}').label.endswith(f"{score}점")
+    assert at.session_state["scan"] == before

@@ -332,6 +332,15 @@ def _group_score(item, people, fresh):
     return "—", next((reason for reason in ("확인 필요", "제한 확인", "점수 없음") if reason in reasons), "점수 없음")
 
 
+def _is_meal(item):
+    """API가 주식·주요리로 확인한 메뉴만 식사 추천 대상으로 삼는다."""
+    profile = item.get("profile") or {}
+    roles = profile.get("meal_roles")
+    return (profile.get("status", "known") == "known" and isinstance(roles, list)
+            and "meal_roles" not in (profile.get("unknown_fields") or [])
+            and any(role in {"주식", "주요리"} for role in roles if isinstance(role, str)))
+
+
 def menu():
     s = st.session_state
     report = s.scan
@@ -340,9 +349,10 @@ def menu():
     _title(report.get("restaurant") or "메뉴판", f'메뉴 {len(report["items"])}개' + (f' · {basis}' if basis else ""))
     fresh = _fresh()
     # 점수가 같은 메뉴는 원래 순서로 유지한다. 원본 분석 배열은 바꾸지 않는다.
-    items = sorted(report["items"], key=lambda item: -_menu_rank(item, people, fresh))
-    recommended = {item["id"] for item in items if _menu_rank(item, people, fresh) >= 0}
-    recommended = {item["id"] for item in items[:2] if item["id"] in recommended}
+    ranks = {item["id"]: _menu_rank(item, people, fresh) for item in report["items"]}
+    meal_ids = {item["id"] for item in report["items"] if _is_meal(item) and ranks[item["id"]] >= 0}
+    items = sorted(report["items"], key=lambda item: (item["id"] not in meal_ids, -ranks[item["id"]]))
+    recommended = {item["id"] for item in items[:2] if item["id"] in meal_ids}
     extraction = report.get("currency") or (report.get("report") or {}).get("extraction") or {}
     currency = menu_prices.currency_code(extraction)
     inferred = extraction.get("currency_source") == "inferred"
