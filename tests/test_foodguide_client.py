@@ -344,3 +344,17 @@ def test_malformed_progress_ignored_and_nonstring_status_rejected():
         with pytest.raises(FoodGuideError) as error:
             run(c, {})
     assert error.value.code == "invalid_response"
+
+
+@pytest.mark.parametrize("failure", ["connect", "ngrok_offline"])
+def test_unreachable_server_is_unavailable_not_uncertain(failure):
+    """서버에 닿지 못한 제출은 '접수 불확실'이 아니라 '연결할 수 없음'이고, 다음에 다시 보낼 수 있다."""
+    def handler(request):
+        if failure == "connect":
+            raise httpx.ConnectError("down", request=request)
+        return httpx.Response(404, text="ERR_NGROK_3200")
+    state = {}
+    with client(handler) as c, pytest.raises(FoodGuideError) as error:
+        run(c, state)
+    assert error.value.code == "unavailable"
+    assert not any(entry.get("uncertain") for entry in state.values())

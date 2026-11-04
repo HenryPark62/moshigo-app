@@ -280,10 +280,17 @@ class Client:
             entry["uncertain"] = True
             try:
                 accepted = self._request("POST", "/v1/jobs/image" if image is not None else "/v1/jobs/text", deadline, payload, image)
+            except (httpx.ConnectError, httpx.ConnectTimeout):
+                # 연결 자체가 안 됐으면 서버가 요청을 받지 못했다: 접수 불확실이 아니라 '연결할 수 없음' (다시 보내도 중복 없음)
+                entry.pop("uncertain", None)
+                raise _error("unavailable") from None
             except httpx.HTTPError:
                 raise _error("submission_unknown") from None
             except FoodGuideError as error:
-                if error.code in {"rate_limited", "unauthorized", "validation_error", "not_found"}:
+                if error.code == "not_found":  # 접수 주소가 없다는 것은 서버(ngrok 등)가 꺼져 있다는 뜻
+                    entry.pop("uncertain", None)
+                    raise _error("unavailable", retry_after=error.retry_after) from None
+                if error.code in {"rate_limited", "unauthorized", "validation_error"}:
                     entry.pop("uncertain", None)
                 raise
             job_id = accepted.get("job_id")

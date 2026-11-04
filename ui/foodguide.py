@@ -98,7 +98,7 @@ def _pending():
             if _run(lambda progress: flow.resume(active(), s, on_progress=progress)):
                 go("menu")
             st.rerun()
-    elif st.button("분석 이어 보기", key="fg_resume", type="primary", width="stretch"):
+    elif st.button("다시 시도하기" if code == "unavailable" else "분석 이어 보기", key="fg_resume", type="primary", width="stretch"):
         if _run(lambda progress: flow.resume(active(), s, on_progress=progress)):
             go("menu")
 
