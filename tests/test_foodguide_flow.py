@@ -237,3 +237,16 @@ def test_daily_gate_rejects_before_upstream_requests(fake_service, monkeypatch):
     with pytest.raises(FoodGuideError, match="한도"):
         flow.run_image(b"image", "image/jpeg", PEOPLE, {})
     assert fake_service == []
+
+
+def test_inflight_result_cannot_repopulate_different_code_session(fake_service, monkeypatch):
+    session = {"code": "ownerA"}
+    def finish_after_code_change(*args, **kwargs):
+        flow.clear_analysis(session)
+        session["code"] = "ownerB"
+        return report()
+    monkeypatch.setattr(flow.Client, "run_image", finish_after_code_change)
+    with pytest.raises(FoodGuideError) as error:
+        flow.run_image(b"ownerA-photo", "image/jpeg", PEOPLE, session)
+    assert error.value.code == "session_changed"
+    assert session == {"code": "ownerB"}

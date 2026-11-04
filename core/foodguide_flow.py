@@ -160,6 +160,10 @@ def _complete(report, people, summary, metadata, pending, session):
 
 
 def _execute(pending, people, session, on_progress):
+    owner = session.get("code")
+    def require_owner():
+        if session.get("code") != owner:
+            raise FoodGuideError("session_changed", "기기 코드가 바뀌어 이전 분석을 표시하지 않았어요. 현재 입맛으로 다시 요청해 주세요.")
     session["foodguide_pending"] = pending
     invalidate(session)
     try:
@@ -178,6 +182,7 @@ def _execute(pending, people, session, on_progress):
             jobs = session.setdefault("foodguide_jobs", {})
             cache = session.setdefault("foodguide_reference_cache", {})
             preferences, summary = references.resolve(people, client, jobs, cache, on_progress)
+            require_owner()
             session["foodguide_summary"] = deepcopy(summary)
             metadata = pending.get("metadata") or {}
             if on_progress:
@@ -188,9 +193,11 @@ def _execute(pending, people, session, on_progress):
             else:
                 report = client.run_text(pending["menus"], preferences, pending.get("context"),
                                          state=jobs, operation_key="analysis-text", on_progress=on_progress)
+            require_owner()
             return _complete(report, people, summary, metadata, pending, session)
     except FoodGuideError as error:
-        _store_error(session, error)
+        if session.get("code") == owner:
+            _store_error(session, error)
         raise
 
 
